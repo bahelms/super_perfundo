@@ -16,7 +16,7 @@ defmodule SuperPerfundoWeb.Router do
   scope "/", SuperPerfundoWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", BlogController, :index
   end
 
   # Other scopes may use custom stacks.

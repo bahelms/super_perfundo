@@ -1,0 +1,10 @@
+<section>
+  <h2>Posts</h2>
+  <%= for post <- @posts do %>
+    <p>
+      <div><strong> Title:</strong> <span><%= post.title %> </span></div>
+      <div><strong> Published:</strong> <span><%= post.date %> </span></div>
+      <div><%= post.body %></div>
+    </p>
+  <% end %>
+</section>
