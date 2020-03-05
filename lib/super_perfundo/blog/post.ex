@@ -31,7 +31,9 @@ defmodule SuperPerfundo.Blog.Post do
   end
 
   defp parse_attr(:title, value), do: String.trim(value)
-  defp parse_attr(:body, value), do: value
+
+  defp parse_attr(:body, value),
+    do: Earmark.as_html!(value) |> ExDoc.Highlighter.highlight_code_blocks()
 
   defp parse_attr(:tags, value),
     do: String.split(value, ",") |> Enum.map(&String.trim/1) |> Enum.sort()
