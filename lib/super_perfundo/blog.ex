@@ -1,6 +1,8 @@
 defmodule SuperPerfundo.Blog do
   alias SuperPerfundo.Blog.Post
 
+  for app <- [:earmark, :makeup_elixir], do: Application.ensure_all_started(app)
+
   post_paths = Path.wildcard("posts/**/*.md") |> Enum.sort()
 
   posts =

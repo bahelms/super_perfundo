@@ -4,7 +4,7 @@
     <p>
       <div><strong> Title:</strong> <span><%= post.title %> </span></div>
       <div><strong> Published:</strong> <span><%= post.date %> </span></div>
-      <div><%= post.body %></div>
+      <div><%= raw post.body %></div>
     </p>
   <% end %>
 </section>
