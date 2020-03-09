@@ -52,28 +52,3 @@ main {
   max-width: 900px;
   flex-wrap: wrap;
 }
-
-/* header { */
-/*   position: fixed; */
-/*   top: 0; */
-/*   z-index: 1000; */
-/* } */
-
-/* header section { */
-/*   margin: 10px 10px; */
-/*   justify-content: space-evenly; */
-/* } */
-
-/* main { */
-/*   margin-top: 70px; */
-/* } */
-
-/* #posts-list { */
-/*   display: flex; */
-/*   flex-wrap: wrap; */
-/*   flex-direction: column; */
-/* } */
-
-/* article { */
-/*   border: 1px solid black; */
-/* } */
