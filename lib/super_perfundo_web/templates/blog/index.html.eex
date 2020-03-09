@@ -1,7 +1,5 @@
-<section>
-  <h2>Posts</h2>
-</section>
 <section id="posts-list">
+  <h2>Posts</h2>
   <%= for post <- @posts do %>
     <article>
       <div><strong> Title:</strong> <span><%= post.title %> </span></div>

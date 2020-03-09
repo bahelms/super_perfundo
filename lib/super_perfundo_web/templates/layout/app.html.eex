@@ -10,12 +10,14 @@
   </head>
   <body>
     <header>
-      <div id="title">Super Perfundo</div>
-      <nav>
-        <div id="posts"><%= link("All Posts", to: "/") %></div>
-      </nav>
+      <div id="header-container">
+        <div>Super Perfundo</div>
+        <nav>
+          <div><%= link("All Posts", to: "/") %></div>
+        </nav>
+      </div>
     </header>
-    <main role="main" class="container">
+    <main role="main">
       <%= render @view_module, @view_template, assigns %>
     </main>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
