@@ -1,3 +1,10 @@
-<section>
-  <h2><%= @post.title %></h2>
+<section class="post-show">
+  <article class="post-card">
+    <h1><%= @post.title %></h1>
+    <div class="post-meta">
+      <div><%= format_date(@post) %></span></div>
+      <div class="tags-list">tags: <%= tags(@post) %></div>
+    </div>
+    <p><%= raw @post.body %></p>
+  </article>
 </section>

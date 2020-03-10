@@ -1,6 +1,6 @@
 /* This file is for your main application css. */
 
-/* @import "./makeup.css"; */
+@import "./makeup.css";
 
 html {
   box-sizing: border-box;
@@ -13,7 +13,7 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
-  font-family: Raleway, sans-serif;
+  font-family: Lato, sans-serif;
 }
 
 header {
@@ -68,8 +68,7 @@ h1, h2, h3 {
 }
 
 #blog-title {
-  font-size: 25px;
-  font-family: "Baloo Bhaina 2", sans-serif;
+  font: 25px "Baloo Bhaina 2", sans-serif;
   margin-top: -10px;
   color: dimgrey;
 }
@@ -84,12 +83,12 @@ h1, h2, h3 {
 }
 
 #posts-list h3 {
-  margin: 40px 0;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 .post-meta {
-  font-family: Spartan, sans-serif;
-  font-size: 15px;
+  font: 15px Spartan, sans-serif;
   color: dimgrey;
 }
 
@@ -99,9 +98,10 @@ h1, h2, h3 {
 
 .post-card {
   box-shadow: 0 0 3px lightgray;
-  margin-bottom: 20px;
+  margin-top: 20px;
   padding: 20px;
   border-radius: 10px;
+  max-width: 900px;
 }
 
 .post-card h1 {
@@ -120,10 +120,20 @@ h1, h2, h3 {
   border-radius: 8px;
   background-color: darkcyan;
   color: white;
-  font-family: Spartan, sans-serif;
-  font-size: 12px;
+  font: 12px Spartan, sans-serif;
 }
 
 .post-card button:hover {
   background-color: cadetblue;
+  cursor: pointer;
+}
+
+.post-show .post-card {
+  margin-top: 50px;
+}
+
+pre {
+  border-left: 3px solid cornflowerblue;
+  padding: 10px;
+  background-color: #f8f8f8;
 }
