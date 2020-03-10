@@ -14,7 +14,7 @@
       <div id="header-container">
         <div id="blog-title">Super Perfundo</div>
         <nav>
-          <%= link("ALL POSTS", to: "/") %>
+          <%= link("ARTICLES", to: "/") %>
         </nav>
       </div>
     </header>
