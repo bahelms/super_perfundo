@@ -5,15 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title><%= assigns[:page_title] || "Super Perfundo" %></title>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2:wght@600&family=Raleway&family=Spartan:wght@400;800&display=swap');</style>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <%= csrf_meta_tag() %>
   </head>
   <body>
     <header>
       <div id="header-container">
-        <div>Super Perfundo</div>
+        <div id="blog-title">Super Perfundo</div>
         <nav>
-          <div><%= link("All Posts", to: "/") %></div>
+          <%= link("ALL POSTS", to: "/") %>
         </nav>
       </div>
     </header>
