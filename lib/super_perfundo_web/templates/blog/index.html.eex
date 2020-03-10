@@ -1,10 +1,14 @@
 <section id="posts-list">
-  <h2>Posts</h2>
+  <h3>Posts</h3>
   <%= for post <- @posts do %>
-    <article>
-      <div><strong> Title:</strong> <span><%= post.title %> </span></div>
-      <div><strong> Published:</strong> <span><%= post.date %> </span></div>
-      <div><%= raw post.body %></div>
+    <article class="post-card">
+      <h1><%= post.title %></h1>
+      <div class="post-meta">
+        <div><%= format_date(post) %></span></div>
+        <div class="tags-list">tags: <%= tags(post) %></div>
+      </div>
+      <p><%= post.description %></p>
+      <%= button("Read Post", to: "/#{post.id}", method: :get) %>
     </article>
   <% end %>
 </section>

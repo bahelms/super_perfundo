@@ -4,6 +4,9 @@ Test post again
 ==tags==
 monkeys, donuts
 
+==description==
+One fine day, I decided to write a blog!
+
 ==body==
 Gan example: `val x = 3.5`
 

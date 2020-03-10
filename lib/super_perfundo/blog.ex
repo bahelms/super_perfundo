@@ -16,4 +16,8 @@ defmodule SuperPerfundo.Blog do
   def list_posts do
     @posts
   end
+
+  def get_post(id) do
+    Enum.find(@posts, &(&1.id == id))
+  end
 end

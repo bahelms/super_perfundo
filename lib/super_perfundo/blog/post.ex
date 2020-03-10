@@ -1,6 +1,6 @@
 defmodule SuperPerfundo.Blog.Post do
-  @enforce_keys [:id, :title, :body, :tags, :date]
-  defstruct [:id, :title, :body, :tags, :date]
+  @enforce_keys [:id, :title, :body, :tags, :description, :date]
+  defstruct [:id, :title, :body, :tags, :description, :date]
 
   @field_pattern ~r/^==(\w+)==\n/m
 
@@ -31,6 +31,7 @@ defmodule SuperPerfundo.Blog.Post do
   end
 
   defp parse_attr(:title, value), do: String.trim(value)
+  defp parse_attr(:description, value), do: String.trim(value)
 
   defp parse_attr(:body, value),
     do: Earmark.as_html!(value) |> ExDoc.Highlighter.highlight_code_blocks()

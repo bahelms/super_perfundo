@@ -40,7 +40,8 @@ defmodule SuperPerfundo.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:earmark, "~> 1.3"},
-      {:ex_doc, "~> 0.21.3"}
+      {:ex_doc, "~> 0.21.3"},
+      {:timex, "~> 3.6.1"}
     ]
   end
 end
