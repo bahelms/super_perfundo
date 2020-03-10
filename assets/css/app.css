@@ -93,6 +93,10 @@ h1, h2, h3 {
   color: dimgrey;
 }
 
+.tags-list {
+  color: blue;
+}
+
 .post-card {
   box-shadow: 0 0 3px lightgray;
   margin-bottom: 20px;
@@ -111,6 +115,15 @@ h1, h2, h3 {
   font-size: 18px;
 }
 
-.tags-list {
-  color: blue;
+.post-card button {
+  padding: 12px 15px 10px;
+  border-radius: 8px;
+  background-color: darkcyan;
+  color: white;
+  font-family: Spartan, sans-serif;
+  font-size: 12px;
+}
+
+.post-card button:hover {
+  background-color: cadetblue;
 }
