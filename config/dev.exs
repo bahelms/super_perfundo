@@ -53,7 +53,8 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/super_perfundo_web/(live|views)/.*(ex)$",
-      ~r"lib/super_perfundo_web/templates/.*(eex)$"
+      ~r"lib/super_perfundo_web/templates/.*(eex)$",
+      ~r"posts/*/.*(md)$"
     ]
   ]
 

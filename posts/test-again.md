@@ -5,10 +5,10 @@ Test post again
 wigs, donuts
 
 ==description==
-One fine day, I decided to write a blog!
+Live reloading these things is fucking sweet!
 
 ==body==
-In Chapter 8, we mentioned that one limitation of vectors is that they can store elements of only one type. We created a workaround in Listing 8-10 where we defined a SpreadsheetCell enum that had variants to hold integers, floats, and text. This meant we could store different types of data in each cell and still have a vector that represented a row of cells. This is a perfectly good solution when our interchangeable items are a fixed set of types that we know when our code is compiled.
+Dude, in Chapter 9, we mentioned that one limitation of vectors is that they can store elements of only one type. We created a workaround in Listing 8-10 where we defined a SpreadsheetCell enum that had variants to hold integers, floats, and text. This meant we could store different types of data in each cell and still have a vector that represented a row of cells. This is a perfectly good solution when our interchangeable items are a fixed set of types that we know when our code is compiled.
 
 ### Code Examples
 ```
@@ -17,7 +17,7 @@ val x = 3.5
 
 Code body:
 ```
-val x = 3
+val x = 3 + 2
 val result = timesThree(x)
 
 fn timesThree(num int) int:
