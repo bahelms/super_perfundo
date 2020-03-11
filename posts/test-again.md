@@ -2,7 +2,7 @@
 Test post again
 
 ==tags==
-monkeys, donuts
+wigs, donuts
 
 ==description==
 One fine day, I decided to write a blog!
@@ -22,6 +22,8 @@ val result = timesThree(x)
 
 fn timesThree(num int) int:
   num * 3
+
+log(result)
 ```
 
 However, sometimes we want our library user to be able to extend the set of types that are valid in a particular situation. To show how we might achieve this, we’ll create an example graphical user interface (GUI) tool that iterates through a list of items, calling a draw method on each one to draw it to the screen—a common technique for GUI tools. We’ll create a library crate called gui that contains the structure of a GUI library. This crate might include some types for people to use, such as Button or TextField. In addition, gui users will want to create their own types that can be drawn: for instance, one programmer might add an Image and another might add a SelectBox.

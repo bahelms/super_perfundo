@@ -2,7 +2,7 @@
 Awesome post
 
 ==tags==
-monkeys, donuts
+brushes, donuts
 
 ==description==
 One fine day, I decided to write a blog!

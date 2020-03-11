@@ -13,5 +13,9 @@ defmodule SuperPerfundo.Blog do
 
   def list_posts, do: @posts
 
+  def list_posts(for_tag: tag) do
+    for post <- @posts, tag in post.tags, do: post
+  end
+
   def get_post(id), do: Enum.find(@posts, &(&1.id == id))
 end

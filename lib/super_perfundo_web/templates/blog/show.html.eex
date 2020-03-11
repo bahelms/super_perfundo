@@ -3,7 +3,7 @@
     <h1><%= @post.title %></h1>
     <div class="post-meta">
       <div><%= format_date(@post) %></span></div>
-      <div class="tags-list">tags: <%= tags(@post) %></div>
+      <div class="tags-list">tags: <%= tag_links(@post.tags) %></div>
     </div>
     <div class="body"><%= raw @post.body %></div>
   </article>
