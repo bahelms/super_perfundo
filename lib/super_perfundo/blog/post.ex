@@ -5,19 +5,22 @@ defmodule SuperPerfundo.Blog.Post do
   @field_pattern ~r/^==(\w+)==\n/m
 
   def parse!(filename) do
-    {id, date} = parse_id_and_date(filename)
+    id = parse_id(filename)
+    date = parse_date(filename)
     contents = parse_contents(File.read!(filename))
     struct!(__MODULE__, [id: id, date: date] ++ contents)
   end
 
-  defp parse_id_and_date(filename) do
-    [year, month_day_id] =
-      filename
-      |> Path.split()
-      |> Enum.take(-2)
+  defp parse_id(filename) do
+    filename
+    |> Path.split()
+    |> List.last()
+    |> Path.rootname()
+  end
 
-    [month, day, id_with_ext] = String.split(month_day_id, "-", parts: 3)
-    {Path.rootname(id_with_ext), Date.from_iso8601!("#{year}-#{month}-#{day}")}
+  defp parse_date(filename) do
+    {date, _} = File.stat!(filename).mtime
+    Date.from_erl!(date)
   end
 
   defp parse_contents(contents) do
