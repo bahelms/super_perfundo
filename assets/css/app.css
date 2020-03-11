@@ -13,7 +13,8 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
-  font-family: Lato, sans-serif;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
 }
 
 header {
@@ -43,6 +44,7 @@ nav {
   display: flex;
   margin-left: auto;
   padding-top: 7px;
+  color: dimgrey;
 }
 
 nav > * {
@@ -51,7 +53,6 @@ nav > * {
 
 nav a {
   text-decoration: none;
-  color: dimgrey;
 }
 
 nav a:visited {
@@ -69,7 +70,7 @@ h1, h2, h3 {
 
 #blog-title {
   font: 25px "Baloo Bhaina 2", sans-serif;
-  margin-top: -10px;
+  margin-top: -7px;
   color: dimgrey;
 }
 
@@ -132,8 +133,22 @@ h1, h2, h3 {
   margin-top: 50px;
 }
 
+.post-show .body {
+  line-height: 1.8em;
+}
+
+.post-show .body h3 {
+  padding-top: 10px;
+}
+
 pre {
-  border-left: 3px solid cornflowerblue;
+  border: 1px solid lightgrey;
   padding: 10px;
   background-color: #f8f8f8;
+  line-height: initial;
+  font-size: 16px;
+}
+
+pre code {
+  font-family: "Overpass Mono", monospace;
 }
