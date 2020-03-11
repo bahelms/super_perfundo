@@ -51,10 +51,6 @@ nav > * {
   flex: 1 1 auto;
 }
 
-nav a {
-  text-decoration: none;
-}
-
 nav a:visited {
   color: dimgrey;
 }
@@ -66,6 +62,14 @@ main {
 h1, h2, h3 {
   font-family: Spartan, sans-serif;
   color: darkslategrey;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:visited {
+  color: blue;
 }
 
 #blog-title {
@@ -134,7 +138,7 @@ h1, h2, h3 {
 }
 
 .post-show .body {
-  line-height: 1.8em;
+  line-height: 1.6;
 }
 
 .post-show .body h3 {
@@ -146,9 +150,10 @@ pre {
   padding: 10px;
   background-color: #f8f8f8;
   line-height: initial;
-  font-size: 16px;
+  font-size: 15px;
+  border-radius: 4px;
 }
 
 pre code {
-  font-family: "Overpass Mono", monospace;
+  font-family: "Source Code Pro", monospace;
 }

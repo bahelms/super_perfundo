@@ -1,11 +1,11 @@
 <section id="posts-list">
-  <h3>All Articles</h3>
+  <h3><%= index_heading(@tag) %></h3>
   <%= for post <- @posts do %>
     <article class="post-card">
       <h1><%= post.title %></h1>
       <div class="post-meta">
         <div><%= format_date(post) %></span></div>
-        <div class="tags-list">tags: <%= tags(post) %></div>
+        <div class="tags-list">tags: <%= tag_links(post.tags) %></div>
       </div>
       <p><%= post.description %></p>
       <%= button("Read Post", to: "/#{post.id}", method: :get) %>

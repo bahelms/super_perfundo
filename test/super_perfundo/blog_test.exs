@@ -2,8 +2,13 @@ defmodule SuperPerfundo.BlogTest do
   use ExUnit.Case
   alias SuperPerfundo.Blog
 
-  test "get_post finds the blog post by ID" do
-    p = Blog.get_post("awesome")
-    assert p.title == "Awesome post"
+  test "getting post by ID" do
+    p = Blog.get_post("01-01-awesome")
+    assert p.title == "Awesome post hey"
+  end
+
+  test "filtering posts by tag" do
+    posts = Blog.list_posts(for_tag: "monkeys")
+    assert length(posts) == 4
   end
 end
