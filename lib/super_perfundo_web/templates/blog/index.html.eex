@@ -1,5 +1,5 @@
 <section id="posts-list">
-  <h3>All Posts</h3>
+  <h3>All Articles</h3>
   <%= for post <- @posts do %>
     <article class="post-card">
       <h1><%= post.title %></h1>

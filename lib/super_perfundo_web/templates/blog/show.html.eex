@@ -5,6 +5,6 @@
       <div><%= format_date(@post) %></span></div>
       <div class="tags-list">tags: <%= tags(@post) %></div>
     </div>
-    <p><%= raw @post.body %></p>
+    <div class="body"><%= raw @post.body %></div>
   </article>
 </section>
