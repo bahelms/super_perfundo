@@ -145,15 +145,20 @@ a:visited {
   padding-top: 10px;
 }
 
+/* Code blocks */
+
 pre {
   border: 1px solid lightgrey;
   padding: 10px;
   background-color: #f8f8f8;
   line-height: initial;
-  font-size: 15px;
   border-radius: 4px;
 }
 
-pre code {
-  font-family: "Source Code Pro", monospace;
+code {
+  font: 15px "Source Code Pro", monospace;
+}
+
+code.inline {
+  background-color: #f8f8f8;
 }
