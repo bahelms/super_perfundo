@@ -3,8 +3,12 @@ defmodule SuperPerfundo.Blog do
 
   for app <- [:earmark, :makeup_elixir], do: Application.ensure_all_started(app)
 
+  paths =
+    Application.compile_env(:super_perfundo, :posts_pattern)
+    |> Path.wildcard()
+
   posts =
-    for path <- Path.wildcard("posts/**/*.md") do
+    for path <- paths do
       @external_resource Path.relative_to_cwd(path)
       Post.parse!(path)
     end

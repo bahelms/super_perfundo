@@ -6,5 +6,7 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :super_perfundo, :posts_pattern, "test/posts/*.md"
+
 # Print only warnings and errors during test
 config :logger, level: :warn
