@@ -5,31 +5,30 @@ Super perfundo on the early eve of your day
 elixir, phoenix, css
 
 ==description==
-TBD
+How I was inspired to create this blog and the methods I used to get it to production.
 
 ==body==
 After years of thinking about writing technical blog posts, I've finally found 
-the impetus to cross the finish line and actually do it. I was never sure what 
+the impetus to cross the finish line and actually do it. In the past, I was never sure what 
 to write about. What ideas could I discuss that haven't already been discussed 
 before? I enjoy reading other blogs, but I never thought of anything meaningful 
 to contribute myself. Lately, though, I've found a couple things that inspired me. 
 
 One is the fact that I've decided to create my own new programming language. 
-For fun of course. That should provide plenty of content to share, and I'll kick
-that off in the next post. The other is the process of making the blog server itself.
-I was massively inspired to make this site after reading a post from José Valim
-about how [Dashbit](https://dashbit.co){:target="x"} put together its blog: 
-<https://dashbit.co/blog/welcome-to-our-blog-how-it-was-made>{:target="x"}.
-In my post, I'll talk about how I started with that blueprint and ended up with
+For fun of course (I don't expect anyone else to use it). That should provide plenty of content to share, and I'll kick
+that off in the next post. The other is the process of making this blog itself.
+I was massively inspired to make this site after reading an article from José Valim
+about how [Dashbit put together its blog](https://dashbit.co/blog/welcome-to-our-blog-how-it-was-made){:target="x"}.
+In this post, I'll talk about how I started with that blueprint and ended up with
 what you're seeing now.
 
-### Functionality
+### Blog Functionality
 The site is built with [Phoenix](https://www.phoenixframework.org/){:target="x"}, 
-which I think is the best way to build a serverful web app in this day and age. 
+which I think is the best way to build a serverful web app in this day and age<a name="1'">[<sup>1</sup>](#1)</a>.
 However, the main thing that grabbed my attention was the fact that posts were 
 served without a database. I think finding ways to avoid 
 using a DB is novel and interesting, if not always practical in production. 
-But it's not even just reading a file and rendering it upon request. The posts 
+But it's not just reading a file and rendering it upon request. The posts 
 themselves are compiled into the app, so they are already in memory! Here's the
 magic:
 ```
@@ -44,7 +43,7 @@ defmodule SuperPerfundo.Blog do
     |> Path.wildcard()
 
   # @external_resource says this module is dependent on 
-  # the value and will recompile if it changes.
+  # the value and will recompile if the value changes.
   posts =
     for path <- paths do
       @external_resource Path.relative_to_cwd(path)
@@ -56,9 +55,24 @@ defmodule SuperPerfundo.Blog do
   def list_posts, do: @posts
 end
 ```
+It globs all the posts from wherever they're configured to be, parses them, and 
+compiles them into the module. `@external_resource` tells Mix that contents 
+from an external file were embedded in this module, so if they change, recompile. 
+By the time the server starts, `@posts` inside `list_posts/0` has been replaced with a list of `Post` structs. 
 
-I had been toying with the idea of taking a [Gatsby](https://www.gatsbyjs.org/){:target="x"} tutorial and using that to generate a static site. But by using Phoenix with pre-compiled blog posts, you can enjoy static AND dynamic features at lightning speed.  Super cool. The posts are also written in markdown and stored in version control, which makes developing them very enjoyable (and I don't have to leave vim!). Throw in a new `live_reload` pattern and you can watch your post update automatically as you write it.
+Rather than using a dated directory of posts (`posts/YYYY/MM-DD-name.md`) as the Dashbit blog does, dates are parsed from the last modified time of the files so it's as up-to-date as possible when publishing. If I ever need to edit content later, I'll probably add a new feature to display the edit instead of changing the file directly. The posts are written in markdown and stored in version control, which makes developing them very enjoyable (and I don't have to leave vim!). Throw in a new `live_reload` pattern and you can watch your work update automatically as you save it.
 
-### Design
+Before I built this I had been toying with the idea of taking a [Gatsby](https://www.gatsbyjs.org/){:target="x"} tutorial and using that to generate a static site. But by using Phoenix with pre-compiled blog posts, I can take advantage of static AND dynamic features at lightning speed. Super cool. 
+
+
+### Visual Design
+I've always been more interested in the backend world; I love [PLT](https://en.wikipedia.org/wiki/Programming_language_theory){:target="x"} and deeper computer science topics. Making things look pretty has never been a top personal priority. However, no one else was going to make my blog look good. Currently, Phoenix (v1.4) ships with [Milligram](https://milligram.io/){:target="x"} as its CSS framework. I started out incorporating Milligram but went nowhere fast. It was a brand new tool for me to learn and the docs aren't that great. I decided to bite the bullet and learn me some real CSS from scratch. Fortunately, the amazing company I work for offers [LinkedIn Learning](https://www.linkedin.com/learning){:target="x"}. After taking a couple of courses, I threw out the Milligram code and designed the site from the ground up to be responsive and mobile friendly using only vanilla CSS3. It was actually a lot more fun than I thought it would be, I'm pretty happy with the results, and now I'm a better developer.
 
 ### Deployment
+GitHub Actions and Gigalixir
+
+### Title
+The name of this article and the blog itself is taken from a mind-bending movie I've loved since first seeing it in college: [Waking Life](https://www.imdb.com/title/tt0243017/){:target="x"}.
+
+#### Notes
+* <a name="1">[1](#1')</a>: Check out a great book, [Real-Time Phoenix](https://pragprog.com/book/sbsockets/real-time-phoenix){:target="x"}, for a look into the power this framework puts in your hands.
