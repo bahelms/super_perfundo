@@ -1,0 +1,36 @@
+on: 
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: 21.1
+          elixir-version: 1.10.2
+      - name: Install deps
+        run: mix deps.get
+
+      - run: mix format --check-formatted
+      - run: mix test
+
+  # deploy:
+  #   if: github.event.pull_request.merged
+  #   needs: verify
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       ref: master
+  #       fetch-depth: 0
+
+  #     - uses: mhanberg/gigalixir-action@0.2.0
+  #       with:
+  #         GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
+  #         GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
+  #         GIGALIXIR_APP: ${{ secrets.GIGALIXIR_APP }}
+  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+  #         RUN_MIGRATIONS: false
