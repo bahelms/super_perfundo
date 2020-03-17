@@ -13,7 +13,7 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
-  font-family: "Open Sans", sans-serif;
+  font-family: Inter, sans-serif;
   font-weight: 300;
 }
 
@@ -99,6 +99,7 @@ a:visited {
 
 .tags-list {
   color: blue;
+  margin-top: 3px;
 }
 
 .post-card {
@@ -138,7 +139,7 @@ a:visited {
 }
 
 .post-show .body {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .post-show .body h3 {
