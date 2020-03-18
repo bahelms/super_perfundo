@@ -149,7 +149,11 @@ a:visited {
 .note-anchor {
   display: inline-block;
   position: relative;
-  top: -100px;
+  top: -110px;
+}
+
+sup {
+  font-size: 12px;
 }
 
 /* Code blocks */
