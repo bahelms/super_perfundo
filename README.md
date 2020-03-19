@@ -5,6 +5,6 @@ A blog server with no database!
 ### TODO
 - Core
   * about page
-  * article link shows `?_csrf_token=&_method=get` params in url
+  * email signup for new posts notifications
 - Next
   * comments
