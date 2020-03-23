@@ -3,17 +3,29 @@ defmodule SuperPerfundo.Blog do
 
   for app <- [:earmark, :makeup_elixir], do: Application.ensure_all_started(app)
 
-  paths =
+  published_posts =
     Application.compile_env(:super_perfundo, :posts_pattern)
     |> Path.wildcard()
 
   posts =
-    for path <- paths do
+    for path <- published_posts do
       @external_resource Path.relative_to_cwd(path)
       Post.parse!(path)
     end
 
   @posts Enum.sort_by(posts, & &1.date, {:desc, Date})
+
+  draft_posts =
+    Application.compile_env(:super_perfundo, :drafts_pattern)
+    |> Path.wildcard()
+
+  drafts =
+    for path <- draft_posts do
+      @external_resource Path.relative_to_cwd(path)
+      Post.parse!(path)
+    end
+
+  @drafts Enum.sort_by(drafts, & &1.date, {:desc, Date})
 
   def list_posts, do: @posts
 
@@ -22,4 +34,6 @@ defmodule SuperPerfundo.Blog do
   end
 
   def get_post(id), do: Enum.find(@posts, &(&1.id == id))
+
+  def get_draft(id), do: Enum.find(@drafts, &(&1.id == id))
 end

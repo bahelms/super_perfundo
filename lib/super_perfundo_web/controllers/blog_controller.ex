@@ -15,4 +15,8 @@ defmodule SuperPerfundoWeb.BlogController do
     post = SuperPerfundo.Blog.get_post(id)
     render(conn, "show.html", post: post)
   end
+
+  def show_draft(conn, %{"id" => id}) do
+    render(conn, "show.html", post: SuperPerfundo.Blog.get_draft(id))
+  end
 end

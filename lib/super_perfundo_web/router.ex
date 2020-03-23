@@ -14,5 +14,6 @@ defmodule SuperPerfundoWeb.Router do
 
     get "/", BlogController, :index
     get "/:id", BlogController, :show
+    get "/drafts/:id", BlogController, :show_draft
   end
 end
