@@ -8,7 +8,7 @@
         <div class="tags-list">tags: <%= tag_links(post.tags) %></div>
       </div>
       <p><%= post.description %></p>
-      <%= button("Read Post", to: "/#{post.id}", method: :get) %>
+      <%= link("Read Post", to: "/#{post.id}", class: "btn") %>
     </article>
   <% end %>
 </section>
