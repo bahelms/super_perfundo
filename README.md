@@ -3,5 +3,8 @@
 A blog server with no database!
 
 ### TODO
-* article link shows `?_csrf_token=&_method=get` params in url
-* comments
+- Core
+  * about page
+  * email signup for new posts notifications
+- Next
+  * comments
