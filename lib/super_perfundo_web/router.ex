@@ -13,6 +13,8 @@ defmodule SuperPerfundoWeb.Router do
     pipe_through :browser
 
     get "/", BlogController, :index
+    get "/about", BlogController, :about
+
     get "/:id", BlogController, :show
     get "/drafts/:id", BlogController, :show_draft
   end

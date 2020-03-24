@@ -1,0 +1,10 @@
+<section id="about">
+  <h1>Author: Barrett Helms</h1>
+  <p>I like computer.</p>
+  <h4>Fun places:</h3>
+  <ul>
+    <li>
+      <%= link("github.com/bahelms", to: "https://www.github.com/bahelms", target: "_blank") %>
+    </li>
+  </ul>
+</section>
