@@ -24,6 +24,7 @@
         <div id="blog-title">SuperPerfundo.Tech</div>
         <nav>
           <%= link("ARTICLES", to: "/") %>
+          <%= link("ABOUT", to: "/about") %>
         </nav>
       </div>
     </header>

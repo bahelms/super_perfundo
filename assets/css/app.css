@@ -49,6 +49,7 @@ nav {
 
 nav > * {
   flex: 1 1 auto;
+  padding-left: 15px;
 }
 
 nav a:visited {
@@ -59,7 +60,7 @@ main {
   margin-top: 60px;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   font-family: Spartan, sans-serif;
   color: darkslategrey;
 }
@@ -176,4 +177,12 @@ code {
 
 code.inline {
   background-color: #f8f8f8;
+}
+
+#about {
+  margin-top: 50px;
+}
+
+#about h4 {
+  margin-top: 40px;
 }
