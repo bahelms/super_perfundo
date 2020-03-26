@@ -24,8 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        ref: master
-        fetch-depth: 0
+        with:
+          ref: master
+          fetch-depth: 0
 
       - uses: mhanberg/gigalixir-action@master
         with:
