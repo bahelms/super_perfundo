@@ -19,8 +19,8 @@ defmodule SuperPerfundo.Blog.Post do
   end
 
   defp parse_date(filename) do
-    {date, _} = File.stat!(filename, time: :local).mtime
-    Date.from_erl!(date)
+    File.stat!(filename).mtime
+    |> Timex.Timezone.convert("US/Eastern")
   end
 
   defp parse_contents(contents) do

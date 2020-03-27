@@ -1,7 +1,7 @@
 defmodule SuperPerfundo.Blog do
   alias SuperPerfundo.Blog.Post
 
-  for app <- [:earmark, :makeup_elixir], do: Application.ensure_all_started(app)
+  for app <- [:earmark, :makeup_elixir, :timex], do: Application.ensure_all_started(app)
 
   published_posts =
     Application.compile_env(:super_perfundo, :posts_pattern)
