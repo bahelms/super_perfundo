@@ -75,11 +75,17 @@ ships with [Milligram](https://milligram.io/){:target="x"} as its CSS framework.
 I started out with that but went nowhere fast. It was a brand new 
 tool for me to learn and the docs aren't great. 
 
-I decided to bite the bullet and learn me some real CSS from scratch. Fortunately, the amazing company I work for offers [LinkedIn Learning](https://www.linkedin.com/learning){:target="x"}. After taking a couple of courses, I threw out the Milligram code and designed the site from the ground up to be responsive and mobile friendly using only vanilla CSS3. It was actually a lot more fun than I thought it would be, I'm pretty happy with the results, and now I'm a better developer.
+I decided to bite the bullet and learn me some real CSS from scratch. Fortunately, 
+the amazing company I work for, [SalesLoft](https://salesloft.com){:target="x"}, 
+offers [LinkedIn Learning](https://www.linkedin.com/learning){:target="x"}. 
+After taking a couple of courses, I threw out the Milligram code and designed 
+the site from the ground up to be responsive and mobile friendly using only 
+vanilla CSS3. It was actually a lot more fun than I thought it would be, I'm 
+pretty happy with the results, and now I'm a better developer.
 
 ### Operations
 The site is hosted at [Gigalixir](https://gigalixir.com/){:target="x"}, which is 
-basically Heroku specifically for Elixir apps (so you can use hot upgrades, remote observer, etc). 
+basically Heroku specifically for Elixir apps (so you can use hot upgrades, remote observer/console, etc). 
 You get one app with a database that never sleeps and automatic TLS certs so you 
 can use HTTPS out of the box. It's pretty easy to setup, and you can pick from 
 Mix, Distillery, or Elixir Releases to deploy. I went with built-in Releases, 
@@ -107,7 +113,7 @@ This project has been a lot of fun and covered many aspects of web development.
 Had I just picked an off-the-shelf blog platform on which to publish posts, I 
 may not have been as motivated to actually write. Doing it myself was way more enjoyable!
 I've also been kicking around the idea of adding comments. Should I use a third party, roll my own,
-or even do it at all? Leave a comment below and tell me what you... Oh yeah.
+or even do it at all? Leave a comment below and tell me... oh yeah.
 
 
 #### Notes
