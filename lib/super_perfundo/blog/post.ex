@@ -19,7 +19,7 @@ defmodule SuperPerfundo.Blog.Post do
   end
 
   defp parse_date(filename) do
-    {date, _} = File.stat!(filename).mtime
+    {date, _} = File.stat!(filename, time: :local).mtime
     Date.from_erl!(date)
   end
 
