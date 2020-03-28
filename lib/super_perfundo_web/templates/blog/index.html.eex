@@ -1,14 +1,27 @@
-<section id="posts-list">
+<section id="index">
   <h3><%= index_heading(@tag) %></h3>
-  <%= for post <- @posts do %>
-    <article class="post-card">
-      <h1><%= post.title %></h1>
-      <div class="post-meta">
-        <div><%= format_date(post) %></span></div>
-        <div class="tags-list">tags: <%= tag_links(post.tags) %></div>
-      </div>
-      <p><%= post.description %></p>
-      <%= link("Read Post", to: "/#{post.id}", class: "btn") %>
-    </article>
-  <% end %>
+  <div>
+    <div id="posts-list">
+      <%= for post <- @posts do %>
+        <article class="post-card">
+          <h1><%= post.title %></h1>
+          <div class="post-meta">
+            <div><%= format_date(post) %></span></div>
+            <div class="tags-list">tags: <%= tag_links(post.tags) %></div>
+          </div>
+          <p><%= post.description %></p>
+          <%= link("Read Post", to: "/#{post.id}", class: "btn") %>
+        </article>
+      <% end %>
+    </div>
+    <div id="mailing-list">
+      <h4>Subscribe to Updates</h4>
+      <p>
+        You'll receive emails when new articles are published. 
+        And don't worry, I'm too lazy to sell your information.
+      </p>
+      <%= text_input :mailing_list, :email_address, placeholder: "Email" %>
+      <button>Subscribe</button>
+    </div>
+  </div>
 </section>

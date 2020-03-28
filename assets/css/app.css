@@ -165,16 +165,53 @@ a:visited {
 
 /* POSTS */
 
+#index > h3 {
+  margin: 40px 0 20px 15px;
+}
+
+#index > div {
+  display: flex;
+  max-width: 900px;
+  justify-content: space-between;
+}
+
+#index > div > div {
+  flex-grow: 1;
+}
+
 #posts-list {
   display: flex;
   max-width: 900px;
   flex-wrap: wrap;
   flex-direction: column;
+  min-width: 300px;
 }
 
-#posts-list h3 {
-  margin-top: 40px;
-  margin-bottom: 20px;
+#mailing-list {
+  box-shadow: 0 0 4px lightgray;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  margin-top: 20px;
+  margin-left: 15px;
+  max-height: 190px;
+  font-size: 14px;
+  max-width: 300px;
+}
+
+#mailing-list h4 {
+  font-size: 16px;
+}
+
+@media screen and (max-width: 900px) {
+  #mailing-list {
+    max-width: initial;
+    margin-left: 0;
+  }
+
+  #index > div {
+    flex-wrap: wrap;
+  }
 }
 
 .post-meta {
