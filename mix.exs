@@ -41,7 +41,11 @@ defmodule SuperPerfundo.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:earmark, "~> 1.3"},
       {:ex_doc, "~> 0.21.3"},
-      {:timex, "~> 3.6.1"}
+      {:timex, "~> 3.6.1"},
+      {:ex_aws, "~> 2.1"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.9"},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 end

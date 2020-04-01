@@ -1,0 +1,7 @@
+<section id="subscribed">
+  <h1>You've subscribed!</h1>
+  <p>
+    Notifications will be sent to <strong><%= @email %></strong> when new 
+    articles are published.
+  </p>
+</section>
