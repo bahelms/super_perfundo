@@ -23,4 +23,8 @@ defmodule SuperPerfundoWeb.BlogController do
   def about(conn, _) do
     render(conn, "about.html")
   end
+
+  def subscribe(conn, %{"email_address" => email}) do
+    render(conn, "subscribed.html", email: email)
+  end
 end

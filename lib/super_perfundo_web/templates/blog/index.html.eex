@@ -1,6 +1,7 @@
 <section id="index">
   <h3><%= index_heading(@tag) %></h3>
   <div>
+
     <div id="posts-list">
       <%= for post <- @posts do %>
         <article class="post-card">
@@ -14,14 +15,18 @@
         </article>
       <% end %>
     </div>
+
     <div id="mailing-list">
       <h4>Subscribe to Updates</h4>
       <p>
         You'll receive emails when new articles are published. 
         And don't worry, I'm too lazy to sell your information.
       </p>
-      <%= text_input :mailing_list, :email_address, placeholder: "Email" %>
-      <button>Subscribe</button>
+      <%= form_for @conn, Routes.blog_path(@conn, :subscribe), fn f ->  %>
+        <%= text_input f, :email_address, placeholder: "Email" %>
+        <%= submit "Subscribe" %>
+      <% end %>
     </div>
+
   </div>
 </section>

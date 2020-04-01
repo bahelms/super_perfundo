@@ -113,7 +113,7 @@ This project has been a lot of fun and covered many aspects of web development.
 Had I just picked an off-the-shelf blog platform on which to publish posts, I 
 may not have been as motivated to actually write. Doing it myself was way more enjoyable!
 I've also been kicking around the idea of adding comments. Should I use a third party, roll my own,
-or even do it at all? Leave a comment below and tell me... oh yeah.
+or even do it at all? Leave a comment below and... oh yeah.
 
 
 #### Notes
