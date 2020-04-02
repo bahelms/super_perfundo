@@ -192,13 +192,37 @@ a:visited {
   border-radius: 10px;
   background: #f8f8f8;
   margin: 20px 0 10px 15px;
-  max-height: 185px;
+  max-height: 230px;
   font-size: 14px;
   max-width: 300px;
 }
 
 #mailing-list h4 {
   font-size: 16px;
+}
+
+#mailing-list form > * {
+  height: 30px;
+  font-size: 13px;
+  font-family: Inter, sans-serif;
+}
+
+#mailing-list form input {
+  width: 100%;
+  margin-right: 10px;
+}
+
+#mailing-list form button {
+  border-radius: 5px;
+  background-color: lightblue;
+  margin-top: 10px;
+}
+
+.alert-danger {
+  margin-top: 40px;
+  color: red;
+  background-color: pink;
+  border-radius: 5px;
 }
 
 @media screen and (max-width: 1000px) {
