@@ -102,11 +102,12 @@ nav a:visited, nav a:link {
   right: 0;
   padding: 15px 50px 10px 50px;
   margin-top: 17px;
-  transform: translate(100%, -30px);
+  transform: translate(250px, -30px);
   transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
   background: #ededed;
   position: absolute;
   border-radius: 5px;
+  box-shadow: 0 0 5px;
 }
 
 #responsive-nav ul li {
@@ -328,6 +329,10 @@ code.inline {
 
 #about h4 {
   margin-top: 40px;
+}
+
+#subscribed {
+  margin: 20px;
 }
 
 #subscribed h1 {
