@@ -8,7 +8,30 @@ defmodule SuperPerfundo.Blog.Subscribe do
   end
 
   def persist(email) do
-    # ExAws.S3.put_object("bucket", "name", "contents") |> ExAws.request()
-    # ExAws.S3.get_object("bucket", "name") |> ExAws.request()
+    Task.Supervisor.start_child(
+      SuperPerfundo.EmailStorageSupervisor,
+      __MODULE__,
+      :store_email,
+      [email, SuperPerfundo.EmailStorage]
+    )
+  end
+
+  def store_email(email, storage) do
+    storage.get_emails()
+    |> to_list()
+    |> add_email(email)
+    |> serialize()
+    |> storage.store_emails()
+  end
+
+  defp to_list(""), do: []
+  defp to_list(emails), do: String.split(emails, "\n")
+
+  defp serialize(emails) do
+    Enum.join(emails, "\n")
+  end
+
+  defp add_email(emails, email) do
+    [email | emails]
   end
 end
