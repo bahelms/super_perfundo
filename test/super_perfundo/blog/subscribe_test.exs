@@ -16,8 +16,21 @@ defmodule SuperPerfundo.Blog.SubscribeTest do
     end
   end
 
-  describe "persist/1" do
-    test "email is stored in AWS S3" do
+  defmodule TestStorage do
+    def get_emails, do: ""
+
+    def store_emails(emails), do: emails
+  end
+
+  describe "store_email/1" do
+    test "email is added to empty list of emails" do
+      emails = Subscribe.store_email("bob@monkey.io", TestStorage)
+      assert emails == "bob@monkey.io"
+    end
+
+    test "email is added to populated list of emails" do
+      emails = Subscribe.store_email("bob@monkey.io", TestStorage)
+      assert emails == "bob@monkey.io"
     end
   end
 end

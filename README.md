@@ -7,4 +7,5 @@ A blog server with no database!
   * email signup for new posts notifications
 - Next
   * CSS mobile: horizontal scroll for code blocks
+  * email signup as LiveView
   * comments
