@@ -1,4 +1,10 @@
 defmodule SuperPerfundo.Blog.Subscribe do
+  @timezone "US/Eastern"
+
+  defmodule Email do
+    defstruct [:address, :timestamp]
+  end
+
   def verify_email(email) do
     if Regex.match?(~r/^[\w.%+-]+@[\w.-]+\.[A-Z]{2,}$/i, email) do
       {:ok, email}
@@ -8,7 +14,51 @@ defmodule SuperPerfundo.Blog.Subscribe do
   end
 
   def persist(email) do
-    # ExAws.S3.put_object("bucket", "name", "contents") |> ExAws.request()
-    # ExAws.S3.get_object("bucket", "name") |> ExAws.request()
+    Task.Supervisor.start_child(
+      SuperPerfundo.EmailStorageSupervisor,
+      __MODULE__,
+      :store_email,
+      [email, SuperPerfundo.EmailStorage]
+    )
+  end
+
+  def store_email(email, storage) do
+    storage.get_emails()
+    |> hydrate()
+    |> add_email(email)
+    |> serialize()
+    |> storage.store_emails()
+  end
+
+  defp hydrate(""), do: []
+
+  defp hydrate(emails) do
+    emails
+    |> String.split("\n")
+    |> Enum.map(&to_struct/1)
+  end
+
+  defp to_struct(record) do
+    [address | [timestamp]] = String.split(record, ",")
+    %Email{address: address, timestamp: timestamp}
+  end
+
+  defp add_email(emails, address) do
+    emails
+    |> Enum.find(&(&1.address == address))
+    |> case do
+      nil -> [%Email{address: address, timestamp: Timex.now(@timezone)} | emails]
+      _ -> nil
+    end
+  end
+
+  defp serialize(nil), do: nil
+
+  defp serialize(emails) do
+    emails
+    |> Enum.map(fn %{address: address, timestamp: timestamp} ->
+      "#{address},#{timestamp}"
+    end)
+    |> Enum.join("\n")
   end
 end
