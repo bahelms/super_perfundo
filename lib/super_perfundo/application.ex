@@ -6,12 +6,9 @@ defmodule SuperPerfundo.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
-      # Start the endpoint when the application starts
-      SuperPerfundoWeb.Endpoint
-      # Starts a worker by calling: SuperPerfundo.Worker.start_link(arg)
-      # {SuperPerfundo.Worker, arg},
+      SuperPerfundoWeb.Endpoint,
+      {Task.Supervisor, name: SuperPerfundo.EmailStorageSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
