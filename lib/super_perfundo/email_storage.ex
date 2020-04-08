@@ -16,8 +16,12 @@ defmodule SuperPerfundo.EmailStorage do
       |> ExAws.request()
 
     case response do
-      {:ok, %{body: emails}} -> emails
-      {:error, error} -> IO.inspect(error, label: "S3 get_object error")
+      {:ok, %{body: emails}} ->
+        emails
+
+      {:error, error} ->
+        IO.inspect(error, label: "S3 get_object error")
+        ""
     end
   end
 
@@ -26,6 +30,9 @@ defmodule SuperPerfundo.EmailStorage do
     success:
       {:ok, %{body: "...."}}
   """
+  @spec store_emails(nil) :: nil
+  def store_emails(nil), do: nil
+
   @spec store_emails(String.t()) :: any
   def store_emails(emails) do
     ExAws.S3.put_object(@bucket, @object_name, emails)
