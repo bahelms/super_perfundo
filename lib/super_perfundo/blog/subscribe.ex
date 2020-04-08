@@ -1,4 +1,10 @@
 defmodule SuperPerfundo.Blog.Subscribe do
+  @timezone "US/Eastern"
+
+  defmodule Email do
+    defstruct [:address, :timestamp]
+  end
+
   def verify_email(email) do
     if Regex.match?(~r/^[\w.%+-]+@[\w.-]+\.[A-Z]{2,}$/i, email) do
       {:ok, email}
@@ -18,20 +24,34 @@ defmodule SuperPerfundo.Blog.Subscribe do
 
   def store_email(email, storage) do
     storage.get_emails()
-    |> to_list()
+    |> hydrate()
     |> add_email(email)
     |> serialize()
     |> storage.store_emails()
   end
 
-  defp to_list(""), do: []
-  defp to_list(emails), do: String.split(emails, "\n")
+  defp hydrate(""), do: []
 
-  defp serialize(emails) do
-    Enum.join(emails, "\n")
+  defp hydrate(emails) do
+    emails
+    |> String.split("\n")
+    |> Enum.map(&to_struct/1)
   end
 
-  defp add_email(emails, email) do
-    [email | emails]
+  defp to_struct(record) do
+    [address | [timestamp]] = String.split(record, ",")
+    %Email{address: address, timestamp: timestamp}
+  end
+
+  defp add_email(emails, address) do
+    [%Email{address: address, timestamp: Timex.now(@timezone)} | emails]
+  end
+
+  defp serialize(emails) do
+    emails
+    |> Enum.map(fn %{address: address, timestamp: timestamp} ->
+      "#{address},#{timestamp}"
+    end)
+    |> Enum.join("\n")
   end
 end
