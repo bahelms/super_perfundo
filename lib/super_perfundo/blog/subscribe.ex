@@ -44,8 +44,15 @@ defmodule SuperPerfundo.Blog.Subscribe do
   end
 
   defp add_email(emails, address) do
-    [%Email{address: address, timestamp: Timex.now(@timezone)} | emails]
+    emails
+    |> Enum.find(&(&1.address == address))
+    |> case do
+      nil -> [%Email{address: address, timestamp: Timex.now(@timezone)} | emails]
+      _ -> nil
+    end
   end
+
+  defp serialize(nil), do: nil
 
   defp serialize(emails) do
     emails

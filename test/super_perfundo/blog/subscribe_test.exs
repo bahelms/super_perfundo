@@ -26,6 +26,15 @@ defmodule SuperPerfundo.Blog.SubscribeTest do
     def store_emails(emails), do: emails
   end
 
+  def email_tuples(emails_string) do
+    emails_string
+    |> String.split("\n")
+    |> Enum.map(fn email ->
+      [email | [time]] = String.split(email, ",")
+      {email, time}
+    end)
+  end
+
   describe "store_email/1" do
     test "email is added to empty list of emails with timestamp" do
       [email | [time]] =
@@ -39,11 +48,7 @@ defmodule SuperPerfundo.Blog.SubscribeTest do
     test "email is added to populated list of emails with timestamp" do
       emails =
         Subscribe.store_email("bob@monkey.io", PopulatedStorage)
-        |> String.split("\n")
-        |> Enum.map(fn email ->
-          [email | [time]] = String.split(email, ",")
-          {email, time}
-        end)
+        |> email_tuples()
 
       assert length(emails) == 3
 
@@ -54,6 +59,10 @@ defmodule SuperPerfundo.Blog.SubscribeTest do
 
       assert addr == "bob@monkey.io"
       assert time =~ ~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.+US\/Eastern/
+    end
+
+    test "duplicate emails are not added" do
+      refute Subscribe.store_email("karl@io.com", PopulatedStorage)
     end
   end
 end
