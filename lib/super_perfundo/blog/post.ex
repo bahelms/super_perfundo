@@ -3,6 +3,7 @@ defmodule SuperPerfundo.Blog.Post do
   defstruct [:id, :title, :body, :tags, :description, :date]
 
   @field_pattern ~r/^==(\w+)==\n/m
+  @timezone Application.get_env(:super_perfundo, :timezone)
 
   def parse!(filename) do
     id = parse_id(filename)
@@ -14,14 +15,45 @@ defmodule SuperPerfundo.Blog.Post do
   defp parse_id(filename) do
     filename
     |> Path.split()
+    |> Enum.take(-1)
+    |> List.first()
+    |> String.split("_")
     |> List.last()
     |> Path.rootname()
   end
 
   defp parse_date(filename) do
-    File.stat!(filename).mtime
-    |> Timex.Timezone.convert("US/Eastern")
+    {year, postname} =
+      filename
+      |> Path.split()
+      |> Enum.take(-2)
+      |> case do
+        ["drafts", postname] -> {current_date().year, postname}
+        [year, postname] -> {String.to_integer(year), postname}
+      end
+
+    [month, day] = parse_month_and_day(postname)
+
+    {{year, month, day}, {5, 0, 0}}
+    |> Timex.Timezone.convert(@timezone)
   end
+
+  defp parse_month_and_day(postname) do
+    postname
+    |> String.split("_")
+    |> case do
+      data when length(data) == 2 ->
+        List.first(data)
+
+      _ ->
+        date = current_date()
+        "#{date.month}-#{date.day}"
+    end
+    |> String.split("-")
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  defp current_date, do: Timex.now(@timezone)
 
   defp parse_contents(contents) do
     parts = Regex.split(@field_pattern, contents, include_captures: true, trim: true)
