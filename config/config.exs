@@ -15,8 +15,9 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
   pubsub: [name: SuperPerfundo.PubSub, adapter: Phoenix.PubSub.PG2],
   live_view: [signing_salt: "5owO4PIx"]
 
-config :super_perfundo, :posts_pattern, "posts/published/*.md"
+config :super_perfundo, :posts_pattern, "posts/published/**/*.md"
 config :super_perfundo, :drafts_pattern, "posts/drafts/*.md"
+config :super_perfundo, :timezone, "US/Eastern"
 
 # Configures Elixir's Logger
 config :logger, :console,

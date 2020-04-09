@@ -4,7 +4,7 @@ defmodule SuperPerfundoWeb.BlogControllerTest do
   test "show_draft", %{conn: conn} do
     response =
       conn
-      |> get(Routes.blog_path(conn, :show_draft, "test_draft"))
+      |> get(Routes.blog_path(conn, :show_draft, "test-draft"))
       |> html_response(200)
 
     assert response =~ "Test Draft!"
