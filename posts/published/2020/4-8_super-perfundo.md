@@ -16,7 +16,7 @@ to contribute myself. Lately, though, I've found a couple things that inspired m
 
 One is the fact that I've decided to create my own new programming language. 
 For fun of course (I don't expect anyone else to use it). That should provide plenty of content to share, and I'll kick
-that off in the next post. The other is the process of making this blog itself.
+that off in a future post. The other is the process of making this blog itself.
 I was galvanized to make this site after reading an article from José Valim
 about how [Dashbit put together its blog](https://dashbit.co/blog/welcome-to-our-blog-how-it-was-made){:target="x"}.
 In this post, I'll talk about how I started with that blueprint and ended up with
