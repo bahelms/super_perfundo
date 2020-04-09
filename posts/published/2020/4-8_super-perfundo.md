@@ -61,7 +61,14 @@ compiles them into the module. `@external_resource` tells Mix that contents
 from an external file were embedded in this module, so if they change, recompile. 
 By the time the server starts, `@posts` inside `list_posts/0` has been replaced with a list of `Post` structs. 
 
-Rather than using a dated directory of posts (`posts/YYYY/MM-DD-name.md`) as the Dashbit blog does, dates are parsed from the last modified time of the files so it's as up-to-date as possible when publishing. If I ever need to edit content later, I'll probably add a new feature to display the edit instead of changing the file directly. The posts are written in markdown and stored in version control, which makes developing them very enjoyable (and I don't have to leave vim!). Throw in a new `live_reload` pattern and you can watch your work update automatically as you save it.
+For published posts, the date is taken from the directory and filename. 
+For example, `posts/published/2020/1-1-hey.md` comes out as `January 1, 2020`. 
+There's also an internal drafts feature that uses the current date at compile time. 
+This way I can hand a URL to someone for proof reading before it gets published.
+The posts are written in markdown and stored in version control, which makes 
+developing them very enjoyable (and I don't have to leave vim!). Throw in a 
+new `live_reload` pattern and you can watch your work update automatically as 
+you save it.
 
 Before I built this I had been toying with the idea of taking a [Gatsby](https://www.gatsbyjs.org/){:target="x"} tutorial and using that to generate a static site. But by using Phoenix with pre-compiled blog posts, I can take advantage of static AND dynamic features at lightning speed. Super cool. 
 
@@ -75,11 +82,17 @@ ships with [Milligram](https://milligram.io/){:target="x"} as its CSS framework.
 I started out with that but went nowhere fast. It was a brand new 
 tool for me to learn and the docs aren't great. 
 
-I decided to bite the bullet and learn me some real CSS from scratch. Fortunately, the amazing company I work for offers [LinkedIn Learning](https://www.linkedin.com/learning){:target="x"}. After taking a couple of courses, I threw out the Milligram code and designed the site from the ground up to be responsive and mobile friendly using only vanilla CSS3. It was actually a lot more fun than I thought it would be, I'm pretty happy with the results, and now I'm a better developer.
+I decided to bite the bullet and learn me some real CSS from scratch. Fortunately, 
+the amazing company I work for, [SalesLoft](https://salesloft.com){:target="x"}, 
+offers [LinkedIn Learning](https://www.linkedin.com/learning){:target="x"}. 
+After taking a couple of courses, I threw out the Milligram code and designed 
+the site from the ground up to be responsive and mobile friendly using only 
+vanilla CSS3. It was actually a lot more fun than I thought it would be, I'm 
+pretty happy with the results, and now I'm a better developer.
 
 ### Operations
 The site is hosted at [Gigalixir](https://gigalixir.com/){:target="x"}, which is 
-basically Heroku specifically for Elixir apps (so you can use hot upgrades, remote observer, etc). 
+basically Heroku specifically for Elixir apps (so you can use hot upgrades, remote observer/console, etc). 
 You get one app with a database that never sleeps and automatic TLS certs so you 
 can use HTTPS out of the box. It's pretty easy to setup, and you can pick from 
 Mix, Distillery, or Elixir Releases to deploy. I went with built-in Releases, 
@@ -107,7 +120,7 @@ This project has been a lot of fun and covered many aspects of web development.
 Had I just picked an off-the-shelf blog platform on which to publish posts, I 
 may not have been as motivated to actually write. Doing it myself was way more enjoyable!
 I've also been kicking around the idea of adding comments. Should I use a third party, roll my own,
-or even do it at all? Leave a comment below and tell me what you... Oh yeah.
+or even do it at all? Leave a comment below and... oh yeah.
 
 
 #### Notes
