@@ -64,7 +64,7 @@ By the time the server starts, `@posts` inside `list_posts/0` has been replaced 
 For published posts, the date is taken from the directory and filename. 
 For example, `posts/published/2020/1-1-hey.md` comes out as `January 1, 2020`. 
 There's also an internal drafts feature that uses the current date at compile time. 
-This way I can hand a URL to someone for proof reading before it gets published.
+This way I can hand a URL to someone for proofreading before it gets published.
 The posts are written in markdown and stored in version control, which makes 
 developing them very enjoyable (and I don't have to leave vim!). Throw in a 
 new `live_reload` pattern and you can watch your work update automatically as 
@@ -104,7 +104,7 @@ so all I had to do was:
 
 Gigalixir does the rest. A cool thing about Phoenix 1.4.4+ is `prod.secret.exs` uses an env var for `SECRET_KEY_BASE`, which Gigalixir generates for you, so you don't have to do anything with that file now. Since I'm not using a database there is also no need for a `DATABASE_URL`.
 
-Next was buying a sweet domain name. The TLD `.io` is so hot right now, making it one of the more expensive ones. I picked `.tech` because I think it's a better fit in general (and it's cheap!). Then it's just a matter of adding the domain to Gigalixir and updating the CNAME. TLS certs were regenerated automatically.
+Next was buying a sweet domain name. The TLD `.io` is so hot right now, making it one of the more expensive ones. I picked `.tech` because I think it's a better fit in general (and it's cheap!). Then it's just a matter of adding the domain to Gigalixir and updating the CNAME. TLS certs are regenerated automatically.
 
 At this point the site was live, but I still had to manually run tests and push to a remote. I'm too lazy for that. But I'm not too lazy to learn [GitHub Actions](https://github.com/features/actions){:target="x"}, a hip new automation platform I've been eager to play with. Thankfully, there was already a [blog post of someone doing this exact thing](https://www.mitchellhanberg.com/ci-cd-with-phoenix-github-actions-and-gigalixir/){:target="x"}. 
 
