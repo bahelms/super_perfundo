@@ -19,6 +19,10 @@ config :super_perfundo, :posts_pattern, "posts/published/**/*.md"
 config :super_perfundo, :drafts_pattern, "posts/drafts/*.md"
 config :super_perfundo, :timezone, "US/Eastern"
 
+# config :super_perfundo, SuperPerfundo.Mailer,
+#   adapter: Bamboo.SendGridAdapter,
+#   api_key: System.get_env("SENDGRID_API_KEY")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

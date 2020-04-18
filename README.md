@@ -6,3 +6,12 @@ A blog server with no database!
 * CSS mobile: horizontal scroll for code blocks
 * email signup as LiveView
 * comments
+
+Publish steps
+* Move draft into /posts/publish/YEAR/MONTH_DAY_TITLE.md
+* Deploy
+- Execute email notification:
+  * Determine new article
+  * Get stored emails
+  * Generate HTML email for new article
+  * Send emails
