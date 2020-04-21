@@ -4,8 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>New SuperPerfundo.Tech Article</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(SuperPerfundoWeb.Endpoint, "/css/app.css") %>"/>
   </head>
-  <body>
-    <h1>hey there</h1>
+
+  <body id="email">
+    <section>
+      <h1><%= @post.title %></h1>
+      <p>Published: <%= format_date(@post) %></p>
+      <p><%= @post.description %></p>
+    </section>
+    <div id="unsub">
+      If these emails are annoying, then <%= link("unsubscribe", to: "/unsubscribe", target: "_blank") %> already.
+    </div>
   </body>
 </html>

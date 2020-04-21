@@ -338,3 +338,15 @@ code.inline {
 #subscribed h1 {
   margin-top: 100px;
 }
+
+/* Email */
+
+#email {
+  display: initial;
+}
+
+#email #unsub {
+  font-size: 10px;
+  margin-top: 110px;
+  text-align: center;
+}
