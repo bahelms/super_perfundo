@@ -30,6 +30,11 @@ defmodule SuperPerfundo.Blog.Subscribe do
     |> storage.store_emails()
   end
 
+  def subscriptions do
+    SuperPerfundo.EmailStorage.get_emails()
+    |> hydrate()
+  end
+
   defp hydrate(""), do: []
 
   defp hydrate(emails) do

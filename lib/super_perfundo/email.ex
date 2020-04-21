@@ -1,13 +1,23 @@
 defmodule SuperPerfundo.Email do
-  import Bamboo.Email
+  use Bamboo.Phoenix, view: SuperPerfundo.EmailView
 
-  def notification_email do
+  def send_published_emails do
+    SuperPerfundo.Blog.Subscribe.subscriptions()
+    |> Enum.map(& &1.address)
+    |> Enum.map(&published_email/1)
+    |> Enum.each(&deliver/1)
+  end
+
+  def published_email(recipient) do
     new_email(
-      to: "jimbonk69@gmail.com",
-      from: "tech@superperfundo.tech",
-      subject: "Test notification",
-      html_body: "<h1>hey there</h1>",
-      text_body: "hey there"
+      to: recipient,
+      from: "SuperPerfundo <tech@superperfundo.tech>",
+      subject: "A new article has been published at SuperPerfundo.Tech!"
     )
+    |> render(:published_email)
+  end
+
+  def deliver(email) do
+    SuperPerfundo.Mailer.deliver_now(email)
   end
 end
