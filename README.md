@@ -8,7 +8,7 @@ A blog server with no database!
 * comments
 
 Publish steps
-* Move draft into /posts/publish/YEAR/MONTH_DAY_TITLE.md
+* Move draft into /posts/published/YEAR/MONTH_DAY_TITLE.md
 * Deploy
 - Execute email notification:
   * Determine new article

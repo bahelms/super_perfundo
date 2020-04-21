@@ -9,6 +9,10 @@ defmodule SuperPerfundoWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  if Mix.env() == :dev do
+    forward "/emails", Bamboo.SentEmailViewerPlug
+  end
+
   scope "/", SuperPerfundoWeb do
     pipe_through :browser
 
