@@ -1,5 +1,5 @@
 defmodule SuperPerfundo.EmailStorage do
-  @object_name "email-list"
+  @object_name Application.compile_env(:super_perfundo, :email_list)
   @bucket "super-perfundo"
 
   @doc """

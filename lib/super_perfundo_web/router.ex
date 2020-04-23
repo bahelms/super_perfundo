@@ -9,14 +9,20 @@ defmodule SuperPerfundoWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  if Mix.env() == :dev do
+    forward "/emails", Bamboo.SentEmailViewerPlug
+  end
+
   scope "/", SuperPerfundoWeb do
     pipe_through :browser
 
     get "/", BlogController, :index
     get "/about", BlogController, :about
-
     get "/:id", BlogController, :show
     get "/drafts/:id", BlogController, :show_draft
-    post "/subscribe", BlogController, :subscribe
+
+    post "/subscribe", SubscriptionController, :create
+    get "/unsubscribe/:email", SubscriptionController, :edit
+    delete "/unsubscribe/:email", SubscriptionController, :destroy
   end
 end
