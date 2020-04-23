@@ -1,4 +1,4 @@
-<section id="subscribed">
+<section class="subscribed">
   <h1>You've subscribed!</h1>
   <p>
     Notifications will be sent to <strong><%= @email %></strong> when new 

@@ -331,10 +331,38 @@ code.inline {
   margin-top: 40px;
 }
 
-#subscribed {
+.subscribed {
   margin: 20px;
 }
 
-#subscribed h1 {
+.subscribed h1 {
   margin-top: 100px;
+}
+
+#unsubscribe {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#unsubscribe button {
+  border-radius: 5px;
+  background-color: lightblue;
+  margin-top: 10px;
+  padding: 12px 15px 10px;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  font: 12px Spartan, sans-serif;
+}
+
+/* Email */
+
+#email {
+  display: initial;
+}
+
+#email #unsub {
+  font-size: 10px;
+  margin-top: 110px;
+  text-align: center;
 }

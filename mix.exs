@@ -4,7 +4,7 @@ defmodule SuperPerfundo.MixProject do
   def project do
     [
       app: :super_perfundo,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -45,7 +45,8 @@ defmodule SuperPerfundo.MixProject do
       {:ex_aws, "~> 2.1"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
-      {:sweet_xml, "~> 0.6"}
+      {:sweet_xml, "~> 0.6"},
+      {:bamboo, "~> 1.4"}
     ]
   end
 end

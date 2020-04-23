@@ -1,0 +1,3 @@
+<%= @post.title %>
+Published: <%= format_date(@post) %>
+<%= @post.description %>
