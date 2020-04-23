@@ -10,8 +10,4 @@ A blog server with no database!
 Publish steps
 * Move draft into /posts/published/YEAR/MONTH_DAY_TITLE.md
 * Deploy
-- Execute email notification:
-  * Determine new article
-  * Get stored emails
-  * Generate HTML email for new article
-  * Send emails
+* Exec `_build/prod/rel/super_perfundo/bin/super_perfundo eval "SuperPerfundo.Release.send_new_article_emails"`

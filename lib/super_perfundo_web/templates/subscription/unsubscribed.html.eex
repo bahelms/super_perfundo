@@ -1,0 +1,5 @@
+<section class="subscribed">
+  <h1>You've unsubscribed!</h1>
+  <p>No emails of any kind will ever again be sent to <strong><%= @email %></strong> again.</p>
+  <h6>Peace</h6>
+</section>

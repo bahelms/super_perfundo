@@ -23,7 +23,7 @@
         You'll receive emails when new articles are published. 
         And don't worry, I'm too lazy to sell your information.
       </p>
-      <%= form_for @conn, Routes.blog_path(@conn, :subscribe), fn f ->  %>
+      <%= form_for @conn, Routes.subscription_path(@conn, :create), fn f ->  %>
         <%= text_input f, :email_address, placeholder: "Email" %>
         <br />
         <%= submit "Subscribe" %>
