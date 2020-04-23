@@ -18,9 +18,11 @@ defmodule SuperPerfundoWeb.Router do
 
     get "/", BlogController, :index
     get "/about", BlogController, :about
-
     get "/:id", BlogController, :show
     get "/drafts/:id", BlogController, :show_draft
-    post "/subscribe", BlogController, :subscribe
+
+    post "/subscribe", SubscriptionController, :create
+    get "/unsubscribe/:email", SubscriptionController, :edit
+    delete "/unsubscribe/:email", SubscriptionController, :destroy
   end
 end

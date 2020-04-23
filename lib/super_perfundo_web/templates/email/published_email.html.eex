@@ -9,12 +9,20 @@
 
   <body id="email">
     <section>
-      <h1><%= @post.title %></h1>
-      <p>Published: <%= format_date(@post) %></p>
+      <h1>
+        <%= link(@post.title, to: Routes.blog_url(SuperPerfundoWeb.Endpoint, :show, @post.id)) %>
+      </h1>
+      <p><strong>Published: <%= format_date(@post) %></strong></p>
       <p><%= @post.description %></p>
     </section>
+    <hr />
     <div id="unsub">
-      If these emails are annoying, then <%= link("unsubscribe", to: "/unsubscribe", target: "_blank") %> already.
+      If these emails are annoying, then
+      <%= link("unsubscribe",
+        to: Routes.subscription_url(SuperPerfundoWeb.Endpoint, :edit, @email),
+        target: "_blank"
+      ) %> already.
     </div>
+    <script type="text/javascript" src="<%= Routes.static_path(SuperPerfundoWeb.Endpoint, "/js/app.js") %>"></script>
   </body>
 </html>

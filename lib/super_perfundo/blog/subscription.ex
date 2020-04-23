@@ -1,4 +1,4 @@
-defmodule SuperPerfundo.Blog.Subscribe do
+defmodule SuperPerfundo.Blog.Subscription do
   @timezone Application.get_env(:super_perfundo, :timezone)
 
   defmodule Email do
@@ -13,16 +13,16 @@ defmodule SuperPerfundo.Blog.Subscribe do
     end
   end
 
-  def persist(email) do
-    Task.Supervisor.start_child(
-      SuperPerfundo.EmailStorageSupervisor,
-      __MODULE__,
-      :store_email,
-      [email, SuperPerfundo.EmailStorage]
-    )
+  def subscriptions do
+    SuperPerfundo.EmailStorage.get_emails()
+    |> hydrate()
   end
 
-  def store_email(email, storage) do
+  def subscribe(email), do: update(email, :subscribe_email)
+
+  def unsubscribe(email), do: update(email, :unsubscribe_email)
+
+  def subscribe_email(email, storage) do
     storage.get_emails()
     |> hydrate()
     |> add_email(email)
@@ -30,9 +30,21 @@ defmodule SuperPerfundo.Blog.Subscribe do
     |> storage.store_emails()
   end
 
-  def subscriptions do
-    SuperPerfundo.EmailStorage.get_emails()
+  def unsubscribe_email(email, storage) do
+    storage.get_emails()
     |> hydrate()
+    |> delete_email(email)
+    |> serialize()
+    |> storage.store_emails()
+  end
+
+  defp update(email, action) do
+    Task.Supervisor.start_child(
+      SuperPerfundo.EmailStorageSupervisor,
+      __MODULE__,
+      action,
+      [email, SuperPerfundo.EmailStorage]
+    )
   end
 
   defp hydrate(""), do: []
@@ -54,6 +66,15 @@ defmodule SuperPerfundo.Blog.Subscribe do
     |> case do
       nil -> [%Email{address: address, timestamp: Timex.now(@timezone)} | emails]
       _ -> nil
+    end
+  end
+
+  defp delete_email(emails, address) do
+    emails
+    |> Enum.find(&(&1.address == address))
+    |> case do
+      nil -> emails
+      email -> List.delete(emails, email)
     end
   end
 
