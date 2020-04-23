@@ -18,6 +18,7 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
 config :super_perfundo, :posts_pattern, "posts/published/**/*.md"
 config :super_perfundo, :drafts_pattern, "posts/drafts/*.md"
 config :super_perfundo, :timezone, "US/Eastern"
+config :super_perfundo, :email_list, "email-list"
 
 # Configures Elixir's Logger
 config :logger, :console,
