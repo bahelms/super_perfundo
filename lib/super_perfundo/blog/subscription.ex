@@ -13,7 +13,7 @@ defmodule SuperPerfundo.Blog.Subscription do
     end
   end
 
-  def subscriptions do
+  def list_subscriptions do
     SuperPerfundo.EmailStorage.get_emails()
     |> hydrate()
   end
