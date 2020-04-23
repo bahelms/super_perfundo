@@ -8,6 +8,7 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
 
 config :super_perfundo, :posts_pattern, "test/posts/published/**/*.md"
 config :super_perfundo, :drafts_pattern, "test/posts/drafts/*.md"
+config :super_perfundo, :email_list, "email-list-test"
 
 # Print only warnings and errors during test
 config :logger, level: :warn
