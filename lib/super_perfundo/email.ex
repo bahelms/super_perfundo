@@ -2,7 +2,7 @@ defmodule SuperPerfundo.Email do
   use Bamboo.Phoenix, view: SuperPerfundoWeb.EmailView
 
   def send_published_emails(post) do
-    SuperPerfundo.Blog.Subscribe.subscriptions()
+    SuperPerfundo.Blog.Subscription.subscriptions()
     |> Enum.map(& &1.address)
     |> Enum.map(&published_email(&1, post))
     |> Enum.each(&deliver/1)

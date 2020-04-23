@@ -69,3 +69,4 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :super_perfundo, SuperPerfundo.Mailer, adapter: Bamboo.LocalAdapter
+config :super_perfundo, :email_list, "email-list-dev"
