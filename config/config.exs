@@ -12,7 +12,7 @@ config :super_perfundo, SuperPerfundoWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "g9ITUiJF7vCpIsUxnlnEONQVRbtjE6Afe2icT1AwwQVBczelfGbeTx/M6PvdzKpq",
   render_errors: [view: SuperPerfundoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: SuperPerfundo.PubSub, adapter: Phoenix.PubSub.PG2],
+  pubsub_server: SuperPerfundo.PubSub,
   live_view: [signing_salt: "5owO4PIx"]
 
 config :super_perfundo, :posts_pattern, "posts/published/**/*.md"
