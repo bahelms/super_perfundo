@@ -7,6 +7,7 @@ defmodule SuperPerfundo.Application do
 
   def start(_type, _args) do
     children = [
+      {Phoenix.PubSub, name: SuperPerfundo.PubSub},
       SuperPerfundoWeb.Endpoint,
       {Task.Supervisor, name: SuperPerfundo.EmailStorageSupervisor}
     ]
