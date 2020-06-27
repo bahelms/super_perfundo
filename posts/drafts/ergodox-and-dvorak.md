@@ -53,7 +53,7 @@ But be prepared to make constant changes for a long time.
 I spent a solid five weeks in flux before mostly settling on my current layout.
 This is made possible by how easy it is to change the config with the GUI web app.
 
-<img class="md-image" src="http://localhost:4000/images/ergodox-layout.png" alt="Current layout" />
+<img class="md-image" src="<%= img_url.("ergodox-layout.png") %>" alt="Current layout" />
 
 You can set up to 32 layers, which means at the push of a button all the keys will change to whatever you've set for that layer.
 You can also give layers their own backlight color or change it for individual keys.
@@ -107,7 +107,7 @@ And the view was pretty nice.
 
 ### Final Summation
 
-<img class="md-image" src="http://localhost:4000/images/ergodox.jpeg" alt="Current layout" />
+<img class="md-image" src="<%= img_url.("ergodox.jpeg") %>" alt="Current layout" />
 
 This is where I am now. The Ergodox gives me the freedom to do whatever I want, and Dvorak lets me do it while riding on a finger cloud.
 Dvorak is far superior to Qwerty, but it's not without its warts.
