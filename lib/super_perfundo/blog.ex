@@ -33,7 +33,17 @@ defmodule SuperPerfundo.Blog do
     for post <- @posts, tag in post.tags, do: post
   end
 
-  def get_post(id), do: Enum.find(@posts, &(&1.id == id))
+  def get_post(id), do: get_article(@posts, id)
 
-  def get_draft(id), do: Enum.find(@drafts, &(&1.id == id))
+  def get_draft(id), do: get_article(@drafts, id)
+
+  defp get_article(articles, id) do
+    article = Enum.find(articles, &(&1.id == id))
+    struct(article, body: set_image_src(article.body))
+  end
+
+  defp set_image_src(text) do
+    text
+    |> EEx.eval_string(img_url: &"#{SuperPerfundoWeb.Endpoint.url()}/images/#{&1}")
+  end
 end
