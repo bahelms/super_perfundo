@@ -85,7 +85,7 @@ I specifically wanted to get away from that since it added strain to my wrist, a
 Based on occurences in words of the English dictionary, Dvorak moves the most commonly used letters to the home row, 
 less used letters to the top row, and least used letters to the bottom.
 Punctuation and vowels are on the left side with most consonants on the right. 
-This allows for more hand alternation (right, left, right, left). 
+This allows for more hand alternation (right, left, right, left), and actually gives the right hand more work to do. A plus for my predicament! 
 Combined with lower finger travel, this layout seemed like a great way to put less strain on my phalanges.
 I did a quick learning tutorial before jumping over to Dvorak cold turkey.
 Queue rock bottom: 
@@ -100,7 +100,7 @@ I was a total noob again, and that's not a great feeling when you know the happi
 On top of this, I use Vim which meant my 133t skills were crippled while editing text.
 Vim was built for Qwerty, so I had to regain muscle memory for its keyboard navigation.
 I knew I would get better as long as I continued. 
-I knew this was the path I wanted to go down, and as hard as it seemed to continue, giving up now would be even worse.
+I knew this was the path I wanted to go down, and as hard as would be to continue, giving up now would be even worse.
 I pressed on, wary.
 
 I got morale boosts for each new 10 WPM I gained. I quickly reached 20 WPM, and the next week I was at 30.
