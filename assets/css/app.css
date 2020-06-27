@@ -366,3 +366,11 @@ code.inline {
   margin-top: 110px;
   text-align: center;
 }
+
+/* Markdown */
+
+.md-image {
+  width: 100%;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
