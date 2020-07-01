@@ -24,5 +24,7 @@ defmodule SuperPerfundoWeb.Router do
     post "/subscribe", SubscriptionController, :create
     get "/unsubscribe/:email", SubscriptionController, :edit
     delete "/unsubscribe/:email", SubscriptionController, :destroy
+
+    live "/quarto", QuartoLive, layout: {SuperPerfundoWeb.LayoutView, :app}
   end
 end

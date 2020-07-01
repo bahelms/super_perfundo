@@ -26,6 +26,7 @@
         <div id="blog-title">SuperPerfundo.Tech</div>
         <nav>
           <%= link("ARTICLES", to: "/") %>
+          <%= link("QUARTO", to: "/quarto") %>
           <%= link("ABOUT", to: "/about") %>
           <div id="responsive-nav">
             <input type="checkbox" />
@@ -36,6 +37,7 @@
             </div>
             <ul>
               <a href="/"><li>ARTICLES</li></a>
+              <a href="/quarto"><li>QUARTO</li></a>
               <a href="/about"><li>ABOUT</li></a>
             </ul>
           </div>
