@@ -2,6 +2,9 @@
 
 A blog server with no database!
 
+### Dev
+Run `mix phx.gen.cert` in order to serve `https` in dev.
+
 ### TODO
 * CSS mobile: horizontal scroll for code blocks
 * email signup as LiveView

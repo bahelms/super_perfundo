@@ -44,6 +44,11 @@ defmodule SuperPerfundo.Blog do
 
   defp set_image_src(text) do
     text
-    |> EEx.eval_string(img_url: &"#{SuperPerfundoWeb.Endpoint.url()}/images/#{&1}")
+    |> EEx.eval_string(img_url: &"#{ssl_url()}/images/#{&1}")
+  end
+
+  defp ssl_url do
+    SuperPerfundoWeb.Endpoint.url()
+    |> String.replace("http:", "https:")
   end
 end
