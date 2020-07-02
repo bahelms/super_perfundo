@@ -31,13 +31,10 @@ I decided to initiate the nuclear option.
 
 ### Enter Ergodox EZ
 
-I've always been a fan of mechanical keyboards;
-I fondly remember pulling the key caps off of those old loud ones in grade school computer class.
-There are a few in my collection these days, and I enjoy discovering new, sleek, innovative designs.
+I'm a big fan of mechanical keyboards; you just can't beat that tactile bump from the switch (Cherry MX Browns are my favorite).
+There are a few in my collection these days, and I enjoy discovering new, innovative designs.
 I had been drooling over the idea of a customizable split keyboard for some time, even before the wrist pain.
-Whenever the moment came when my wife would condone yet another board for an even more ridiculous price, I would get it.
-This would be the dream board; the one board to rule them all! 
-It would sit wherever my hands wished and do whatever my fingers desired.
+Finally, the time had come where I felt I couldn't wait any longer.
 
 Of all the options available today, the [Ergodox EZ](https://ergodox-ez.com/){:target="x"}
 seems to be the best split mechanical keyboard with the smallest barrier of entry (you don't have to build it yourself).
