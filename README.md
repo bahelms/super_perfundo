@@ -13,4 +13,4 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
 Publish steps
 * Move draft into /posts/published/YEAR/MONTH_DAY_TITLE.md
 * Deploy
-* Exec `_build/prod/rel/super_perfundo/bin/super_perfundo eval "SuperPerfundo.Release.send_new_article_emails"`
+    * In `ps:remote_shell`, `Blog.get_post("name") |> Email.send_published_emails()`
