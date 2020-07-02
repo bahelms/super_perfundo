@@ -80,7 +80,7 @@ Dvorak appealed to me the most because it was created as a ground-up rethinking 
 The other two were geared more toward making Qwerty better as they keep a lot of the same keys, including that awful bottom left row ZXCV (for strategic shortcuting purposes).
 I specifically wanted to get away from that since it added strain to my wrist, and I was now able to move Control wherever I wanted. 😎
 
-Based on occurences in words of the English dictionary, Dvorak moves the most commonly used letters to the home row, 
+Based on occurrences in words of the English dictionary, Dvorak moves the most commonly used letters to the home row, 
 less used letters to the top row, and least used letters to the bottom.
 Punctuation and vowels are on the left side with most consonants on the right. 
 This allows for more hand alternation (right, left, right, left), and actually gives the right hand more work to do; a plus for my predicament! 
