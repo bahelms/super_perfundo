@@ -162,3 +162,11 @@
 .cylinder .bottom.tall {
   top: 80px;
 }
+
+.cylinder .hollow {
+  width: 41px;
+  height: 14px;
+  border-radius: 50%;
+  background: black;
+  transform: translateY(-5px) translateX(7px);
+}
