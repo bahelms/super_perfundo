@@ -6,17 +6,23 @@ defmodule SuperPerfundoWeb.QuartoLive do
     <div id="board">
       <div class="row">
         <div class="slot">
-           <div class="cube short">
-             <div class="side front color-dark"></div>
-             <div class="side top color-dark"></div>
-             <div class="side left color-dark"></div>
+           <div class="cube">
+             <div class="side front-short dark"></div>
+             <div class="side back-short dark"></div>
+             <div class="side top-short dark"></div>
+             <div class="side bottom-short dark"></div>
+             <div class="side left-short dark"></div>
+             <div class="side right-short dark"></div>
            </div>
         </div>
         <div class="slot">
-           <div class="cube tall">
-             <div class="side front color-light"></div>
-             <div class="side top color-light"></div>
-             <div class="side left color-light"></div>
+           <div class="cube">
+             <div class="side front-tall light"></div>
+             <div class="side back-tall light"></div>
+             <div class="side top-tall light"></div>
+             <div class="side bottom-tall light"></div>
+             <div class="side left-tall light"></div>
+             <div class="side right-tall light"></div>
            </div>
         </div>
         <div class="slot"></div>
