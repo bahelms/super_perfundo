@@ -14,6 +14,14 @@
   border-radius: 50%;
 }
 
+.dark {
+  background: saddlebrown;
+}
+
+.light {
+  background: papayawhip;
+}
+
 .cube {
   width: 50px;
   height: 50px;
@@ -32,64 +40,56 @@
   border: black solid 1px;
 }
 
-.front-short {
+.front.short {
   transform: translateY(25px) rotateX(90deg);
 }
 
-.front-tall {
+.front.tall {
   height: 100px;
   transform: rotateX(90deg);
 }
 
-.back-short {
+.back.short {
   transform: translateY(-25px) rotateX(90deg);
 }
 
-.back-tall {
+.back.tall {
   height: 100px;
   transform: translateY(-50px) rotateX(90deg);
 }
 
-.left-short {
+.left.short {
   transform: translateX(-25px) rotateY(90deg);
 }
 
-.left-tall {
+.left.tall {
   height: 100px;
   transform: translateX(-25px) translateY(-25px) rotateX(90deg) rotateY(90deg);
 }
 
-.right-short {
+.right.short {
   transform: translateX(25px) rotateY(90deg);
 }
 
-.right-tall {
+.right.tall {
   height: 100px;
   transform: translateX(25px) translateY(-25px) rotateX(90deg) rotateY(90deg);
 }
 
-.top-short {
+.top.short {
   transform: translateZ(25px);
 }
 
-.top-tall {
+.top.tall {
   transform: translateZ(50px);
 }
 
-.bottom-short {
+.cube .bottom.short {
   transform: translateZ(-25px);
 }
 
-.bottom-tall {
+.cube .bottom.tall {
   transform: translateZ(-50px);
-}
-
-.dark {
-  background: saddlebrown;
-}
-
-.light {
-  background: papayawhip;
 }
 
 .hollow {
@@ -99,10 +99,66 @@
   background: black;
 }
 
-.hollow-short {
+.hollow.short {
   transform: translateZ(25px) translateY(7px) translateX(4px);
 }
 
-.hollow-tall {
+.hollow.tall {
   transform: translateZ(50px) translateY(7px) translateX(4px);
+}
+
+.cylinder {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotate3d(1, 1, 2, 10deg);
+}
+
+.cylinder.short {
+  margin-top: 38px;
+  margin-left: 32px;
+}
+
+.cylinder.tall {
+  margin-top: 12px;
+  margin-left: 35px;
+}
+
+.cylinder .top {
+  width: 55px;
+  height: 25px;
+  border: black solid 1px;
+  border-radius: 60px / 25px;
+  top: -10px;
+  position: absolute;
+}
+
+.cylinder .middle {
+  width: 55px;
+  position: absolute;
+  border-left: black solid 1px;
+  border-right: black solid 1px;
+}
+
+.cylinder .middle.short {
+  height: 40px;
+}
+
+.cylinder .middle.tall {
+  height: 95px;
+}
+
+.cylinder .bottom {
+  width: 55px;
+  height: 25px;
+  border: black solid 1px;
+  border-radius: 60px / 25px;
+  position: absolute;
+}
+
+.cylinder .bottom.short {
+  top: 25px;
+}
+
+.cylinder .bottom.tall {
+  top: 80px;
 }
