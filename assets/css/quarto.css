@@ -91,3 +91,18 @@
 .light {
   background: papayawhip;
 }
+
+.hollow {
+  width: 41px;
+  height: 35px;
+  border-radius: 50%;
+  background: black;
+}
+
+.hollow-short {
+  transform: translateZ(25px) translateY(7px) translateX(4px);
+}
+
+.hollow-tall {
+  transform: translateZ(50px) translateY(7px) translateX(4px);
+}
