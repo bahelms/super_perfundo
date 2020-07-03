@@ -1,4 +1,4 @@
 <section id="unsubscribe">
-  <p>We're sorry to so you go, <strong><%= @email %></strong>!</p>
+  <p>We're sorry to see you go, <strong><%= @email %></strong>!</p>
   <%= button("Stop these horrible emails for good", to: "/unsubscribe/#{@email}", method: :delete) %>
 </section>
