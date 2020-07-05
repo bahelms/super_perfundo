@@ -66,6 +66,14 @@ defmodule SuperPerfundoWeb do
     end
   end
 
+  def live_component do
+    quote do
+      use Phoenix.LiveComponent
+
+      unquote(view_helpers())
+    end
+  end
+
   defp view_helpers do
     quote do
       # Use all HTML functionality (forms, tags, etc)
