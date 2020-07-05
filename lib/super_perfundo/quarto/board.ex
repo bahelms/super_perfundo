@@ -36,8 +36,8 @@ defmodule SuperPerfundo.Quarto.Board do
   }
 
   def new do
-    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-    # {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+    # {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+    {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
   end
 
   def piece_at_position(board, position) do
@@ -51,6 +51,10 @@ defmodule SuperPerfundo.Quarto.Board do
         |> String.pad_leading(4, "0")
         |> bits_to_piece()
     end
+  end
+
+  def set_piece(board, piece, position) do
+    put_elem(board, position, piece)
   end
 
   defp bits_to_piece(<<shape, size, fill, color>>) do

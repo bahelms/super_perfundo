@@ -7,9 +7,7 @@ defmodule SuperPerfundoWeb.PieceComponent do
     {:ok, assign(socket, :piece, piece)}
   end
 
-  def render(assigns = %{piece: nil}) do
-    ~L""
-  end
+  def render(assigns = %{piece: nil}), do: ~L""
 
   def render(assigns) do
     ~L"""
@@ -23,18 +21,18 @@ defmodule SuperPerfundoWeb.PieceComponent do
         <div class="side right <%= @piece.size %> <%= @piece.color %>"></div>
         <%= if @piece.fill == "hollow" do %>
           <div class="hollow <%= @piece.size %>"></div>
-        <%= end %>
+        <% end %>
       </div>
-    <%= else %>
+    <% else %>
       <div class="cylinder <%= @piece.size %>">
         <div class="bottom <%= @piece.size %> <%= @piece.color %>"></div>
         <div class="middle <%= @piece.size %> <%= @piece.color %>"></div>
         <div class="top <%= @piece.color %>"></div>
         <%= if @piece.fill == "hollow" do %>
           <div class="hollow"></div>
-        <%= end %>
+        <% end %>
       </div>
-    <%= end %>
+    <% end %>
     """
   end
 end

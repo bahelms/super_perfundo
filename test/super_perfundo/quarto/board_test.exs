@@ -10,6 +10,11 @@ defmodule SuperPerfundo.Quarto.BoardTest do
     assert tuple_size(board) == 16
   end
 
+  test "set_piece updates board with new piece integer", %{board: board} do
+    new_board = Board.set_piece(board, 14, 2)
+    assert elem(new_board, 2) == 14
+  end
+
   describe "piece_at_position/2" do
     test "converts integer at position to Piece", %{board: board} do
       piece =
