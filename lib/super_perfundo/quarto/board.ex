@@ -34,10 +34,33 @@ defmodule SuperPerfundo.Quarto.Board do
     fill: %{"0" => "solid", "1" => "hollow"},
     color: %{"0" => "light", "1" => "dark"}
   }
+  @all_pieces_set MapSet.new([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 
   def new do
-    # {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
     {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+  end
+
+  def integer_to_piece(nil), do: nil
+
+  def integer_to_piece(int) do
+    int
+    |> int_to_nibble()
+    |> nibble_to_piece()
+  end
+
+  defp int_to_nibble(int) do
+    int
+    |> Integer.to_string(2)
+    |> String.pad_leading(4, "0")
+  end
+
+  defp nibble_to_piece(<<shape, size, fill, color>>) do
+    %Piece{
+      shape: @property_map.shape[<<shape>>],
+      size: @property_map.size[<<size>>],
+      fill: @property_map.fill[<<fill>>],
+      color: @property_map.color[<<color>>]
+    }
   end
 
   def piece_at_position(board, position) do
@@ -46,10 +69,7 @@ defmodule SuperPerfundo.Quarto.Board do
         nil
 
       int ->
-        int
-        |> Integer.to_string(2)
-        |> String.pad_leading(4, "0")
-        |> bits_to_piece()
+        integer_to_piece(int)
     end
   end
 
@@ -57,12 +77,15 @@ defmodule SuperPerfundo.Quarto.Board do
     put_elem(board, position, piece)
   end
 
-  defp bits_to_piece(<<shape, size, fill, color>>) do
-    %Piece{
-      shape: @property_map.shape[<<shape>>],
-      size: @property_map.size[<<size>>],
-      fill: @property_map.fill[<<fill>>],
-      color: @property_map.color[<<color>>]
-    }
+  def remaining_pieces(board) do
+    MapSet.difference(@all_pieces_set, current_pieces_set(board))
+  end
+
+  def current_pieces_set(board) do
+    for position <- 0..15,
+        piece = elem(board, position),
+        piece != nil,
+        do: piece,
+        into: MapSet.new()
   end
 end

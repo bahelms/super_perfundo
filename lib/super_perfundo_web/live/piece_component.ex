@@ -3,7 +3,13 @@ defmodule SuperPerfundoWeb.PieceComponent do
   alias SuperPerfundo.Quarto.Board
 
   def update(assigns, socket) do
-    piece = Board.piece_at_position(assigns.board, assigns.position)
+    piece =
+      if assigns[:board] do
+        Board.piece_at_position(assigns.board, assigns.position)
+      else
+        Board.integer_to_piece(assigns.piece)
+      end
+
     {:ok, assign(socket, :piece, piece)}
   end
 

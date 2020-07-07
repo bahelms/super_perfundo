@@ -32,4 +32,28 @@ defmodule SuperPerfundo.Quarto.BoardTest do
       assert Board.piece_at_position(board, 0) == nil
     end
   end
+
+  describe "integer_to_piece/1" do
+    test "converts integer to Piece" do
+      piece = Board.integer_to_piece(15)
+      assert piece.shape == "cylinder"
+      assert piece.size == "tall"
+      assert piece.fill == "hollow"
+      assert piece.color == "dark"
+    end
+
+    test "handles nil" do
+      assert Board.integer_to_piece(nil) == nil
+    end
+  end
+
+  describe "remaining_pieces/1" do
+    test "returns the pieces not in the board" do
+      remaining =
+        {nil, 1, 2, 3, 4, 5, nil, 6, 7, nil, nil, nil, nil, nil, nil, nil}
+        |> Board.remaining_pieces()
+
+      assert remaining == MapSet.new([8, 9, 10, 11, 12, 13, 14, 15])
+    end
+  end
 end
