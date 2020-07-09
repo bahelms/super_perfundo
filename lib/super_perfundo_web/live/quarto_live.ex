@@ -116,21 +116,15 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   def handle_event("position_chosen", %{"position" => position}, socket) do
-    board =
-      Board.set_piece(
-        socket.assigns.board,
-        socket.assigns.active_piece,
-        String.to_integer(position)
-      )
+    position = String.to_integer(position)
 
-    socket =
-      assign(socket,
-        board: board,
-        active_piece: nil,
-        winning_state: Board.four_in_a_row?(board)
-      )
+    case Board.piece_at_position(socket.assigns.board, position) do
+      nil ->
+        {:noreply, set_piece(position, socket)}
 
-    {:noreply, socket}
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("piece_chosen", %{"piece" => piece}, socket) do
@@ -154,7 +148,7 @@ defmodule SuperPerfundoWeb.QuartoLive do
       assign(socket,
         board: board,
         active_piece: next_piece,
-        active_player: if(winning_state, do: nil, else: :user),
+        active_player: if(winning_state, do: :ai, else: :user),
         waiting_for_opponent: false,
         winning_state: winning_state
       )
@@ -164,4 +158,19 @@ defmodule SuperPerfundoWeb.QuartoLive do
 
   defp display_player(:user), do: "You"
   defp display_player(:ai), do: "AI"
+
+  defp set_piece(position, socket) do
+    board =
+      Board.set_piece(
+        socket.assigns.board,
+        socket.assigns.active_piece,
+        position
+      )
+
+    assign(socket,
+      board: board,
+      active_piece: nil,
+      winning_state: Board.four_in_a_row?(board)
+    )
+  end
 end

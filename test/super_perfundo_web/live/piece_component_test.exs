@@ -23,23 +23,4 @@ defmodule SuperPerfundoWeb.PieceComponentTest do
 
            """
   end
-
-  # describe "render/1" do
-
-  #   test "HTML for a short, light, hollow cube" do
-  #     piece = %Piece{shape: "cube", fill: "hollow", color: "light", size: "short"}
-
-  #     assert QuartoLive.to_html(piece) == """
-  #            <div class="cube">
-  #              <div class="side front short light"></div>
-  #              <div class="side back short light"></div>
-  #              <div class="side top short light"></div>
-  #              <div class="side bottom short light"></div>
-  #              <div class="side left short light"></div>
-  #              <div class="side right short light"></div>
-  #              <div class="hollow short"></div>
-  #            </div>
-  #            """
-  #   end
-  # end
 end
