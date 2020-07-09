@@ -50,10 +50,93 @@ defmodule SuperPerfundo.Quarto.BoardTest do
   describe "remaining_pieces/1" do
     test "returns the pieces not in the board" do
       remaining =
-        {nil, 1, 2, 3, 4, 5, nil, 6, 7, nil, nil, nil, nil, nil, nil, nil}
+        {nil, 1, 2, 3, 4, 5, nil, 6, 7, nil, nil, 0, nil, nil, nil, nil}
         |> Board.remaining_pieces()
 
       assert remaining == MapSet.new([8, 9, 10, 11, 12, 13, 14, 15])
+    end
+  end
+
+  describe "four_in_a_row?/1" do
+    test "returns false when no four pieces match", %{board: board} do
+      refute Board.four_in_a_row?(board)
+      refute Board.four_in_a_row?({1, 2, 4, 8, 12, 5, nil, 6, 7, nil, nil, 0, nil, nil, nil, nil})
+    end
+
+    test "finds match on four light pieces" do
+      assert Board.four_in_a_row?({0, 2, 4, 8})
+    end
+
+    test "finds match on four dark pieces" do
+      assert Board.four_in_a_row?({1, 3, 5, 9})
+    end
+
+    test "finds match on four solid pieces" do
+      assert Board.four_in_a_row?({0, 1, 4, 8})
+    end
+
+    test "finds match on four hollow pieces" do
+      assert Board.four_in_a_row?({2, 3, 6, 10})
+    end
+
+    test "finds match on four short pieces" do
+      assert Board.four_in_a_row?({0, 1, 2, 8})
+    end
+
+    test "finds match on four tall pieces" do
+      assert Board.four_in_a_row?({4, 5, 6, 12})
+    end
+
+    test "finds match on four cube pieces" do
+      assert Board.four_in_a_row?({0, 1, 2, 4})
+      assert Board.four_in_a_row?({3, 4, 6, 7})
+    end
+
+    test "finds match on four cylinder pieces" do
+      assert Board.four_in_a_row?({8, 9, 10, 12})
+    end
+
+    test "handles false positives" do
+      refute Board.four_in_a_row?(
+               {15, 10, 9, 4, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
+             )
+    end
+
+    test "checks all rows" do
+      assert Board.four_in_a_row?({nil, nil, nil, nil, 0, 2, 4, 8})
+      assert Board.four_in_a_row?({nil, nil, nil, nil, nil, nil, nil, nil, 0, 2, 4, 8})
+
+      assert Board.four_in_a_row?(
+               {nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, 2, 4, 8}
+             )
+    end
+
+    test "checks all verticals" do
+      assert Board.four_in_a_row?(
+               {0, nil, nil, nil, 2, nil, nil, nil, 4, nil, nil, nil, 8, nil, nil, nil}
+             )
+
+      assert Board.four_in_a_row?(
+               {nil, 0, nil, nil, nil, 2, nil, nil, nil, 4, nil, nil, nil, 8, nil, nil}
+             )
+
+      assert Board.four_in_a_row?(
+               {nil, nil, 0, nil, nil, nil, 2, nil, nil, nil, 4, nil, nil, nil, 8, nil}
+             )
+
+      assert Board.four_in_a_row?(
+               {nil, nil, nil, 0, nil, nil, nil, 2, nil, nil, nil, 4, nil, nil, nil, 8}
+             )
+    end
+
+    test "checks all diagonals" do
+      assert Board.four_in_a_row?(
+               {0, nil, nil, nil, nil, 2, nil, nil, nil, nil, 4, nil, nil, nil, nil, 8}
+             )
+
+      assert Board.four_in_a_row?(
+               {nil, nil, nil, 0, nil, nil, 2, nil, nil, 4, nil, nil, 8, nil, nil, nil}
+             )
     end
   end
 end

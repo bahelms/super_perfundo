@@ -9,8 +9,9 @@ defmodule SuperPerfundoWeb.QuartoLive do
       |> assign(
         board: Board.new(),
         active_player: :user,
-        active_piece: 4,
-        waiting_for_opponent: false
+        active_piece: nil,
+        waiting_for_opponent: false,
+        winning_state: false
       )
 
     {:ok, socket}
@@ -20,10 +21,12 @@ defmodule SuperPerfundoWeb.QuartoLive do
     ~L"""
     <div id="game">
       <div class="player-status">
-        Current Player: <%= @active_player %>
+        Current Player: <%= display_player(@active_player) %>
         <div class="active-piece">
           Active Piece
-          <%= live_component(@socket, PieceComponent, piece: @active_piece) %>
+          <div class="piece">
+            <%= live_component(@socket, PieceComponent, piece: @active_piece) %>
+          </div>
         </div>
       </div>
 
@@ -86,10 +89,10 @@ defmodule SuperPerfundoWeb.QuartoLive do
         </div>
       </div>
 
-      <%= if @active_player == :user && !@active_piece do %>
+      <%= if @active_player == :user && !@active_piece && !@winning_state do %>
         <div class="modal">
           <div class="modal-content">
-            <div>Select the piece for me to play:</div>
+            <div>Select a piece for me to play:</div>
             <div class="remaining-pieces">
               <%= for piece <- Board.remaining_pieces(@board) do %>
                 <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
@@ -97,6 +100,14 @@ defmodule SuperPerfundoWeb.QuartoLive do
                 </div>
               <% end %>
             </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= if @winning_state do %>
+        <div class="modal">
+          <div class="modal-content">
+            Winner: <%= display_player(@active_player) %>!
           </div>
         </div>
       <% end %>
@@ -112,11 +123,11 @@ defmodule SuperPerfundoWeb.QuartoLive do
         String.to_integer(position)
       )
 
-    # check winning state
     socket =
       assign(socket,
         board: board,
-        active_piece: nil
+        active_piece: nil,
+        winning_state: Board.four_in_a_row?(board)
       )
 
     {:noreply, socket}
@@ -136,16 +147,21 @@ defmodule SuperPerfundoWeb.QuartoLive do
   def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
     socket = assign(socket, waiting_for_opponent: true)
     {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
-    # check winning state
+    board = Board.set_piece(board, piece, position)
+    winning_state = Board.four_in_a_row?(board)
 
     socket =
       assign(socket,
-        board: Board.set_piece(board, piece, position),
+        board: board,
         active_piece: next_piece,
-        active_player: :user,
-        waiting_for_opponent: false
+        active_player: if(winning_state, do: nil, else: :user),
+        waiting_for_opponent: false,
+        winning_state: winning_state
       )
 
     {:noreply, socket}
   end
+
+  defp display_player(:user), do: "You"
+  defp display_player(:ai), do: "AI"
 end
