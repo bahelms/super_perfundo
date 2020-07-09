@@ -4,13 +4,25 @@
 }
 
 .player-status {
+  width: 150px;
   margin-right: 20px;
 }
 
 .active-piece {
-  margin-top: 10px;
+  height: 33%;
+  margin-top: 20px;
   border: 3px lightgrey solid;
   border-radius: 4px;
+  text-align: center;
+}
+
+.active-piece .piece {
+  margin-top: 32px;
+  margin-left: 15px;
+}
+
+.active-piece .piece .cube {
+  margin-top: 50px;
 }
 
 .modal {
@@ -27,7 +39,8 @@
 
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto;
+  margin-left: 10%;
+  margin-top: 54%;
   padding: 20px;
   border: 1px solid #888;
   max-width: 1000px;

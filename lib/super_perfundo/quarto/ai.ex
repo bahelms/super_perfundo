@@ -18,6 +18,7 @@ defmodule SuperPerfundo.Quarto.AI do
       |> Enum.take_random(1)
       |> List.first()
 
+    :timer.sleep(1000)
     {position, next_piece}
   end
 
