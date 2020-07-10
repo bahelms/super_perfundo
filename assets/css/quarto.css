@@ -1,6 +1,13 @@
+/* This gets the LiveView phx-main div */
+body > div:first-of-type {
+  width: 100%;
+  margin-top: 110px;
+}
+
 #game {
   display: flex;
-  margin-top: 50px;
+  margin: 0 auto;
+  max-width: 1000px;
 }
 
 .player-status {
@@ -11,19 +18,35 @@
 .active-piece {
   height: 33%;
   margin-top: 20px;
-  border: 3px lightgrey solid;
+  border: 2px lightgrey solid;
   border-radius: 4px;
   text-align: center;
 }
 
 .active-piece .piece {
   margin-top: 32px;
-  margin-left: 15px;
+  margin-left: 4px;
 }
 
 .active-piece .piece .cube {
   margin-top: 50px;
 }
+
+#remaining-pieces-container {
+  border: 2px lightgrey solid;
+  border-radius: 4px;
+  margin-left: 20px;
+  text-align: center;
+}
+
+.remaining-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 350px;
+}
+
+/* .remaining-pieces .piece { */
+/* } */
 
 .modal {
   position: fixed;
@@ -45,19 +68,6 @@
   border: 1px solid #888;
   max-width: 1000px;
   height: 200px;
-}
-
-.remaining-pieces {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.remaining-pieces .cylinder.short {
-  margin-right: 35px;
-}
-
-.remaining-pieces .cylinder.tall {
-  margin-right: 35px;
 }
 
 .row {

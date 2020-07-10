@@ -5,6 +5,7 @@ defmodule SuperPerfundoWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
+    plug :put_root_layout, {SuperPerfundoWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -25,6 +26,6 @@ defmodule SuperPerfundoWeb.Router do
     get "/unsubscribe/:email", SubscriptionController, :edit
     delete "/unsubscribe/:email", SubscriptionController, :destroy
 
-    live "/quarto", QuartoLive, layout: {SuperPerfundoWeb.LayoutView, :app}
+    live "/quarto", QuartoLive
   end
 end
