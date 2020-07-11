@@ -5,7 +5,7 @@ defmodule SuperPerfundo.Quarto.AI do
   Easiest AI ever! This picks a random position for the given piece and a random
   piece to use next.
   """
-  def choose_position_and_next_piece(board, piece) do
+  def choose_position_and_next_piece(board, active_piece) do
     position =
       board
       |> open_positions()
@@ -14,7 +14,7 @@ defmodule SuperPerfundo.Quarto.AI do
 
     next_piece =
       board
-      |> remaining_pieces(piece)
+      |> Board.remaining_pieces(active_piece)
       |> Enum.take_random(1)
       |> List.first()
 
@@ -24,11 +24,5 @@ defmodule SuperPerfundo.Quarto.AI do
 
   defp open_positions(board) do
     for index <- 0..15, !elem(board, index), do: index
-  end
-
-  defp remaining_pieces(board, piece) do
-    board
-    |> Board.remaining_pieces()
-    |> MapSet.difference(MapSet.new([piece]))
   end
 end

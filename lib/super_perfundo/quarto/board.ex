@@ -91,8 +91,13 @@ defmodule SuperPerfundo.Quarto.Board do
     put_elem(board, position, piece)
   end
 
-  def remaining_pieces(board) do
-    MapSet.difference(@all_pieces_set, current_pieces_set(board))
+  def remaining_pieces(board, active_piece) do
+    used_pieces =
+      board
+      |> current_pieces_set()
+      |> MapSet.put(active_piece)
+
+    MapSet.difference(@all_pieces_set, used_pieces)
   end
 
   defp current_pieces_set(board) do

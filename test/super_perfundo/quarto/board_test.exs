@@ -48,12 +48,12 @@ defmodule SuperPerfundo.Quarto.BoardTest do
   end
 
   describe "remaining_pieces/1" do
-    test "returns the pieces not in the board" do
+    test "returns the pieces not in the board or active piece" do
       remaining =
         {nil, 1, 2, 3, 4, 5, nil, 6, 7, nil, nil, 0, nil, nil, nil, nil}
-        |> Board.remaining_pieces()
+        |> Board.remaining_pieces(13)
 
-      assert remaining == MapSet.new([8, 9, 10, 11, 12, 13, 14, 15])
+      assert remaining == MapSet.new([8, 9, 10, 11, 12, 14, 15])
     end
   end
 
@@ -136,6 +136,13 @@ defmodule SuperPerfundo.Quarto.BoardTest do
 
       assert Board.four_in_a_row?(
                {nil, nil, nil, 0, nil, nil, 2, nil, nil, 4, nil, nil, 8, nil, nil, nil}
+             )
+    end
+
+    test "finds matching shorts on diagonal" do
+      # 1011 1000 0001 1010
+      assert Board.four_in_a_row?(
+               {nil, nil, nil, 11, nil, nil, 8, nil, nil, 1, nil, nil, 9, nil, nil, nil}
              )
     end
   end
