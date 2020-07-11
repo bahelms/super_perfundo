@@ -1,3 +1,9 @@
+<%= if @winning_state do %>
+  <div class="blackout">
+    Winner: <%= display_player(@active_player) %>!
+  </div>
+<% end %>
+
 <div id="game">
   <div class="player-status">
     <span><strong>Player:</strong> <%= display_player(@active_player) %></span>
@@ -66,10 +72,16 @@
     </div>
   </div>
 
-  <div id="remaining-pieces-container">
-    <strong>Remaining Pieces</strong>
+  <div id="remaining-pieces-container"
+       class="<%= choose_piece?(@active_player, @active_piece, @winning_state) %>">
+    <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+      <strong>Select Opponent's Piece</strong>
+    <% else %>
+      <strong>Remaining Pieces</strong>
+    <% end %>
+
     <div class="remaining-pieces">
-      <%= for piece <- Board.remaining_pieces(@board) do %>
+      <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
         <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
           <%= live_component(@socket, PieceComponent, piece: piece) %>
         </div>
@@ -78,25 +90,6 @@
   </div>
 </div>
 
-<%= if @active_player == :user && !@active_piece && !@winning_state do %>
-  <div class="modal">
-    <div class="modal-content">
-      <div>Select a piece for me to play:</div>
-      <div class="remaining-pieces">
-        <%= for piece <- Board.remaining_pieces(@board) do %>
-          <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
-            <%= live_component(@socket, PieceComponent, piece: piece) %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-<% end %>
-
-<%= if @winning_state do %>
-  <div class="modal">
-    <div class="modal-content">
-      Winner: <%= display_player(@active_player) %>!
-    </div>
-  </div>
+<%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+  <div class="blackout" />
 <% end %>
