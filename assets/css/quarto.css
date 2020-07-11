@@ -10,9 +10,13 @@ body > div:first-of-type {
   max-width: 1000px;
 }
 
+#board {
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
 .player-status {
   width: 150px;
-  margin-right: 20px;
 }
 
 .active-piece {
@@ -21,6 +25,7 @@ body > div:first-of-type {
   border: 2px lightgrey solid;
   border-radius: 4px;
   text-align: center;
+  padding-top: 5px;
 }
 
 .active-piece .piece {
@@ -32,12 +37,11 @@ body > div:first-of-type {
   margin-top: 50px;
 }
 
-#remaining-pieces-container {
+.remaining-pieces-container {
   border: 2px lightgrey solid;
   border-radius: 4px;
-  margin-left: 20px;
   text-align: center;
-  height: 600px;
+  height: 590px;
   z-index: 2;
   background: white;
   padding-top: 5px;
@@ -51,9 +55,10 @@ body > div:first-of-type {
 }
 
 .raise-box {
-  box-shadow: 0 0 7px lightgrey;
+  box-shadow: 0 0 7px white;
   transform: scale(1.1, 1.1);
   animation: select-piece 1s;
+  border: 2px white solid;
 }
 
 @keyframes select-piece {

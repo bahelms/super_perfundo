@@ -1,7 +1,5 @@
 <%= if @winning_state do %>
-  <div class="blackout">
-    Winner: <%= display_player(@active_player) %>!
-  </div>
+  Winner: <%= display_player(@active_player) %>!
 <% end %>
 
 <div id="game">
@@ -72,8 +70,7 @@
     </div>
   </div>
 
-  <div id="remaining-pieces-container"
-       class="<%= choose_piece?(@active_player, @active_piece, @winning_state) %>">
+  <div class="<%= choose_piece?(@active_player, @active_piece, @winning_state) %> remaining-pieces-container">
     <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
       <strong>Select Opponent's Piece</strong>
     <% else %>
