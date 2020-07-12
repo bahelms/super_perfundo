@@ -63,7 +63,7 @@ defmodule SuperPerfundoWeb.QuartoLive do
     socket =
       assign(socket,
         board: board,
-        active_piece: next_piece,
+        active_piece: if(winning_state, do: nil, else: next_piece),
         active_player: if(winning_state, do: :ai, else: :user),
         waiting_for_opponent: false,
         winning_state: winning_state
