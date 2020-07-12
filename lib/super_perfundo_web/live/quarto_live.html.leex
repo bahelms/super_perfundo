@@ -1,6 +1,8 @@
-<%= if @winning_state do %>
-  Winner: <%= display_player(@active_player) %>!
-<% end %>
+<div class="game-won">
+  <%= if @winning_state do %>
+    Winner: <%= display_player(@active_player) %>!
+  <% end %>
+</div>
 
 <div id="game">
   <div class="player-status">
@@ -9,7 +11,7 @@
       <strong>Active Piece</strong>
       <%= live_component(@socket, PieceComponent, piece: @active_piece) %>
     </div>
-    <%= if @active_player == :ai do %>
+    <%= if @active_player == :ai && !@winning_state do %>
       <div class="thinking"></div>
     <% end %>
   </div>
