@@ -9,6 +9,9 @@
       <strong>Active Piece</strong>
       <%= live_component(@socket, PieceComponent, piece: @active_piece) %>
     </div>
+    <%= if @active_player == :ai do %>
+      <div class="thinking"></div>
+    <% end %>
   </div>
 
   <div id="board">
