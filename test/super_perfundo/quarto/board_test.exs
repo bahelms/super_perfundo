@@ -58,8 +58,8 @@ defmodule SuperPerfundo.Quarto.BoardTest do
   end
 
   describe "four_in_a_row?/1" do
-    test "returns false when no four pieces match", %{board: board} do
-      refute Board.four_in_a_row?(board)
+    test "returns nil when no four pieces match", %{board: board} do
+      assert Board.four_in_a_row?(board) == nil
       refute Board.four_in_a_row?({1, 2, 4, 8, 12, 5, nil, 6, 7, nil, nil, 0, nil, nil, nil, nil})
     end
 
