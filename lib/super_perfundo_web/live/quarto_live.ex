@@ -10,49 +10,53 @@ defmodule SuperPerfundoWeb.QuartoLive do
         board: Board.new(),
         active_player: :user,
         active_piece: nil,
-        waiting_for_opponent: false,
-        winning_state: false
+        winning_state: nil,
+        waiting_for_opponent: false
       )
 
     {:ok, socket}
   end
 
-  def handle_event("position_chosen", _, socket = %{assigns: %{winning_state: true}}) do
-    {:noreply, socket}
-  end
-
   def handle_event("position_chosen", %{"position" => position}, socket) do
-    position = String.to_integer(position)
-
-    case Board.piece_at_position(socket.assigns.board, position) do
+    case socket.assigns.winning_state do
       nil ->
-        {:noreply, set_piece(position, socket)}
+        position = String.to_integer(position)
+
+        case Board.piece_at_position(socket.assigns.board, position) do
+          nil ->
+            {:noreply, set_piece(position, socket)}
+
+          _ ->
+            {:noreply, socket}
+        end
 
       _ ->
         {:noreply, socket}
     end
   end
 
-  def handle_event("piece_chosen", _, socket = %{assigns: %{winning_state: true}}) do
-    {:noreply, socket}
-  end
-
   def handle_event("piece_chosen", %{"piece" => piece}, socket) do
-    socket =
-      case socket.assigns.active_piece do
-        nil ->
-          send(self(), :ai_start)
+    case socket.assigns.winning_state do
+      nil ->
+        socket =
+          case socket.assigns.active_piece do
+            nil ->
+              send(self(), :ai_start)
 
-          assign(socket,
-            active_piece: String.to_integer(piece),
-            active_player: :ai
-          )
+              assign(socket,
+                active_piece: String.to_integer(piece),
+                active_player: :ai
+              )
 
-        _ ->
-          socket
-      end
+            _ ->
+              socket
+          end
 
-    {:noreply, socket}
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket}
+    end
   end
 
   def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
@@ -99,4 +103,12 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   defp choose_piece?(_, _, _), do: nil
+
+  def highlight_for_win(nil, _), do: nil
+
+  def highlight_for_win(win_state, position) do
+    if Enum.member?(win_state, position) do
+      "slot-win"
+    end
+  end
 end
