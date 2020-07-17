@@ -1,17 +1,15 @@
 defmodule SuperPerfundoWeb.QuartoLive do
   use SuperPerfundoWeb, :live_view
   alias SuperPerfundo.Quarto.{AI, Board}
-  alias SuperPerfundoWeb.PieceComponent
+  alias SuperPerfundoWeb.{PieceComponent, StartModalComponent}
 
   def mount(_params, _session, socket) do
     socket =
-      socket
-      |> assign(
+      assign(socket,
         board: Board.new(),
-        active_player: :user,
+        active_player: nil,
         active_piece: nil,
-        winning_state: nil,
-        waiting_for_opponent: false
+        winning_state: nil
       )
 
     {:ok, socket}
@@ -69,15 +67,21 @@ defmodule SuperPerfundoWeb.QuartoLive do
         board: board,
         active_piece: if(winning_state, do: nil, else: next_piece),
         active_player: if(winning_state, do: :ai, else: :user),
-        waiting_for_opponent: false,
         winning_state: winning_state
       )
+
+    IO.inspect(socket.assigns, label: "assigns")
 
     {:noreply, socket}
   end
 
+  def handle_info({:player_chosen, player}, socket) do
+    {:noreply, assign(socket, :active_player, player)}
+  end
+
   defp display_player(:user), do: "You"
   defp display_player(:ai), do: "AI"
+  defp display_player(nil), do: nil
 
   defp set_piece(position, socket) do
     board =
@@ -95,6 +99,8 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   defp choose_piece?(:user, nil, winning_state) do
+    IO.inspect(winning_state, label: "choose piece? winning_state")
+
     if !winning_state do
       "raise-box"
     else

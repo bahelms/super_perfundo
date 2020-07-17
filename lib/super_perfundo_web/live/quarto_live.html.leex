@@ -92,6 +92,8 @@
   </div>
 </div>
 
+<%= live_component(@socket, StartModalComponent, id: :start_modal) %>
+
 <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
   <div class="blackout" />
 <% end %>
