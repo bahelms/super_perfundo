@@ -48,7 +48,7 @@ defmodule SuperPerfundo.Quarto.BoardTest do
   end
 
   describe "remaining_pieces/1" do
-    test "returns the pieces not in the board or active piece" do
+    test "returns the pieces not in the board including the active piece" do
       remaining =
         {nil, 1, 2, 3, 4, 5, nil, 6, 7, nil, nil, 0, nil, nil, nil, nil}
         |> Board.remaining_pieces(13)

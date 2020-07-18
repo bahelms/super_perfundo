@@ -1,7 +1,7 @@
 defmodule SuperPerfundoWeb.QuartoLive do
   use SuperPerfundoWeb, :live_view
-  alias SuperPerfundo.Quarto.{AI, Board}
-  alias SuperPerfundoWeb.{PieceComponent, StartModalComponent}
+  alias SuperPerfundo.Quarto.{AI, Board, Game}
+  alias SuperPerfundoWeb.PieceComponent
 
   def mount(_params, _session, socket) do
     socket =
@@ -9,10 +9,20 @@ defmodule SuperPerfundoWeb.QuartoLive do
         board: Board.new(),
         active_player: nil,
         active_piece: nil,
-        winning_state: nil
+        winning_state: nil,
+        game_start: true,
+        chosen_player: Game.choose_player()
       )
 
     {:ok, socket}
+  end
+
+  def handle_event("start_game", _, socket = %{assigns: %{chosen_player: chosen_player}}) do
+    if chosen_player == :ai do
+      send(self(), :ai_start)
+    end
+
+    {:noreply, assign(socket, game_start: false, active_player: chosen_player)}
   end
 
   def handle_event("position_chosen", %{"position" => position}, socket) do
@@ -70,18 +80,8 @@ defmodule SuperPerfundoWeb.QuartoLive do
         winning_state: winning_state
       )
 
-    IO.inspect(socket.assigns, label: "assigns")
-
     {:noreply, socket}
   end
-
-  def handle_info({:player_chosen, player}, socket) do
-    {:noreply, assign(socket, :active_player, player)}
-  end
-
-  defp display_player(:user), do: "You"
-  defp display_player(:ai), do: "AI"
-  defp display_player(nil), do: nil
 
   defp set_piece(position, socket) do
     board =
@@ -99,8 +99,6 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   defp choose_piece?(:user, nil, winning_state) do
-    IO.inspect(winning_state, label: "choose piece? winning_state")
-
     if !winning_state do
       "raise-box"
     else
@@ -117,4 +115,11 @@ defmodule SuperPerfundoWeb.QuartoLive do
       "slot-win"
     end
   end
+
+  defp display_player(:user), do: "You"
+  defp display_player(:ai), do: "AI"
+  defp display_player(nil), do: nil
+
+  defp display_coin_toss_winner(:ai), do: "Your opponent won the coin toss. They play first."
+  defp display_coin_toss_winner(:user), do: "You won the coin toss! You play first."
 end
