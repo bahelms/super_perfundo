@@ -18,6 +18,28 @@ body > div:first-of-type {
   z-index: 4;
 }
 
+.modal-content {
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+#game-start-btn {
+  padding: 12px 15px 10px;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  background-color: darkcyan;
+  color: white;
+  font: 12px Spartan, sans-serif;
+}
+
+#game-start-btn:hover {
+  background-color: cadetblue;
+  cursor: pointer;
+}
+
 #game-start-modal + .blackout {
   z-index: 3;
   animation: none;
