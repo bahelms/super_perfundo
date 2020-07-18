@@ -92,7 +92,15 @@
   </div>
 </div>
 
-<%= live_component(@socket, StartModalComponent, id: :start_modal) %>
+<%= if @game_start do %>
+  <div id="game-start-modal">
+    <div class="modal-content">
+      <h3><%= display_coin_toss_winner(@chosen_player) %></h3>
+      <button phx-click="start_game">Game on!</button>
+    </div>
+  </div>
+  <div class="blackout" />
+<% end %>
 
 <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
   <div class="blackout" />
