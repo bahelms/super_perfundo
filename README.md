@@ -17,5 +17,4 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
 - Quarto
   * Instructions
   * Restart game button
-  * Coin toss to see who starts
   * Actual AI
