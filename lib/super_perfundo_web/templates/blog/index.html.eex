@@ -12,7 +12,7 @@
             <div class="tags-list">tags: <%= tag_links(post.tags) %></div>
           </div>
           <p><%= post.description %></p>
-          <%= link("Read Post", to: "/#{post.id}", class: "btn") %>
+          <%= link("Read Post", to: "/articles/#{post.id}", class: "btn") %>
         </article>
       <% end %>
     </div>
