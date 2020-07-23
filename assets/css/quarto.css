@@ -1,0 +1,399 @@
+/* This gets the LiveView phx-main div */
+body > div:first-of-type {
+  width: 100%;
+  margin-top: 110px;
+}
+
+#game-start-modal {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 2px solid #888;
+  border-radius: 5px;
+  max-width: 715px;
+  width: 50%;
+  top: 35%;
+  left: 50%;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+#game-start-btn {
+  padding: 12px 15px 10px;
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  background-color: darkcyan;
+  color: white;
+  font: 12px Spartan, sans-serif;
+}
+
+#game-start-btn:hover {
+  background-color: cadetblue;
+  cursor: pointer;
+}
+
+#game-start-modal + .blackout {
+  z-index: 3;
+  animation: none;
+  background-color: rgba(0,0,0,0.4);
+}
+
+#instructions {
+  display: block;
+  margin-top: 25px;
+  font: 14px Spartan, sans-serif;
+}
+
+#game {
+  display: flex;
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.game-won {
+  font-size: 40px;
+  width: 233px;
+  margin: -10px auto 20px;
+  height: 49px;
+}
+
+#board {
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
+.player-status {
+  width: 150px;
+}
+
+.active-piece {
+  height: 33%;
+  margin-top: 20px;
+  border: 2px lightgrey solid;
+  border-radius: 4px;
+  text-align: center;
+  padding-top: 5px;
+}
+
+.active-piece .piece {
+  margin-top: 32px;
+}
+
+.active-piece .piece .cube {
+  margin-top: 50px;
+}
+
+.thinking {
+  font-size: 8px;
+  margin: 25px auto;
+  text-indent: -9999em;
+  width: 7em;
+  height: 7em;
+  border-radius: 50%;
+  background: grey;
+  background: -moz-linear-gradient(left, grey 10%, rgba(189,81,81,0) 42%);
+  background: -webkit-linear-gradient(left, grey 10%, rgba(189,81,81,0) 42%);
+  background: -o-linear-gradient(left, grey 10%, rgba(189,81,81,0) 42%);
+  background: -ms-linear-gradient(left, grey 10%, rgba(189,81,81,0) 42%);
+  background: linear-gradient(to right, grey 10%, rgba(189,81,81,0) 42%);
+  position: relative;
+  -webkit-animation: think 1.4s infinite linear;
+  animation: think 0.5s infinite linear;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.thinking:before {
+  background: grey;
+  border-radius: 100% 0 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: '';
+}
+
+.thinking:after {
+  background: white;
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  content: '';
+  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+@keyframes think {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes think {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.remaining-pieces-container {
+  border: 2px lightgrey solid;
+  border-radius: 4px;
+  text-align: center;
+  height: 590px;
+  z-index: 2;
+  background: white;
+  padding-top: 5px;
+}
+
+.remaining-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 350px;
+  margin-top: 10px;
+}
+
+.raise-box {
+  box-shadow: 0 0 7px white;
+  animation: select-piece 1s 0.5s forwards;
+}
+
+@keyframes select-piece {
+  0% { transform: scale(1, 1); }
+  100% { 
+    transform: scale(1.1, 1.1); 
+  }
+}
+
+.blackout {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  animation: blackout 1s 0.5s forwards;
+}
+
+@keyframes blackout {
+  0% { 
+    background-color: rgba(0,0,0,0); /* Black w/ opacity */
+  }
+  100% { 
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+}
+
+.row {
+  display: flex;
+}
+
+.slot {
+  border: 6px solid lightblue;
+  height: 125px;
+  width: 125px;
+  margin: 6px;
+  border-radius: 50%;
+}
+
+.slot-win {
+  border: 6px solid gold;
+}
+
+.piece {
+  animation: place-piece 0.6s;
+}
+
+@keyframes place-piece {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.dark {
+  background: saddlebrown;
+}
+
+.light {
+  background: papayawhip;
+}
+
+.cube {
+  width: 50px;
+  height: 50px;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotate3d(3, 1, -1, 70deg);
+  margin-top: 31px;
+  margin-left: 33px;
+}
+
+.side {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 3%;
+  border: black solid 1px;
+}
+
+.front.short {
+  transform: translateY(25px) rotateX(90deg);
+}
+
+.front.tall {
+  height: 100px;
+  transform: rotateX(90deg);
+}
+
+.back.short {
+  transform: translateY(-25px) rotateX(90deg);
+}
+
+.back.tall {
+  height: 100px;
+  transform: translateY(-50px) rotateX(90deg);
+}
+
+.left.short {
+  transform: translateX(-25px) rotateY(90deg);
+}
+
+.left.tall {
+  height: 100px;
+  transform: translateX(-25px) translateY(-25px) rotateX(90deg) rotateY(90deg);
+}
+
+.right.short {
+  transform: translateX(25px) rotateY(90deg);
+}
+
+.right.tall {
+  height: 100px;
+  transform: translateX(25px) translateY(-25px) rotateX(90deg) rotateY(90deg);
+}
+
+.top.short {
+  transform: translateZ(25px);
+}
+
+.top.tall {
+  transform: translateZ(50px);
+}
+
+.cube .bottom.short {
+  transform: translateZ(-25px);
+}
+
+.cube .bottom.tall {
+  transform: translateZ(-50px);
+}
+
+.hollow {
+  width: 41px;
+  height: 35px;
+  border-radius: 50%;
+  background: black;
+}
+
+.hollow.short {
+  transform: translateZ(25px) translateY(7px) translateX(4px);
+}
+
+.hollow.tall {
+  transform: translateZ(50px) translateY(7px) translateX(4px);
+}
+
+.cylinder {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotate3d(1, 1, 2, 10deg);
+}
+
+.cylinder.short {
+  margin-top: 38px;
+  margin-left: 32px;
+}
+
+.cylinder.tall {
+  margin-top: 12px;
+  margin-left: 35px;
+}
+
+.cylinder .top {
+  width: 55px;
+  height: 25px;
+  border: black solid 1px;
+  border-radius: 60px / 25px;
+  top: -10px;
+  position: absolute;
+}
+
+.cylinder .middle {
+  width: 55px;
+  position: absolute;
+  border-left: black solid 1px;
+  border-right: black solid 1px;
+}
+
+.cylinder .middle.short {
+  height: 40px;
+}
+
+.cylinder .middle.tall {
+  height: 95px;
+}
+
+.cylinder .bottom {
+  width: 55px;
+  height: 25px;
+  border: black solid 1px;
+  border-radius: 60px / 25px;
+  position: absolute;
+}
+
+.cylinder .bottom.short {
+  top: 25px;
+}
+
+.cylinder .bottom.tall {
+  top: 80px;
+}
+
+.cylinder .hollow {
+  width: 41px;
+  height: 14px;
+  border-radius: 50%;
+  background: black;
+  transform: translateY(-5px) translateX(7px);
+  position: absolute;
+}
+
+.remaining-pieces .cylinder {
+  margin-right: 50px;
+  margin-top: 60px;
+}

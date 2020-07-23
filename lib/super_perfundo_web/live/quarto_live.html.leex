@@ -1,0 +1,108 @@
+<div class="game-won">
+  <%= if @winning_state do %>
+    Winner: <%= display_player(@active_player) %>!
+  <% end %>
+</div>
+
+<div id="game">
+  <div class="player-status">
+    <span><strong>Player:</strong> <%= display_player(@active_player) %></span>
+    <div class="active-piece">
+      <strong>Active Piece</strong>
+      <%= live_component(@socket, PieceComponent, piece: @active_piece) %>
+    </div>
+    <%= if @active_player == :ai && !@winning_state do %>
+      <div class="thinking"></div>
+    <% end %>
+  </div>
+
+  <div id="board">
+    <div class="row">
+      <div class="slot <%= highlight_for_win(@winning_state, 0) %>" phx-click="position_chosen" phx-value-position="0">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 0) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 1) %>" phx-click="position_chosen" phx-value-position="1">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 1) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 2) %>" phx-click="position_chosen" phx-value-position="2">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 2) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 3) %>" phx-click="position_chosen" phx-value-position="3">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 3) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="slot <%= highlight_for_win(@winning_state, 4) %>" phx-click="position_chosen" phx-value-position="4">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 4) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 5) %>" phx-click="position_chosen" phx-value-position="5">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 5) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 6) %>" phx-click="position_chosen" phx-value-position="6">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 6) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 7) %>" phx-click="position_chosen" phx-value-position="7">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 7) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="slot <%= highlight_for_win(@winning_state, 8) %>" phx-click="position_chosen" phx-value-position="8">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 8) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 9) %>" phx-click="position_chosen" phx-value-position="9">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 9) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 10) %>" phx-click="position_chosen" phx-value-position="10">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 10) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 11) %>" phx-click="position_chosen" phx-value-position="11">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 11) %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="slot <%= highlight_for_win(@winning_state, 12) %>" phx-click="position_chosen" phx-value-position="12">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 12) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 13) %>" phx-click="position_chosen" phx-value-position="13">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 13) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 14) %>" phx-click="position_chosen" phx-value-position="14">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 14) %>
+      </div>
+      <div class="slot <%= highlight_for_win(@winning_state, 15) %>" phx-click="position_chosen" phx-value-position="15">
+        <%= live_component(@socket, PieceComponent, board: @board, position: 15) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= choose_piece?(@active_player, @active_piece, @winning_state) %> remaining-pieces-container">
+    <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+      <strong>Select Opponent's Piece</strong>
+    <% else %>
+      <strong>Remaining Pieces</strong>
+    <% end %>
+
+    <div class="remaining-pieces">
+      <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
+        <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
+          <%= live_component(@socket, PieceComponent, piece: piece) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= if @game_start do %>
+  <div id="game-start-modal">
+    <div class="modal-content">
+      <h3><%= display_coin_toss_winner(@chosen_player) %></h3>
+      <button id="game-start-btn" phx-click="start_game">Game on!</button>
+      <a href="https://youtu.be/VMazU6Q-YFY?t=10" target="_blank" id="instructions">How to play Quarto (video)</a>
+    </div>
+  </div>
+  <div class="blackout" />
+<% end %>
+
+<%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+  <div class="blackout" />
+<% end %>
