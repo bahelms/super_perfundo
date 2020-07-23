@@ -1,6 +1,7 @@
 /* This file is for your main application css. */
 
 @import "./makeup.css";
+@import "./quarto.css";
 
 html {
   box-sizing: border-box;
