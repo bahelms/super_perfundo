@@ -96,6 +96,8 @@ match of the single property shared by all numbers in this example.
 To see if four in a row exists on the board, this check must run for every direction 
 (vertical, horizontal, diagonal). The shortened Elixir for doing this:
 
+    import Bitwise
+
     @match_positions [
       [0, 1, 2, 3],
       [4, 5, 6, 7],
@@ -137,7 +139,165 @@ Getting the two's complement (`& 1111`) is necessary to find the true number I'm
 ### User Interface
 With the core game logic done, I now had to figure out how to render the game 
 so that it would look good (most importantly), and actually be playable.
+I didn't want to use a bunch of static images for the pieces and empty board.
+I wanted it to be dynamically rendered. I started out with SVGs, but they involved
+a lot of long decimals in order to get the 3D look, so
+I abandoned them and settled on drawing everything with pure CSS.
 
-* Animating box-shadow: https://tobiasahlin.com/blog/how-to-animate-box-shadow/
+To display a piece, the integer is converted to a struct and given to a stateless 
+Live Component. The properties of the piece determine which CSS classes to apply.
+For some added panache, when a piece is added to the board, it has a nice intro animation.
+
+    # e.g. "1010"
+    defp nibble_to_piece(<<shape, size, fill, color>>) do
+      %Piece{
+        shape: @property_map.shape[<<shape>>],
+        size: @property_map.size[<<size>>],
+        fill: @property_map.fill[<<fill>>],
+        color: @property_map.color[<<color>>]
+      }
+    end
+    
+    def render(assigns) do
+      ~L"""
+      <div class="piece">
+        <%= if @piece.shape == "cube" do %>
+          <div class="cube">
+            <div class="side front <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="side back <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="side top <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="side bottom <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="side left <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="side right <%= @piece.size %> <%= @piece.color %>"></div>
+            <%= if @piece.fill == "hollow" do %>
+              <div class="hollow <%= @piece.size %>"></div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="cylinder <%= @piece.size %>">
+            <div class="bottom <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="middle <%= @piece.size %> <%= @piece.color %>"></div>
+            <div class="top <%= @piece.color %>"></div>
+            <%= if @piece.fill == "hollow" do %>
+              <div class="hollow"></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      """
+    end
+
+The board is just a flexbox of divs styled as a circle. The only other thing of note
+is the Remaining Pieces container. It originally began as a modal for selecting
+the piece your opponent would play. However, I found that not being able to see 
+the board while making a tactical decision was less that ideal. It also helped to be
+able to see the remaining pieces at any time (not just when selecting the next one).
+Therefore, I changed the modal to be an always present div to the side of the board
+that shows pool of pieces remaining. When it's time for the user to pick the next
+piece, the container gets emphasis by animating its box shadow and darkening everything
+else on the screen. Pretty cool.
 
 ### LiveView Server
+Now for the technology I was most excited about using: 
+[Phoenix's LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html){:target="x"}. 
+It allows you to add super performant client-side behavior without touching any client-side
+code (apart from HTML). That's right! This project didn't require a single line
+of JavaScript on my part! Everything this game needs is all Elixir on the server-side.
+
+When the game starts, it's rendered with an empty board and no active piece or 
+player. A "coin" is flipped to determine if the AI or the user goes first. This 
+is a simple random choice from a list of two elements: `Enum.random([:ai, :user])`.
+Let's say the user plays first. With no active piece, they can only perform the second
+action, choosing the piece for the opponent to play by clicking on one of the remaining
+pieces.
+
+    <div class="remaining-pieces">
+      <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
+        <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
+          <%= live_component(@socket, PieceComponent, piece: piece) %>
+        </div>
+      <% end %>
+    </div>
+
+This sends the `piece_chosen` event back to the server with the value of the piece,
+where the game logic is executed.
+
+    def handle_event("piece_chosen", %{"piece" => piece}, socket) do
+      with nil <- socket.assigns.winning_state,
+           nil <- socket.assigns.active_piece do
+        send(self(), :ai_start)
+
+        {:noreply,
+         assign(socket,
+           active_piece: String.to_integer(piece),
+           active_player: :ai
+         )}
+      else
+        _ ->
+          {:noreply, socket}
+      end
+    end
+
+As long is there is no already active piece and no player has won yet 
+(prevent undesirable game behavior from occuring), the AI's
+turn begins and the state is updated accordingly. This will rerender only the active player and 
+piece sections on the client and display a spinner while the asynchronous AI task 
+finishes making its decisions.
+
+    def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
+      {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
+      board = Board.set_piece(board, piece, position)
+      winning_state = Board.four_in_a_row?(board)
+      ...
+    end
+
+Once the AI has chosen the position to play the active piece and the piece to 
+pass to the user, the board is set, checked for a winning state, and then the 
+socket updated, which in turn rerenders only the relevant parts of the client. 
+The AI implementation used here is essentially a placeholder for Part 2 of this 
+series. Its decisions are entirely random and thus very easy to beat.
+
+    @doc """
+    Easiest AI ever! This picks a random position for the given piece and a random
+    piece to use next.
+    """
+    def choose_position_and_next_piece(board, active_piece) do
+      position =
+        board
+        |> open_positions()
+        |> Enum.take_random(1)
+        |> List.first()
+
+      next_piece =
+        board
+        |> Board.remaining_pieces(active_piece)
+        |> Enum.take_random(1)
+        |> List.first()
+
+      :timer.sleep(1000)
+      {position, next_piece}
+    end
+
+    defp open_positions(board) do
+      for index <- 0..15, !elem(board, index), do: index
+    end
+
+This entire workflow of code (event -> server -> AI -> rerender) was happening so
+fast, I needed to put in a one second delay to even see the AI thinking spinner.
+It seemed jarring for the AI's moves to be rendered so immediately. Anyhow, this
+module will most likely turn into Rust NIFs when I implement a true AI. Setting
+deep game tree search levels will no doubt eliminate the need for a `sleep`!
+
+### Final Summation
+LiveView is a brilliant technology. It can be sprinkled throughout a web app easily,
+and allows developers to avoid having to deal with a separate frontend. I certainly
+would rather be playing with the BEAM over JavaScript any day. I highly recommend
+you give it a spin if you haven't already. 
+
+In the next post, I'll go over writing a true AI for playing Quarto. It'll be an
+excuse to use Rust, which I've been wanting to do lately. I think this will be a
+good use case for it since speed and large computations will be necessary to make
+a strong AI and still maintain a playable game. I've also been considering adding
+an option to play other humans in a future iteration. Perhaps adding a chatbox below
+the game board for trash talking and the like. All while avoiding a single drop 
+of JS (hopefully). Cheers!
