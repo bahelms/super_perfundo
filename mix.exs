@@ -47,7 +47,8 @@ defmodule SuperPerfundo.MixProject do
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.16"},
       {:sweet_xml, "~> 0.6"},
-      {:bamboo, "~> 1.4"}
+      {:bamboo, "~> 1.4"},
+      {:floki, "~> 0.27.0", only: :test}
     ]
   end
 end
