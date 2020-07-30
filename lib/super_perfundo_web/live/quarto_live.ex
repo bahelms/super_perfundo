@@ -26,42 +26,25 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   def handle_event("position_chosen", %{"position" => position}, socket) do
-    case socket.assigns.winning_state do
-      nil ->
-        position = String.to_integer(position)
+    new_assigns =
+      String.to_integer(position)
+      |> Game.position_chosen(socket.assigns)
+      |> Map.to_list()
 
-        case Board.piece_at_position(socket.assigns.board, position) do
-          nil ->
-            {:noreply, set_piece(position, socket)}
-
-          _ ->
-            {:noreply, socket}
-        end
-
-      _ ->
-        {:noreply, socket}
-    end
+    {:noreply, assign(socket, new_assigns)}
   end
 
   def handle_event("piece_chosen", %{"piece" => piece}, socket) do
-    case socket.assigns.winning_state do
-      nil ->
-        socket =
-          case socket.assigns.active_piece do
-            nil ->
-              send(self(), :ai_start)
+    with nil <- socket.assigns.winning_state,
+         nil <- socket.assigns.active_piece do
+      send(self(), :ai_start)
 
-              assign(socket,
-                active_piece: String.to_integer(piece),
-                active_player: :ai
-              )
-
-            _ ->
-              socket
-          end
-
-        {:noreply, socket}
-
+      {:noreply,
+       assign(socket,
+         active_piece: String.to_integer(piece),
+         active_player: :ai
+       )}
+    else
       _ ->
         {:noreply, socket}
     end
@@ -81,21 +64,6 @@ defmodule SuperPerfundoWeb.QuartoLive do
       )
 
     {:noreply, socket}
-  end
-
-  defp set_piece(position, socket) do
-    board =
-      Board.set_piece(
-        socket.assigns.board,
-        socket.assigns.active_piece,
-        position
-      )
-
-    assign(socket,
-      board: board,
-      active_piece: nil,
-      winning_state: Board.four_in_a_row?(board)
-    )
   end
 
   defp choose_piece?(:user, nil, winning_state) do

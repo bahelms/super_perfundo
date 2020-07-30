@@ -35,7 +35,7 @@ defmodule SuperPerfundo.Quarto.Board do
     fill: %{"0" => "solid", "1" => "hollow"},
     color: %{"0" => "light", "1" => "dark"}
   }
-  @all_pieces_set MapSet.new([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+  @all_pieces_set Enum.into(0..15, MapSet.new())
   @twos_compliment_bitmask 0b1111
   @match_positions [
     [0, 1, 2, 3],
