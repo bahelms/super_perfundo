@@ -15,6 +15,6 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
 * email signup as LiveView
 * comments
 - Quarto
-  * Instructions
+  * Change cursor to hand pointer
   * Restart game button
   * Actual AI
