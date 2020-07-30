@@ -2,7 +2,7 @@
 Quarto, pt. 1: Core Functionality
 
 ==tags==
-elixir, phoenix, live-view, games, quarto
+elixir, phoenix, live-view, games, quarto, css
 
 ==description==
 Building a Quarto game with Phoenix LiveView. Game mechanics, dynamic UI, and 
@@ -10,27 +10,27 @@ how LiveView ties it all together.
 
 ==body==
 I do handtool woodworking as a hobby, and I first heard of Quarto while I was browsing
-videos for board game projects. It seemed like Tic-Tac-Toe for adults, and I thought
-it would make for a fun garage project. Immediately after that thought, I had another
-one. It would also be cool to make a web version!
+YouTube videos for board game projects. It seemed like Tic-Tac-Toe for adults, and I thought,
+besides being a fun garage project, it would also be an interesting programming 
+exercise.
 
 This will be a duology of posts detailing how I went about implementing Quarto
 as a web app. This first post covers the majority of how the app functions. In a
-future post, I'll go over writing an AI for the user to play against.
+future post, I'll go over writing a useful AI for the user to play against.
 
 ### The Game of Quarto 
 The game itself is fairly simple; it's like Tic-Tac-Toe on steroids. You must get 
-four in a row to win. However, instead of having only one of two pieces to line up,
-you have sixteen pieces to deal with, each one having four binary properties.
-To win, you need to get four in a row that share the same property. The interesting
+four in a row to win. However, instead of having only one of two types of pieces to line up,
+you have sixteen to deal with, each one having four binary properties.
+To win, you need to get four in a row that have at least one property in common. The 
 kicker is you pick your opponent's piece at the end of your turn. Representing 
-the game and it's processes seemed like a fun coding exercise; more complicated
-than Tic-Tac-Toe, but not a beast like Chess.
+the game and it's processes seemed like an enjoyable effort; more complicated
+than Tic-Tac-Toe, but not a non-trivial beast like Chess.
 
 ### Implementation Mechanics
 #### Pieces
 When thinking about the implementation, I began with how the board and the pieces
-should be represented as data. A piece has four properties with each property being one of
+should be represented as data. A piece has four properties with each property having
 two possibilities. Four binary properties for a total of sixteen combinations? 
 That's a [nibble!](https://en.wikipedia.org/wiki/Nibble){:target="x"} Therefore, 
 the most efficient way to model the pieces is to use the integers 0-15. After 
@@ -93,6 +93,7 @@ If `round1` is over 0, there is a match; however, there may also be false positi
 at this point, since four values are first merged to two then to one. Therefore, we must also
 compare the result of the first and third numbers with `round1` to get the true
 match of the single property shared by all numbers in this example. 
+
 To see if four in a row exists on the board, this check must run for every direction 
 (vertical, horizontal, diagonal). The shortened Elixir for doing this:
 
@@ -146,7 +147,7 @@ I abandoned them and settled on drawing everything with pure CSS.
 
 To display a piece, the integer is converted to a struct and given to a stateless 
 Live Component. The properties of the piece determine which CSS classes to apply.
-For some added panache, when a piece is added to the board, it has a nice intro animation.
+For some added panache, when a piece is placed on the board, it has a nice intro animation.
 
     # e.g. "1010"
     defp nibble_to_piece(<<shape, size, fill, color>>) do
@@ -187,13 +188,13 @@ For some added panache, when a piece is added to the board, it has a nice intro 
       """
     end
 
-The board is just a flexbox of divs styled as a circle. The only other thing of note
+The board is just a flexbox of divs styled as circles. The only other thing of note
 is the Remaining Pieces container. It originally began as a modal for selecting
 the piece your opponent would play. However, I found that not being able to see 
-the board while making a tactical decision was less that ideal. It also helped to be
+the board while making a tactical decision was less than ideal. It also helped to be
 able to see the remaining pieces at any time (not just when selecting the next one).
 Therefore, I changed the modal to be an always present div to the side of the board
-that shows pool of pieces remaining. When it's time for the user to pick the next
+that shows the pool of pieces remaining. When it's time for the user to pick the next
 piece, the container gets emphasis by animating its box shadow and darkening everything
 else on the screen. Pretty cool.
 
@@ -239,9 +240,9 @@ where the game logic is executed.
     end
 
 As long is there is no already active piece and no player has won yet 
-(prevent undesirable game behavior from occuring), the AI's
+(to prevent undesirable game behavior from occuring), the AI's
 turn begins and the state is updated accordingly. This will rerender only the active player and 
-piece sections on the client and display a spinner while the asynchronous AI task 
+active piece sections on the client and display a spinner while the asynchronous AI task 
 finishes making its decisions.
 
     def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
@@ -251,11 +252,11 @@ finishes making its decisions.
       ...
     end
 
-Once the AI has chosen the position to play the active piece and the piece to 
+Once the AI has chosen the position to play and the piece to 
 pass to the user, the board is set, checked for a winning state, and then the 
 socket updated, which in turn rerenders only the relevant parts of the client. 
-The AI implementation used here is essentially a placeholder for Part 2 of this 
-series. Its decisions are entirely random and thus very easy to beat.
+The AI implementation used here is essentially a placeholder for the next iteration.
+Its decisions are entirely random and thus very easy to beat.
 
     @doc """
     Easiest AI ever! This picks a random position for the given piece and a random
@@ -282,10 +283,10 @@ series. Its decisions are entirely random and thus very easy to beat.
       for index <- 0..15, !elem(board, index), do: index
     end
 
-This entire workflow of code (event -> server -> AI -> rerender) was happening so
-fast, I needed to put in a one second delay to even see the AI thinking spinner.
+This entire workflow of code (event -> server -> AI -> rerender) happens so
+fast, I needed to put in a one second delay to even see the "AI thinking" spinner.
 It seemed jarring for the AI's moves to be rendered so immediately. Anyhow, this
-module will most likely turn into Rust NIFs when I implement a true AI. Setting
+module will most likely turn into Rust NIFs when I implement a true AI. Being able to set 
 deep game tree search levels will no doubt eliminate the need for a `sleep`!
 
 ### Final Summation
