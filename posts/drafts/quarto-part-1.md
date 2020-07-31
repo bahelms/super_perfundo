@@ -18,6 +18,10 @@ This will be a duology of posts detailing how I went about implementing Quarto
 as a web app. This first post covers the majority of how the app functions. In a
 future post, I'll go over writing a useful AI for the user to play against.
 
+If you want to play, click [here](/quarto) or that button in the menu up there ^.
+I focused only on getting this to render properly for desktop browsers. It is most definitely not
+mobile-friendly currently, so don't try to play it on your phone.
+
 ### The Game of Quarto 
 The game itself is fairly simple; it's like Tic-Tac-Toe on steroids. You must get 
 four in a row to win. However, instead of having only one of two types of pieces to line up,
@@ -147,6 +151,7 @@ I abandoned them and settled on drawing everything with pure CSS.
 
 To display a piece, the integer is converted to a struct and given to a stateless 
 Live Component. The properties of the piece determine which CSS classes to apply.
+It was fairly straigtforward to make 3D cubes and cylinders with `transform`.
 For some added panache, when a piece is placed on the board, it has a nice intro animation.
 
     # e.g. "1010"
