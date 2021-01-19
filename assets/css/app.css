@@ -314,7 +314,6 @@ sup {
 pre {
   border: 1px solid lightgrey;
   padding: 10px;
-  background-color: #f8f8f8;
   line-height: initial !important;
   border-radius: 4px;
   white-space: pre-wrap;
@@ -326,7 +325,11 @@ code {
 }
 
 code.inline {
-  background-color: #f8f8f8;
+  background-color: #f5f2f0;
+  border-radius: 2px;
+  border: 1px solid lightgrey;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 code[class*="language-"] {
