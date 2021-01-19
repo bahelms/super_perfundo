@@ -309,24 +309,35 @@ sup {
   font-size: 12px;
 }
 
-/* Code blocks */
+/* Code blocks - the !importants are due to Prism.js  */
 
 pre {
   border: 1px solid lightgrey;
   padding: 10px;
-  background-color: #f8f8f8;
-  line-height: initial;
+  line-height: initial !important;
   border-radius: 4px;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 code {
-  font: 15px "Source Code Pro", monospace;
+  font: 15px "Source Code Pro", monospace !important;
 }
 
 code.inline {
-  background-color: #f8f8f8;
+  background-color: #f5f2f0;
+  border-radius: 2px;
+  border: 1px solid lightgrey;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+code[class*="language-"] {
+  white-space: pre-wrap !important;
+}
+
+.token.operator {
+  background: initial !important;
 }
 
 #about {
