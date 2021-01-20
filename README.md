@@ -12,6 +12,7 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
 
 ### TODO
 * CSS mobile: horizontal scroll for code blocks
+* Usage metrics
 * email signup as LiveView
 * comments
 - Quarto
