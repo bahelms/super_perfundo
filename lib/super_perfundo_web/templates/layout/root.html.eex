@@ -4,6 +4,15 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <meta property="og:title" content="<%= og_title(assigns) %>">
+    <meta property="og:description" content="<%= og_description(assigns) %>">
+    <meta property="og:image" content="<%= og_image(assigns) %>">
+    <meta property="og:url" content="<%= Routes.blog_url(@conn, :show, post_id(assigns)) %>">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="SuperPerfundo.Tech">
+
     <title><%= assigns[:page_title] || "SuperPerfundo.Tech" %></title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2:wght@600&family=Spartan:wght@400;800&family=Inter:wght@300;400;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
