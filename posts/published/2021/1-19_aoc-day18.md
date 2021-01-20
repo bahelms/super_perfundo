@@ -7,6 +7,9 @@ rust, advent-of-code, PLT, parsing
 ==description==
 Evaluate addition and multiplication expressions with arbitrary precedence.
 
+==image==
+og-image_aoc-day18.png
+
 ==body==
 One aspect of computer science that fascinates me is [programming language theory](https://en.wikipedia.org/wiki/Programming_language_theory){:target="x"}.
 It's so cool that text in a file can make a computer do something.
