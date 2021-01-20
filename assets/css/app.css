@@ -312,6 +312,7 @@ sup {
 /* Code blocks - the !importants are due to Prism.js  */
 
 pre {
+  background-color: #f8f8f8;
   border: 1px solid lightgrey;
   padding: 10px;
   line-height: initial !important;
