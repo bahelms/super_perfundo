@@ -334,6 +334,7 @@ code.inline {
 
 code[class*="language-"] {
   white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 
 .token.operator {

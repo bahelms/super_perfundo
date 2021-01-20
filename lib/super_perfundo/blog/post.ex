@@ -1,6 +1,6 @@
 defmodule SuperPerfundo.Blog.Post do
   @enforce_keys [:id, :title, :body, :tags, :description, :date]
-  defstruct [:id, :title, :body, :tags, :description, :date]
+  defstruct [:id, :title, :body, :tags, :description, :date, :image]
 
   @field_pattern ~r/^==(\w+)==\n/m
   @timezone Application.get_env(:super_perfundo, :timezone)
@@ -67,6 +67,7 @@ defmodule SuperPerfundo.Blog.Post do
 
   defp parse_attr(:title, value), do: String.trim(value)
   defp parse_attr(:description, value), do: String.trim(value)
+  defp parse_attr(:image, value), do: String.trim(value)
 
   defp parse_attr(:body, value),
     do:
