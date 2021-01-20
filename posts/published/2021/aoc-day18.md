@@ -121,7 +121,7 @@ impl Lexer {
 }
 ```
 
-The following is a Pratt parser that satisfies Part 1:
+The following is a Pratt parser that works for both parts of the problem:
 
 ```rust
 // new function creating a Lexer and evaluating with 0 precedence
