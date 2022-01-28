@@ -393,3 +393,7 @@ code[class*="language-"] {
   border: 1px solid lightgray;
   border-radius: 5px;
 }
+
+.flex {
+  display: flex;
+}
