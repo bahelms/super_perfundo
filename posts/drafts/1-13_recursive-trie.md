@@ -30,5 +30,33 @@ as a source of truth, like a dictionary. Another use is searching strings for ex
 matches. Maybe I want to scan for potty mouth words (shit) and their l33t versions ($h1t).
 All you have to do is build up a trie and search it. Let's do just that!
 
+### The plan
+First, we need to think of how to model a trie in code. A trie is most commonly represented
+as a node pointing to an array of child nodes. This is no binary tree. However,
+this seemed inefficient to me. On every search, each array of nodes would also need to
+be searched. Is there a way to avoid this O(n) cost for every child collection?
+Maybe even get an O(1) operation? By George, there is! **The map** (*or hash, dictionary,
+associative array; wherever you're from*).
+
+In our example trie from above, instead of nodes of arrays:
+
+    root -> [a -> [p -> [p -> [l -> [e]], e -> [s]]]]
+we could say a node is a map of breadth-level letters pointing to other maps.
+
+        {a,    b,  m}
+         |     |   |
+        {p}   {e} {m}
+         |     |   |
+      {p,  e} {e} {n}
+       |   |   |   |
+      {l} {s} {r} {k}
+       |           |
+      {e}       {e,  s}
+                 |
+                {y}
+Essentially, when a letter branches, it points to a single map with the keys
+being all child letters and their values being more maps. This actually allows us
+to do away with a root node entirely, and provides O(1) access to a node's children.
+It's also very recursion friendly.
+
 ### The c0d3
-First, we need to think of how to model a trie in code.
