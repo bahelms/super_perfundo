@@ -24,4 +24,3 @@ COPY --from=builder /app/_build/prod/rel/super_perfundo .
 COPY --from=builder /app/entrypoint.sh .
 
 CMD ["./entrypoint.sh"]
-
