@@ -1,4 +1,4 @@
-FROM bitwalker/alpine-elixir-phoenix:1.10.3 as builder
+FROM bitwalker/alpine-elixir-phoenix:1.11.4 as builder
 
 WORKDIR /app
 ENV MIX_ENV=prod
@@ -14,7 +14,7 @@ RUN cd assets && npm run deploy && cd - && mix do compile, phx.digest
 RUN mix release
 
 
-FROM bitwalker/alpine-elixir:1.10.3
+FROM bitwalker/alpine-elixir:1.11.4
 
 EXPOSE 80
 ENV PORT=80 MIX_ENV=prod
