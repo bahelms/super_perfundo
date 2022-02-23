@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-elixir@v1
         with:
-          otp-version: 23.0.2
-          elixir-version: 1.10.3
-      - name: Install deps
-        run: mix deps.get
+          otp-version: 23.3.1
+          elixir-version: 1.11.4
+
+      - run: mix deps.get
       - run: mix format --check-formatted
       - run: mix test
