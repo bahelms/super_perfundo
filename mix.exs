@@ -4,8 +4,8 @@ defmodule SuperPerfundo.MixProject do
   def project do
     [
       app: :super_perfundo,
-      version: "0.2.0",
-      elixir: "~> 1.13",
+      version: "0.3.0",
+      elixir: "~> 1.11.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
