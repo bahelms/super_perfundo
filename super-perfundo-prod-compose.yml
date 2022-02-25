@@ -5,7 +5,7 @@ services:
     restart: always
     image: registry.digitalocean.com/super-perfundo/super-perfundo:prod
     environment:
-      - HOST=chess-crunch.com
+      - HOST=super-perfundo.tech
       - PORT=80
       - SECRET_KEY_BASE=$SECRET_KEY_BASE
       - VIRTUAL_HOST=www.superperfundo.tech,superperfundo.tech
