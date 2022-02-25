@@ -38,6 +38,8 @@ jobs:
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v0.1.4
         with:
+          HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          USERNAME: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
           KEY: ${{ secrets.PRIVATE_SSH_KEY }}
           script: |
             cd super_perfundo
