@@ -14,5 +14,5 @@ if config_env() == :prod do
 
   config :super_perfundo, SuperPerfundo.Mailer,
     adapter: Bamboo.SendGridAdapter,
-    api_key: System.get_env("SENDGRID_API_KEY")
+    api_key: System.fetch_env!("SENDGRID_API_KEY")
 end
