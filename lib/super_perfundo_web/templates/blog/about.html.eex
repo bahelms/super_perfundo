@@ -6,5 +6,8 @@
     <li>
       <%= link("github.com/bahelms", to: "https://www.github.com/bahelms", target: "_blank") %>
     </li>
+    <li>
+      <%= link("twitter.com/bahelms1", to: "https://www.twitter.com/bahelms1", target: "_blank") %>
+    </li>
   </ul>
 </section>
