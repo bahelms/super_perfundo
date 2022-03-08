@@ -79,14 +79,15 @@ I like it. Let's go over those two functions in the `Trie` module.
       def new, do: %{}
     end
 
-There's our root node, a humble empty map. Now for the easy function:
+There's our root node; a humble empty map. Now for the easy function:
 
     def insert(trie, word) do
       insert_graphemes(trie, String.graphemes(word))
     end
 
-This interface function breaks up the word string into a list of Unicode graphemes
-before passing it to the workhorse.
+Our interface function breaks up the word string into a list of Unicode graphemes
+before passing it to the workhorse. *Aside: a grapheme is essentially a character.
+It can consist of multiple code points.*
 
     defp insert_graphemes(trie, [grapheme | rest]) do
       subtrie =
@@ -98,7 +99,7 @@ before passing it to the workhorse.
 
     defp insert_graphemes(trie, []), do: trie
 
-This one can be a little mind bending. Let's take `"apple"` as our word, so the 
+This recursion can be a little mind bending for the uninitiated. Let's take `"apple"` as our word, so the
 grapheme list is `["a", "p", "p", "l", "e"]`. On first application, the `"a"` is
 split from the list. Next, the trie is accessed to see if `"a"` has a map of children
 (it doesn't yet). An empty map is returned as default, and the `rest` of the graphemes
@@ -121,8 +122,8 @@ the callstack and final data:
      
     %{"a" => %{"p" => %{"p" => %{"l" => %{"e" => %{}}}}}}
 
-Now, when we insert "apes" next, `"a"` does point to a map. It will be returned and "pes"
-will be recursively inserted into that with the resulting trie being:
+When we insert "apes" next, `"a"` now points to a map, and "pes"
+will be recursively inserted into it with the resulting trie being:
 
     %{"a" => 
       %{"p" => 
@@ -135,12 +136,12 @@ will be recursively inserted into that with the resulting trie being:
 
 Beautiful! We've implemented our interface and constructed a trie! Now what do we
 do with it? It depends on your use case. For simplicity, we'll use it as a potty
-mouth matcher. Maybe we are running a chat server and want to filter out swear words
+mouth catcher. Maybe we are running a chat server and want to filter out swear words
 and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie.
 
     Trie.exists?(bad_words, "$h1t") => true
 
-**GASP!** I knew it. On to implementation.
+**GASP!** I knew it. But how does it work?
 
     def exists?(trie, word) do
       search_graphemes(trie, String.graphemes(word))
@@ -156,3 +157,12 @@ Once again, break the word into graphemes first.
     defp search_graphemes(_, _), do: false
 
 Oh man, Elixir is slick. One line for each method thanks to function signature pattern matching.
+We take the first character and access its subtrie. Rinse and repeat for the rest
+of the characters in the word. If the full word matches then we'll end up with an
+empty map and empty list and return true all the way up the callstack (except we have no
+callstack because our tail calls are optimized! *sick*). Otherwise, after the graphemes
+run out and the trie is not exhausted, we return false because it's not an exact match.
+
+### Final Summation
+I was surpised how succinctly a trie can be constructed and searched when implemented
+with recursion.
