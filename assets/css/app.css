@@ -350,6 +350,10 @@ code[class*="language-"] {
   margin-top: 40px;
 }
 
+#about li {
+  margin: 2.5px 0;
+}
+
 .subscribed {
   margin: 20px;
 }
