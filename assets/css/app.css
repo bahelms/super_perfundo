@@ -350,6 +350,10 @@ code[class*="language-"] {
   margin-top: 40px;
 }
 
+#about li {
+  margin: 2.5px 0;
+}
+
 .subscribed {
   margin: 20px;
 }
@@ -392,4 +396,8 @@ code[class*="language-"] {
   width: 100%;
   border: 1px solid lightgray;
   border-radius: 5px;
+}
+
+.flex {
+  display: flex;
 }

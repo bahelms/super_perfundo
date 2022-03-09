@@ -39,7 +39,7 @@ defmodule SuperPerfundo.MixProject do
       {:phoenix_live_view, "~> 0.13.2"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.1"},
+      {:plug_cowboy, "~> 2.5"},
       {:earmark, "~> 1.3"},
       {:ex_doc, "~> 0.21.3"},
       {:timex, "~> 3.6.1"},
