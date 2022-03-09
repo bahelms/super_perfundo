@@ -10,7 +10,7 @@ How to construct and search a trie recursively in Elixir.
 ==body==
 #### ...does it raise an exception?
 
-A trie is one of those fancy data structures you may have heard nerds at
+A trie is one of those fancy data structures you may have heard peers at
 work throw around in discourse at the coffee machine. No need to feel intimidated;
 it's just a tree! I love how easy that is to remember. I've seen it
 pronounced as "try", but I like the other origin
@@ -28,20 +28,20 @@ the trie above for those letters would show me that
 "apple" and "apes" are the only possible words that can come next. The trie acts
 as a source of truth, like a dictionary. Another use is searching strings for exact
 matches. Maybe I want to scan for potty mouth words (shit) and their l33t versions ($h1t).
-All you have to do is build up a trie and search it. Let's do just that!
+All you have to do is build up a trie and search it. Let's do it!
 
 ### The plan
 First, we need to think of how to model a trie in code. A trie is most commonly represented
 as a node pointing to an array of child nodes (no binary trees allowed here). However,
-this seems inefficient to me. On every search, each array of child nodes would need to
+this seems inefficient. On every search, each array of child nodes would need to
 be searched all over again. Is there a way to avoid this O(n) cost for every child collection?
 Maybe even get an O(1) operation? By George, there is! **The map** (*or hash, dictionary,
 associative array; wherever you're from*).
 
-In our example trie from above, instead of nodes of arrays:
+Using our example trie from above, instead of a node pointing to an array of nodes:
 
     root -> [a -> [p -> [p -> [l -> [e]], e -> [s]]]]
-we could say a node is a map of breadth-level letters pointing to other maps.
+we could say a node is a map of breadth-level values pointing to other nodes.
 
         {a,    b,  m}    - 1 map
          |     |   |
@@ -60,10 +60,10 @@ to do away with a root node entirely, and provides O(1) access to a node's child
 It's also extremely recursion friendly.
 
 ### The c0d3
-I generally like to figure out how I'm going to use code before actually writing it.
-Finding the interface to structures and algorithms tends to help drive their implementation.
 Before we can search our trie, we have to populate it. How should we do that? 
-A simple way is to add a word at a time:
+Let's figure out how the code is going to be used before actually writing it.
+Finding the interface to structures and algorithms tends to help drive their implementation.
+One way to build a trie is to add a word at a time:
 
     trie =
       Trie.new()
@@ -73,7 +73,7 @@ A simple way is to add a word at a time:
       |> Trie.insert("monkey")
       |> Trie.insert("monks")
 
-I like it. Let's go over those two functions in the `Trie` module.
+I like it. Let's go over those two functions in the `Trie` module, `new` and `insert`:
 
     defmodule Trie do
       def new, do: %{}
@@ -86,8 +86,8 @@ There's our root node; a humble empty map. Now for the easy function:
     end
 
 Our interface function breaks up the word string into a list of Unicode graphemes
-before passing it to the workhorse. *Aside: a grapheme is essentially a character.
-It can consist of multiple code points.*
+before passing it to the workhorse. If you've never heard of a grapheme, you're not alone.
+It's essentially a character, and it can consist of multiple code points.
 
     defp insert_graphemes(trie, [grapheme | rest]) do
       subtrie =
@@ -99,18 +99,18 @@ It can consist of multiple code points.*
 
     defp insert_graphemes(trie, []), do: trie
 
-This recursion can be a little mind bending for the uninitiated. Let's take `"apple"` as our word, so the
-grapheme list is `["a", "p", "p", "l", "e"]`. On first application, the `"a"` is
+This recursion can be a little mind bending for the uninitiated. Let's take `"apple"` as our word;
+this makes the grapheme list `["a", "p", "p", "l", "e"]`. On first application, the `"a"` is
 split from the list. Next, the trie is accessed to see if `"a"` has a map of children
 (it doesn't yet). An empty map is returned as default, and the `rest` of the graphemes
 are inserted into this map recursively, with the process starting again for `"p"`. 
-Finally, this `subtrie` is inserted into the trie under the `"a"` key. 
+Finally, this `subtrie` is inserted into the trie under the `"a"` key where it all began.
 
-Let's explain the base case when the second argument is an empty list.
+Let's understand the base case when the second argument is an empty list.
 The `grapheme` will be `"e"` and `rest` will be `[]`. At this point, the `trie` is 
-still an empty hash since this function has yet to return and resolve the recursion.
-Therefore, when the base case is reached, the empty map is returned and bound to
-the `subtrie` and `"e"` ends up pointing to this empty map. Here's a visual of
+still an empty hash since this entire function has yet to return and resolve the recursion.
+Therefore, when the base case is reached, the empty map is returned, bound to
+the `subtrie`, and `"e"` ends up pointing to this empty map. Here's a visual of
 the callstack and final data:
 
     insert_graphemes(%{}, ["a" | ["p", "p", "l", "e"]])
@@ -135,8 +135,8 @@ will be recursively inserted into it with the resulting trie being:
     }
 
 Beautiful! We've implemented our interface and constructed a trie! Now what do we
-do with it? It depends on your use case. For simplicity, we'll use it as a potty
-mouth catcher. Maybe we are running a chat server and want to filter out swear words
+do with it? Let's use it as a potty mouth catcher. Maybe we are running a chat
+server and want to filter out swear words
 and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie.
 
     Trie.exists?(bad_words, "$h1t") => true
@@ -149,20 +149,20 @@ and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie
 
 Once again, break the word into graphemes first.
 
-    defp search_graphemes(trie, [grapheme | rest]) do
-      search_graphemes(trie[grapheme], rest)
-    end
-
+    defp search_graphemes(trie, [grapheme | rest]), do: search_graphemes(trie[grapheme], rest)
     defp search_graphemes(trie, []) when trie == %{}, do: true
     defp search_graphemes(_, _), do: false
 
 Oh man, Elixir is slick. One line for each method thanks to function signature pattern matching.
-We take the first character and access its subtrie. Rinse and repeat for the rest
-of the characters in the word. If the full word matches then we'll end up with an
+We take the first grapheme and access its subtrie. Rinse and repeat for the rest
+of the graphemes in the word. If the full word matches, then we'll end up with an
 empty map and empty list and return true all the way up the callstack (except we have no
 callstack because our tail calls are optimized! *sick*). Otherwise, after the graphemes
 run out and the trie is not exhausted, we return false because it's not an exact match.
+And that's how you search a trie for our use case!
 
 ### Final Summation
 I was surpised how succinctly a trie can be constructed and searched when implemented
-with recursion.
+with recursion. Don't be intimidated by the arcane data structures that FAANG companies
+expect you to know by heart. Some of them serve niche practical use cases, but at
+the end of the day, they are just neat ways to store values.
