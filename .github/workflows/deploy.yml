@@ -46,5 +46,5 @@ jobs:
             git pull origin master
             docker-compose -f super-perfundo-prod-compose.yml stop
             docker-compose -f super-perfundo-prod-compose.yml rm
-            docker rmi registry.digitalocean.com/super-perfundo/super-perfundo:prod
+            docker rmi -f registry.digitalocean.com/super-perfundo/super-perfundo:prod
             docker-compose -f super-perfundo-prod-compose.yml up -d
