@@ -11,8 +11,8 @@ How to construct and search a trie recursively in Elixir.
 #### ...does it raise an exception?
 
 A trie is one of those fancy data structures you may have heard peers at
-work throw around in discourse at the coffee machine. Or maybe you're interviewing at a FAANG.
-Or you stumbled on it on LeetCode.
+work throw around in discourse at the coffee machine.
+Or maybe you're interviewing at a FAANG. Or you like LeetCode.
 Regardless, there's no need to feel intimidated; a trie is just a tree!
 I love how easy that is to remember. I've also seen it
 pronounced as "try", but I like the other origin
@@ -128,21 +128,21 @@ the callstack and final data:
 When we insert "apes" next, `"a"` now points to a map, and "pes"
 will be recursively inserted into it with the resulting trie being:
 
-    bad_words =
-      %{"a" =>
-        %{"p" =>
-          %{
-            "p" => %{"l" => %{"e" => %{}}},
-            "e" => %{"s" => %{}}
-          },
-        }
+    %{"a" =>
+      %{"p" =>
+        %{
+          "p" => %{"l" => %{"e" => %{}}},
+          "e" => %{"s" => %{}}
+        },
       }
+    }
 
 Beautiful! We've implemented our interface and constructed a trie! Now what do we
 do with it? Let's use it as a potty mouth catcher. Maybe we are running a chat
 server and want to filter out swear words
 and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie.
 
+    bad_words = %{"$" => %{"h" => %{"1" => %{"t" => %{}}}}}
     Trie.exists?(bad_words, "$h1t") => true
 
 **GASP!** I knew it. But how does it work?
