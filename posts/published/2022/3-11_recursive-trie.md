@@ -7,6 +7,9 @@ elixir, trie, data-structures, algorithms, recursion
 ==description==
 How to construct and search a trie recursively in Elixir.
 
+==image==
+og-image_recursive-trie.png
+
 ==body==
 #### ...does it raise an exception?
 
