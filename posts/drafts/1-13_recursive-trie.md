@@ -11,8 +11,10 @@ How to construct and search a trie recursively in Elixir.
 #### ...does it raise an exception?
 
 A trie is one of those fancy data structures you may have heard peers at
-work throw around in discourse at the coffee machine. No need to feel intimidated;
-it's just a tree! I love how easy that is to remember. I've seen it
+work throw around in discourse at the coffee machine.
+Or maybe you're interviewing at a FAANG. Or you like LeetCode.
+Regardless, there's no need to feel intimidated; a trie is just a tree!
+I love how easy that is to remember. I've also seen it
 pronounced as "try", but I like the other origin
 better: a tree used for fast re**trie**val. The most popular use case I've seen for it
 is to compare similar strings. For example: spell checking, auto-completion, or
@@ -57,7 +59,8 @@ we could say a node is a map of breadth-level values pointing to other nodes.
 Essentially, when a letter branches, it points to a single map with the keys
 being all child letters and their values being more maps. This actually allows us
 to do away with a root node entirely, and provides O(1) access to a node's children.
-It's also extremely recursion friendly.
+It's also extremely recursion friendly. And so is Elixir, which is what we're going
+to use to build this bad boy.
 
 ### The c0d3
 Before we can search our trie, we have to populate it. How should we do that? 
@@ -125,12 +128,12 @@ the callstack and final data:
 When we insert "apes" next, `"a"` now points to a map, and "pes"
 will be recursively inserted into it with the resulting trie being:
 
-    %{"a" => 
-      %{"p" => 
+    %{"a" =>
+      %{"p" =>
         %{
-          "p" => %{"l" => %{"e" => %{}}}, 
+          "p" => %{"l" => %{"e" => %{}}},
           "e" => %{"s" => %{}}
-        }, 
+        },
       }
     }
 
@@ -139,6 +142,7 @@ do with it? Let's use it as a potty mouth catcher. Maybe we are running a chat
 server and want to filter out swear words
 and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie.
 
+    bad_words = %{"$" => %{"h" => %{"1" => %{"t" => %{}}}}}
     Trie.exists?(bad_words, "$h1t") => true
 
 **GASP!** I knew it. But how does it work?
