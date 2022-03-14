@@ -8,6 +8,7 @@
     <meta property="og:title" content="<%= og_title(assigns) %>">
     <meta property="og:description" content="<%= og_description(assigns) %>">
     <meta property="og:image" content="<%= og_image(assigns) %>">
+    <meta name="twitter:image" content="<%= og_image(assigns) %>">
     <meta property="og:url" content="<%= Routes.blog_url(@conn, :show, post_id(assigns)) %>">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_US">
