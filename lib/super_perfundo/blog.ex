@@ -33,6 +33,8 @@ defmodule SuperPerfundo.Blog do
     for post <- @posts, tag in post.tags, do: post
   end
 
+  def list_drafts, do: @drafts
+
   def get_post(id), do: get_article(@posts, id)
 
   def get_draft(id), do: get_article(@drafts, id)

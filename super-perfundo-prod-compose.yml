@@ -5,9 +5,12 @@ services:
     restart: always
     image: registry.digitalocean.com/super-perfundo/super-perfundo:prod
     environment:
-      - HOST=chess-crunch.com
+      - HOST=superperfundo.tech
       - PORT=80
       - SECRET_KEY_BASE=$SECRET_KEY_BASE
+      - SENDGRID_API_KEY=$SENDGRID_API_KEY
+      - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
       - VIRTUAL_HOST=www.superperfundo.tech,superperfundo.tech
-      - LETSENCRYPT_HOST=www.superperfundo.com,superperfundo.tech
+      - LETSENCRYPT_HOST=www.superperfundo.tech,superperfundo.tech
 
