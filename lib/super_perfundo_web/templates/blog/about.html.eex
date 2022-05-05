@@ -4,7 +4,10 @@
   <h4>Fun places:</h3>
   <ul>
     <li>
-      <%= link("github.com/bahelms", to: "https://www.github.com/bahelms", target: "_blank") %>
+      <%= link("GitHub", to: "https://www.github.com/bahelms", target: "_blank") %>
+    </li>
+    <li>
+      <%= link("Twitter", to: "https://www.twitter.com/bahelms1", target: "_blank") %>
     </li>
   </ul>
 </section>

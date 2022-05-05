@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>New SuperPerfundo.Tech Article</title>
-    <link rel="stylesheet" href="<%= Routes.static_path(SuperPerfundoWeb.Endpoint, "/css/app.css") %>"/>
+    <link rel="stylesheet" href="<%= Routes.static_url(SuperPerfundoWeb.Endpoint, "/css/app.css") %>"/>
   </head>
 
   <body id="email">
@@ -12,8 +12,8 @@
       <h1>
         <%= link(@post.title, to: Routes.blog_url(SuperPerfundoWeb.Endpoint, :show, @post.id)) %>
       </h1>
-      <p><strong>Published: <%= format_date(@post) %></strong></p>
       <p><%= @post.description %></p>
+      <p><strong>Published: <%= format_date(@post) %></strong></p>
     </section>
     <hr />
     <div id="unsub">
