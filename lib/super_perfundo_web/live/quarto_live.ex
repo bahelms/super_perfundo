@@ -50,6 +50,10 @@ defmodule SuperPerfundoWeb.QuartoLive do
     end
   end
 
+  def handle_info(:ai_start, socket = %{assigns: %{active_piece: nil}}) do
+    {:noreply, assign(socket, active_piece: AI.choose_next_piece(), active_player: :user)}
+  end
+
   def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
     {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
     board = Board.set_piece(board, piece, position)

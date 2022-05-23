@@ -100,6 +100,8 @@ defmodule SuperPerfundo.Quarto.Board do
     MapSet.difference(@all_pieces_set, used_pieces)
   end
 
+  def all_pieces_set, do: @all_pieces_set
+
   defp current_pieces_set(board) do
     for position <- 0..15,
         piece = elem(board, position),
