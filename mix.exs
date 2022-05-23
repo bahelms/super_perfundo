@@ -48,7 +48,8 @@ defmodule SuperPerfundo.MixProject do
       {:hackney, "~> 1.16"},
       {:sweet_xml, "~> 0.6"},
       {:bamboo, "~> 1.4"},
-      {:floki, "~> 0.27.0", only: :test}
+      {:floki, "~> 0.27.0", only: :test},
+      {:rustler, "~> 0.25.0"}
     ]
   end
 end
