@@ -25,7 +25,7 @@ should be more performant when crunching the numbers (aka annihilating you). Als
 I like Rust and this is my blog. So there.
 
 ### Step 1: Moving the dumb AI into Rust
-Now that we've put on our Architect hat and chosen Rust, we need to change our current
+Now that we've put on our Architect hats and chosen Rust, we need to change our current
 implementation to use it. That way we can iron out the interface between the two
 languages and then focus on rewriting the rando AI into a crushing AI. [Rustler](https://github.com/rusterlium/rustler)
 is the de facto way to embed Rust into Elixir as native implemented functions (NIFs).
@@ -33,8 +33,6 @@ is the de facto way to embed Rust into Elixir as native implemented functions (N
 Setting up a Rust NIF is trivial: `mix rustler.new --name quarto_ai`. This creates a new `native/quarto_ai/`
 directory containing a [Cargo](https://doc.rust-lang.org/cargo/) project with an example NIF. Let's set it up to be a
 replacement for the existing AI function. The format is fairly easy to follow:
-
-
 
     #[rustler::nif]
     fn choose_position_and_next_piece(board: SomeType, active_piece: SomeType) -> SomeType {
@@ -59,9 +57,78 @@ also rip out the rando AI and replace it with a default implementation in the ev
         do: :erlang.nif_error(:nif_not_loaded)
     end
 
-Next, we translate the old logic from Elixir to Rust. Which is easy if you already
-know both languages. :D
+Since NIFs are just functions wrapped in an Elixir module,
+we can test them normally with `mix test`. Our function returns a tuple of integers
+representing the position on the board the AI placed the active piece and the next piece
+chosen for the player to place. We can test this like so (remember the return values are random):
 
-Unfortunately, the documentation is lacking so it took some fiddling to figure
+    test "an index of the board is returned" do
+      board = {nil, nil, 8, nil}
+      {position, _piece} = AI.choose_position_and_next_piece(board, 10)
+      assert position >= 0 && position < tuple_size(board)
+    end
+
+We're representing the board as a tuple of integers (pieces) or nil (no piece).
+Passing integers into the NIF is straightforward; they map to `i32`. However,
+I was unsure how to handle the tuple. And `nil`. Unfortunately, the Rustler
+documentation is lacking so it took some digging and experimentation to figure out
+the correct types to use. The working signature:
+
+    fn choose_position_and_next_piece(board: rustler::Term, active_piece: i32) -> (usize, i32)
+
+`Term` is a Rustler type that covers all Elixir terms, meaning any type. In order
+to use the board, convert the `Term` into a vector of terms with `get_tuple`, which returns a `Result`:
+
+    use rustler::types::tuple::get_tuple;
+    let positions = get_tuple(board).expect("Error getting board tuple.");
+
+All that's left is to translate the old logic from Elixir to Rust. Which is easy if you already
+know both languages. :D. First, collect all the empty positions and played pieces in one swoop:
+
+    let mut empty_positions = Vec::new();
+    let mut current_pieces = HashSet::from([active_piece]);
+    for (idx, pos) in positions.iter().enumerate() {
+        // Board elements are either nil or an integer.
+        // In Elixir, nil is an atom.
+        // Otherwise, decode the Term into an i32.
+        if pos.is_atom() {
+            empty_positions.push(idx);
+        } else {
+            current_pieces.insert(pos.decode().expect("Position isn't an i32"));
+        }
+    }
+
+Pick one of the empty positions at random:
+
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
+    let index: usize = rng.gen_range(0..empty_positions.len());
+    let chosen_position = empty_positions[index];
+
+Choose one of the remaining pieces at random:
+
+    let all_pieces: HashSet<i32> = (0..16).collect();
+    let remaining_pieces: Vec<&i32> = all_pieces.difference(&current_pieces).collect();
+    let random_piece_idx: usize = rng.gen_range(0..remaining_pieces.len());
+    let chosen_piece = *remaining_pieces[random_piece_idx];
+
+Make the player wait so they think they are facing a super intelligent opponent and
+may be defeated at any moment:
+
+    let one_second = time::Duration::from_secs(1);
+    thread::sleep(one_second);
+
+And finally return the results as a tuple of type `(usize, i32)`:
+
+    // usize is the default type of indexes in Rust
+    // it's an unsigned integer the size of the computer architecture's word (32 or 64)
+    (chosen_position, chosen_piece)
+
+We have done it! What a sweet refactoring. Now how the hell do we make this thing
+take over the world?
 
 ### Step 2: Creating a smart AI
+This is where the real fun begins. The glue code is done and we need to make our
+AI actually think!
+
+
