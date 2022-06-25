@@ -1,6 +1,8 @@
 mod game;
-mod monte_carlo_tree_search;
+mod mcts;
 
+use game::{new_board, Board, GameState};
+use mcts::Agent;
 use rand::Rng;
 use rustler::{types::tuple::get_tuple, Term};
 use std::collections::HashSet;
@@ -20,6 +22,30 @@ use std::{thread, time};
 // * Once limit is reached, select the child node of the root that has the highest win rate
 //
 // rustler does not support generics currently
+fn spike_choose_position_and_next_piece(board: Term, active_piece: i32) -> (usize, i32) {
+    let board = convert_term_to_board(board);
+    let game = GameState::new(board, active_piece, "agent");
+    let agent = Agent::new(500, 1.4);
+    // let selected_move = agent.select_move(game);
+    // (selected_move.position, selected_move.next_piece)
+    (0, 0)
+}
+
+fn convert_term_to_board(board: Term) -> Board {
+    let positions = get_tuple(board).expect("Error getting board tuple.");
+    let mut board = new_board();
+    for (i, pos) in positions.iter().enumerate() {
+        // board elements are either nil or an int.
+        // nil comes in as an atom here.
+        if pos.is_atom() {
+            board[i] = None;
+        } else {
+            board[i] = pos.decode().expect("Position isn't an i32");
+        }
+    }
+    board
+}
+
 #[rustler::nif]
 fn choose_position_and_next_piece(board: Term, active_piece: i32) -> (usize, i32) {
     let positions = get_tuple(board).expect("Error getting board tuple.");
