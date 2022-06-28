@@ -1,5 +1,5 @@
 ==title==
-Quarto, pt. 2: The AI
+Quarto, pt. 2.1: The AI
 
 ==tags==
 elixir, rust, ai, games
@@ -9,7 +9,7 @@ Creating an artificial intelligence to be fight you in Quarto. It's more fun whe
 opponent isn't randomly moving. Brought to you by Rust.
 
 ==image==
-trie.png
+rusty-engine.jpg
 
 ==body==
 Now where were we? I think I need to read part 1 again to see what happened.
@@ -24,7 +24,7 @@ I've decided to code it in [Rust](https://www.rust-lang.org/). It's a lot closer
 should be more performant when crunching the numbers (aka annihilating you). Also,
 I like Rust and this is my blog. So there.
 
-### Step 1: Moving the dumb AI into Rust
+### Step 1: Moving our dumb AI into Rust
 Now that we've put on our Architect hats and chosen Rust, we need to change our current
 implementation to use it. That way we can iron out the interface between the two
 languages and then focus on rewriting the rando AI into a crushing AI. [Rustler](https://github.com/rusterlium/rustler)
@@ -125,10 +125,5 @@ And finally return the results as a tuple of type `(usize, i32)`:
     (chosen_position, chosen_piece)
 
 We have done it! What a sweet refactoring. Now how the hell do we make this thing
-take over the world?
-
-### Step 2: Creating a smart AI
-This is where the real fun begins. The glue code is done and we need to make our
-AI actually think!
-
-
+take over the world? Well, that's gonna be a lot of work it turns out. Let's be lazy
+and push that to [Part 2.2!](/) (not finished yet!)
