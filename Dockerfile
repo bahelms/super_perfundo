@@ -1,5 +1,5 @@
-FROM bitwalker/alpine-elixir-phoenix:1.11.4 as builder
 FROM rust:1-slim as rust
+FROM bitwalker/alpine-elixir-phoenix:1.11.4 as builder
 
 WORKDIR /app
 ENV MIX_ENV=prod \
