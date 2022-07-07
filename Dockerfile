@@ -1,20 +1,33 @@
 FROM bitwalker/alpine-elixir-phoenix:1.11.4 as builder
 
-WORKDIR /app
+# install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH $HOME.cargo/bin:$PATH
+ENV RUSTFLAGS="-C target-feature=-crt-static"
+
+# build app
 ENV MIX_ENV=prod
 
-ADD mix.exs mix.lock ./
+WORKDIR /app
+
+COPY mix.exs mix.lock ./
 RUN mix do deps.get --only prod, deps.compile
 
-ADD assets/package.json assets/package-lock.json assets/
-RUN cd assets && npm install
+COPY assets assets
+RUN cd assets && npm install && npm run deploy
 
-ADD . .
-RUN cd assets && npm run deploy && cd - && mix do compile, phx.digest
+COPY . .
+RUN mix do compile, phx.digest
 RUN mix release
 
 
+# start app
 FROM bitwalker/alpine-elixir:1.11.4
+
+# install runtime deps for Rust
+RUN apk update --no-cache && \
+    apk add --no-cache \
+    libgcc
 
 EXPOSE 80
 ENV PORT=80 MIX_ENV=prod
