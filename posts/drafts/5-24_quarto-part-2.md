@@ -2,7 +2,7 @@
 Quarto, pt. 2.1: The AI
 
 ==tags==
-elixir, rust, ai, games
+elixir, rust, ai, games, quarto
 
 ==description==
 Creating an artificial intelligence to fight you in Quarto. It's more fun when your
