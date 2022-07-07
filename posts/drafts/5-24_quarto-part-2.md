@@ -5,7 +5,7 @@ Quarto, pt. 2.1: The AI
 elixir, rust, ai, games
 
 ==description==
-Creating an artificial intelligence to be fight you in Quarto. It's more fun when your
+Creating an artificial intelligence to fight you in Quarto. It's more fun when your
 opponent isn't randomly moving. Brought to you by Rust.
 
 ==image==
