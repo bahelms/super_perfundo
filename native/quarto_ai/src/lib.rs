@@ -22,13 +22,12 @@ use std::{thread, time};
 // * Once limit is reached, select the child node of the root that has the highest win rate
 //
 // rustler does not support generics currently
-fn spike_choose_position_and_next_piece(board: Term, active_piece: i32) -> (usize, i32) {
+fn spike_choose_position_and_next_piece(board: Term, active_piece: i32) -> (i32, i32) {
     let board = convert_term_to_board(board);
     let game = GameState::new(board, active_piece, "agent");
     let agent = Agent::new(500, 1.4);
-    // let selected_move = agent.select_move(game);
-    // (selected_move.position, selected_move.next_piece)
-    (0, 0)
+    let selected_move = agent.select_move(game);
+    (selected_move.position, selected_move.next_piece)
 }
 
 fn convert_term_to_board(board: Term) -> Board {
