@@ -300,7 +300,7 @@ and allows developers to avoid having to deal with a separate frontend. I certai
 would rather be playing with the BEAM over JavaScript any day. I highly recommend
 you give it a spin if you haven't already. 
 
-In the next post, I'll go over writing a true AI for playing Quarto. It'll be an
+In the [next post](/articles/quarto-part-2.1), I'll go over writing a true AI for playing Quarto. It'll be an
 excuse to use Rust, which I've been wanting to do lately. I think this will be a
 good use case for it since speed and large computations will be necessary to make
 a strong AI and still maintain a playable game. I've also been considering adding
