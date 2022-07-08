@@ -20,9 +20,9 @@ const MATCH_POSITIONS: [[usize; 4]; 10] = [
 
 #[derive(Debug, PartialEq)]
 pub struct Move {
-    position: Position,
-    piece: Piece,
-    next_piece: Piece,
+    pub position: Position,
+    pub piece: Piece,
+    pub next_piece: Piece,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -74,9 +74,12 @@ impl GameState {
         legal_moves
     }
 
-    // pub fn apply_move(&self, next_move: Move) -> Self {
-    //     self.clone()
-    // }
+    pub fn apply_move(&self, the_move: &Move) -> Self {
+        let mut next_board = self.board.clone();
+        next_board[the_move.position as usize] = Some(the_move.piece);
+        // should this be current player or the opposite?
+        GameState::new(next_board, the_move.next_piece, self.current_player)
+    }
 }
 
 pub fn new_board() -> Board {
@@ -137,6 +140,20 @@ fn any_matches(left: Option<Piece>, right: Option<Piece>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn apply_move_returns_updated_game_state() {
+        let state = GameState::new(new_board(), 0, "player");
+        let new_move = Move {
+            position: 1,
+            piece: 2,
+            next_piece: 8,
+        };
+        let new_state = state.apply_move(&new_move);
+        assert_eq!(new_state.board[1].unwrap(), 2);
+        assert_eq!(new_state.active_piece, 8);
+        assert_ne!(new_state.board, state.board);
+    }
 
     #[test]
     fn is_over_is_true_when_the_board_is_full() {
@@ -251,16 +268,4 @@ mod tests {
         board[3] = Some(4);
         assert_eq!(four_in_a_row(&board), false);
     }
-
-    //     #[test]
-    //     fn apply_move_returns_updated_game_state() {
-    //         let state = GameState::new(new_board(), 0);
-    //         let new_move = Move {
-    //             position: 1,
-    //             piece: 2,
-    //             next_piece: 8,
-    //         };
-    //         let new_state = state.apply_move(new_move);
-    //         assert_ne!(new_state.board, state);
-    //     }
 }
