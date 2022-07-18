@@ -56,12 +56,11 @@ impl Node {
         self.num_rollouts += 1;
     }
 
-    pub fn add_random_child(&mut self) -> &Node {
+    pub fn add_random_child(&mut self) {
         let next_move = self.random_legal_move();
         let new_game_state = self.game_state.apply_move(&next_move);
         let new_node = Node::new(new_game_state);
         self.children.push(new_node);
-        &self.children.last().unwrap()
     }
 }
 
@@ -86,7 +85,7 @@ mod tests {
     #[test]
     fn add_random_child_adds_new_node_to_tree() {
         let mut root = Node::new(setup());
-        let new_child = root.add_random_child();
+        root.add_random_child();
         assert_eq!(root.children.len(), 1);
     }
 

@@ -1,5 +1,5 @@
 use super::Node;
-use crate::game::{GameState, Move};
+use crate::game::{GameState, Move, Player};
 
 // Monte Carlo Tree Search executor
 pub struct Agent {
@@ -16,7 +16,7 @@ impl Agent {
     }
 
     pub fn select_move(&self, game: GameState) -> Move {
-        let root = Node::new(game);
+        let mut root = Node::new(game);
 
         // for i in range(self.num_rounds):
         //     node = root
@@ -37,17 +37,17 @@ impl Agent {
         //
         // run rounds
         for round in 0..self.num_rounds {
-            // let mut node = root.clone();
-            // while !node.can_add_child() && !node.is_terminal() {
-            //     node = self
-            //         .select_child(node)
-            //         .expect("A selected child was not found");
+            let node = &mut root;
+            while !node.can_add_child() && !node.is_terminal() {
+                let child = &mut self
+                    .select_child(node)
+                    .expect("A selected child was not found");
 
-            //     // Add a new child node into the tree.
-            //     if node.can_add_child() {
-            //         // node = node.add_random_child();
-            //     }
-            // }
+                // Add a new child node into the tree.
+                if child.can_add_child() {
+                    child.add_random_child();
+                }
+            }
         }
 
         Move {
@@ -58,7 +58,7 @@ impl Agent {
     }
 
     // Selecte node with highest UCT score.
-    pub fn select_child<'a>(&self, node: &'a Node) -> Option<&'a Node> {
+    pub fn select_child<'a>(&self, node: &'a mut Node) -> Option<&'a mut Node> {
         let mut total_rollouts = 0.0;
         for child in &node.children {
             total_rollouts += child.num_rollouts as f64;
@@ -66,7 +66,7 @@ impl Agent {
 
         let mut best_score = -1.0;
         let mut best_child = None;
-        for child in &node.children {
+        for child in &mut node.children {
             let win_percentage = child.winning_fraction(node.game_state.current_player);
             let exploration_factor = (total_rollouts.log10() / child.num_rollouts as f64).sqrt();
             let uct_score = win_percentage + self.temperature * exploration_factor;
@@ -78,6 +78,18 @@ impl Agent {
 
         best_child
     }
+
+    fn simulate_random_game(&self, game: &GameState) -> Player {
+        // bots = {
+        //     Player.black: agent.FastRandomBot(),
+        //     Player.white: agent.FastRandomBot(),
+        // }
+        // while not game.is_over():
+        //     bot_move = bots[game.next_player].select_move(game)
+        //     game = game.apply_move(bot_move)
+        // return game.winner()
+        "agent"
+    }
 }
 
 #[cfg(test)]
@@ -86,6 +98,18 @@ mod tests {
     use super::*;
     use crate::game::{new_board, GameState};
     use std::collections::HashMap;
+
+    #[test]
+    fn simulate_random_game_returns_the_winning_player() {
+        let mut board = new_board();
+        board[1] = Some(1);
+        board[2] = Some(2);
+        board[3] = Some(3);
+        let game = GameState::new(board, 0, "agent");
+        let agent = Agent::new(5, 1.0);
+
+        assert_eq!(agent.simulate_random_game(&game), "agent");
+    }
 
     #[test]
     fn select_child_works() {
@@ -107,8 +131,8 @@ mod tests {
         node.children = vec![child_one, child_two, child_three];
 
         let agent = Agent::new(5, 1.0);
-        let expected_child = node.children.last().unwrap();
-        assert_eq!(agent.select_child(&node).unwrap(), expected_child);
+        let child = agent.select_child(&mut node).unwrap();
+        assert_eq!(child.num_rollouts, 3);
     }
 
     #[test]

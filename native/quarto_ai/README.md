@@ -18,3 +18,7 @@ end
 ## Examples
 
 [This](https://github.com/hansihe/NifIo) is a complete example of a NIF written in Rust.
+
+## Todo
+- Refactor GameState.current_player to be an enum:
+    - `Player::Agent` and `Player::Opponent`

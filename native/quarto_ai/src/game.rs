@@ -3,6 +3,7 @@ use std::collections::HashSet;
 type Piece = i32;
 type Position = i32;
 pub type Board = [Option<Piece>; 16];
+pub type Player = &'static str;
 
 const TWOS_COMPLIMENT_BITMASK: i32 = 0b1111;
 const MATCH_POSITIONS: [[usize; 4]; 10] = [
@@ -77,8 +78,15 @@ impl GameState {
     pub fn apply_move(&self, the_move: &Move) -> Self {
         let mut next_board = self.board.clone();
         next_board[the_move.position as usize] = Some(the_move.piece);
-        // should this be current player or the opposite?
-        GameState::new(next_board, the_move.next_piece, self.current_player)
+        GameState::new(next_board, the_move.next_piece, self.next_player())
+    }
+
+    fn next_player(&self) -> Player {
+        match self.current_player {
+            "agent" => "player",
+            "player" => "agent",
+            &_ => panic!("Current player is unsupported {}", self.current_player),
+        }
     }
 }
 
@@ -152,6 +160,7 @@ mod tests {
         let new_state = state.apply_move(&new_move);
         assert_eq!(new_state.board[1].unwrap(), 2);
         assert_eq!(new_state.active_piece, 8);
+        assert_eq!(new_state.current_player, "agent");
         assert_ne!(new_state.board, state.board);
     }
 
