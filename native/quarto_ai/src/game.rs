@@ -19,7 +19,7 @@ const MATCH_POSITIONS: [[usize; 4]; 10] = [
     [3, 6, 9, 12],
 ];
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Move {
     pub position: Position,
     pub piece: Piece,
@@ -88,6 +88,16 @@ impl GameState {
             &_ => panic!("Current player is unsupported {}", self.current_player),
         }
     }
+
+    pub fn winner(&self) -> Option<Player> {
+        if !self.is_over() {
+            return None;
+        }
+        if four_in_a_row(&self.board) {
+            return Some(self.current_player);
+        }
+        None
+    }
 }
 
 pub fn new_board() -> Board {
@@ -148,6 +158,46 @@ fn any_matches(left: Option<Piece>, right: Option<Piece>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn draw_board() -> Board {
+        [
+            Some(7),  // 0111
+            Some(8),  // 1000
+            Some(5),  // 0101
+            Some(10), // 1010
+            Some(12), // 1100
+            Some(3),  // 0011
+            Some(14), // 1110
+            Some(1),  // 0001
+            Some(15), // 1111
+            Some(13), // 1101
+            Some(9),  // 1001
+            Some(6),  // 0110
+            Some(2),  // 0010
+            Some(11), // 1011
+            Some(4),  // 0100
+            Some(0),  // 0001
+        ]
+    }
+
+    #[test]
+    fn game_winner_is_none_when_neither_side_has_won() {
+        let state = GameState::new(draw_board(), 0, "player");
+        assert_eq!(state.winner(), None);
+    }
+
+    #[test]
+    fn game_winner_is_current_player_with_four_in_a_row() {
+        let board = [Some(0); 16];
+        let state = GameState::new(board, 0, "player");
+        assert_eq!(state.winner().unwrap(), "player");
+    }
+
+    #[test]
+    fn game_winner_returns_none_when_game_is_not_over() {
+        let state = GameState::new(new_board(), 0, "player");
+        assert_eq!(state.winner(), None);
+    }
 
     #[test]
     fn apply_move_returns_updated_game_state() {
@@ -276,5 +326,16 @@ mod tests {
         board[2] = Some(9);
         board[3] = Some(4);
         assert_eq!(four_in_a_row(&board), false);
+    }
+
+    #[test]
+    fn four_in_a_row_returns_false_when_four_pieces_do_not_match() {
+        let board = new_board();
+        assert_eq!(four_in_a_row(&board), false)
+    }
+
+    #[test]
+    fn four_in_a_row_returns_false_for_a_draw_board() {
+        assert_eq!(four_in_a_row(&draw_board()), false);
     }
 }

@@ -1,5 +1,6 @@
 use super::Node;
 use crate::game::{GameState, Move, Player};
+use rand::Rng;
 
 // Monte Carlo Tree Search executor
 pub struct Agent {
@@ -16,7 +17,7 @@ impl Agent {
     }
 
     pub fn select_move(&self, game: GameState) -> Move {
-        let mut root = Node::new(game);
+        let root = Node::new(game);
 
         // for i in range(self.num_rounds):
         //     node = root
@@ -36,17 +37,17 @@ impl Agent {
         //         node = node.parent
         //
         // run rounds
-        for round in 0..self.num_rounds {
-            let node = &mut root;
+        for _round in 0..self.num_rounds {
+            let mut node = root.clone();
             while !node.can_add_child() && !node.is_terminal() {
                 let child = &mut self
-                    .select_child(node)
+                    .select_child(&mut node)
                     .expect("A selected child was not found");
+            }
 
-                // Add a new child node into the tree.
-                if child.can_add_child() {
-                    child.add_random_child();
-                }
+            // Add a new child node into the tree.
+            if child.can_add_child() {
+                child.add_random_child();
             }
         }
 
@@ -79,16 +80,20 @@ impl Agent {
         best_child
     }
 
-    fn simulate_random_game(&self, game: &GameState) -> Player {
-        // bots = {
-        //     Player.black: agent.FastRandomBot(),
-        //     Player.white: agent.FastRandomBot(),
-        // }
-        // while not game.is_over():
-        //     bot_move = bots[game.next_player].select_move(game)
-        //     game = game.apply_move(bot_move)
-        // return game.winner()
-        "agent"
+    fn simulate_random_game(&self, game: &GameState) -> Option<Player> {
+        let mut current_game = game.clone();
+        while !current_game.is_over() {
+            let next_move = self.select_random_move(game);
+            current_game = current_game.apply_move(&next_move);
+        }
+        current_game.winner()
+    }
+
+    fn select_random_move(&self, game: &GameState) -> Move {
+        let mut rng = rand::thread_rng();
+        let legal_moves = game.legal_moves();
+        let index: usize = rng.gen_range(0..legal_moves.len());
+        legal_moves[index].clone()
     }
 }
 
@@ -108,7 +113,7 @@ mod tests {
         let game = GameState::new(board, 0, "agent");
         let agent = Agent::new(5, 1.0);
 
-        assert_eq!(agent.simulate_random_game(&game), "agent");
+        assert!(agent.simulate_random_game(&game).is_some());
     }
 
     #[test]

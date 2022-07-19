@@ -3,7 +3,7 @@ use rand::Rng;
 use std::collections::HashMap;
 
 // Monte Carlo Tree Node
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Node {
     pub game_state: GameState,
     pub children: Vec<Node>,
@@ -28,6 +28,7 @@ impl Node {
             win_counts,
         }
     }
+
     fn random_legal_move(&mut self) -> Move {
         let mut rng = rand::thread_rng();
         let index: usize = rng.gen_range(0..self.unvisited_moves.len());
