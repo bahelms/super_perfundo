@@ -1,10 +1,24 @@
 use crate::game::{GameState, Move};
 use rand::Rng;
+use std::cell::RefCell;
 use std::collections::HashMap;
+use std::rc::Rc;
+
+pub type Node = Rc<RefCell<NodeData>>;
+
+pub trait NodeBuilder {
+    fn new(game_state: GameState) -> Self;
+}
+
+impl NodeBuilder for Node {
+    fn new(game_state: GameState) -> Node {
+        Rc::new(RefCell::new(NodeData::new(game_state)))
+    }
+}
 
 // Monte Carlo Tree Node
 #[derive(Debug, PartialEq, Clone)]
-pub struct Node {
+pub struct NodeData {
     pub game_state: GameState,
     pub children: Vec<Node>,
     pub num_rollouts: i32,
@@ -13,7 +27,7 @@ pub struct Node {
     // pub current_move: Option<Move>,
 }
 
-impl Node {
+impl NodeData {
     pub fn new(game_state: GameState) -> Self {
         let unvisited_moves = game_state.legal_moves();
         let mut win_counts = HashMap::new();
@@ -60,7 +74,7 @@ impl Node {
     pub fn add_random_child(&mut self) {
         let next_move = self.random_legal_move();
         let new_game_state = self.game_state.apply_move(&next_move);
-        let new_node = Node::new(new_game_state);
+        let new_node = NodeBuilder::new(new_game_state);
         self.children.push(new_node);
     }
 }
@@ -85,69 +99,69 @@ mod tests {
 
     #[test]
     fn add_random_child_adds_new_node_to_tree() {
-        let mut root = Node::new(setup());
-        root.add_random_child();
-        assert_eq!(root.children.len(), 1);
+        let root: Node = NodeBuilder::new(setup());
+        root.borrow_mut().add_random_child();
+        assert_eq!(root.borrow().children.len(), 1);
     }
 
     #[test]
     fn new_returns_an_initialized_node() {
-        let node = Node::new(setup());
-        assert_eq!(node.num_rollouts, 0);
-        assert_eq!(node.children, Vec::new());
+        let node: Node = NodeBuilder::new(setup());
+        assert_eq!(node.borrow().num_rollouts, 0);
+        assert_eq!(node.borrow().children, Vec::new());
     }
 
     #[test]
     fn record_win_increments_the_wins_for_player() {
-        let mut root = Node::new(setup());
-        root.record_win("player");
-        root.record_win("player");
-        root.record_win("ai");
-        assert_eq!(root.win_counts.get("player").unwrap(), &2);
-        assert_eq!(root.win_counts.get("ai").unwrap(), &1);
+        let root: Node = NodeBuilder::new(setup());
+        root.borrow_mut().record_win("player");
+        root.borrow_mut().record_win("player");
+        root.borrow_mut().record_win("ai");
+        assert_eq!(root.borrow().win_counts.get("player").unwrap(), &2);
+        assert_eq!(root.borrow().win_counts.get("ai").unwrap(), &1);
     }
 
     #[test]
     fn record_win_increments_the_number_of_rollouts() {
-        let mut root = Node::new(setup());
-        root.record_win("player");
-        root.record_win("player");
-        root.record_win("ai");
-        assert_eq!(root.num_rollouts, 3);
+        let root: Node = NodeBuilder::new(setup());
+        root.borrow_mut().record_win("player");
+        root.borrow_mut().record_win("player");
+        root.borrow_mut().record_win("ai");
+        assert_eq!(root.borrow().num_rollouts, 3);
     }
 
     #[test]
     fn can_add_child_returns_true_with_unvisited_moves() {
-        let root = Node::new(setup());
-        assert!(root.can_add_child());
+        let root: Node = NodeBuilder::new(setup());
+        assert!(root.borrow().can_add_child());
     }
 
     #[test]
     fn can_add_child_returns_false_with_no_unvisited_moves() {
-        let mut root = Node::new(setup());
-        root.unvisited_moves = Vec::new();
-        assert_eq!(root.can_add_child(), false);
+        let root: Node = NodeBuilder::new(setup());
+        root.borrow_mut().unvisited_moves = Vec::new();
+        assert_eq!(root.borrow().can_add_child(), false);
     }
 
     #[test]
     fn is_terminal_returns_true_when_game_is_over() {
-        let root = Node::new(setup_finished_game());
-        assert!(root.is_terminal());
+        let root: Node = NodeBuilder::new(setup_finished_game());
+        assert!(root.borrow().is_terminal());
     }
 
     #[test]
     fn is_terminal_returns_false_when_game_is_not_over() {
-        let root = Node::new(setup());
-        assert_eq!(root.is_terminal(), false);
+        let root: Node = NodeBuilder::new(setup());
+        assert_eq!(root.borrow().is_terminal(), false);
     }
 
     #[test]
     fn winning_fraction_returns_win_percentage_for_given_player() {
-        let mut root = Node::new(setup());
-        root.win_counts.insert("agent", 28);
-        root.win_counts.insert("player", 22);
-        root.num_rollouts = 50;
-        assert_eq!(root.winning_fraction("player"), 0.44);
-        assert_eq!(root.winning_fraction("agent"), 0.56);
+        let root: Node = NodeBuilder::new(setup());
+        root.borrow_mut().win_counts.insert("agent", 28);
+        root.borrow_mut().win_counts.insert("player", 22);
+        root.borrow_mut().num_rollouts = 50;
+        assert_eq!(root.borrow().winning_fraction("player"), 0.44);
+        assert_eq!(root.borrow().winning_fraction("agent"), 0.56);
     }
 }

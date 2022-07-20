@@ -1,4 +1,4 @@
-use super::Node;
+use super::{Node, NodeBuilder};
 use crate::game::{GameState, Move, Player};
 use rand::Rng;
 
@@ -17,38 +17,9 @@ impl Agent {
     }
 
     pub fn select_move(&self, game: GameState) -> Move {
-        let root = Node::new(game);
-
-        // for i in range(self.num_rounds):
-        //     node = root
-        //     while (not node.can_add_child()) and (not node.is_terminal()):
-        //         node = self.select_child(node)
-
-        //     # Add a new child node into the tree.
-        //     if node.can_add_child():
-        //         node = node.add_random_child()
-
-        //     # Simulate a random game from this node.
-        //     winner = self.simulate_random_game(node.game_state)
-
-        //     # Propagate scores back up the tree.
-        //     while node is not None:
-        //         node.record_win(winner)
-        //         node = node.parent
-        //
-        // run rounds
+        let root: Node = NodeBuilder::new(game);
         for _round in 0..self.num_rounds {
-            let mut node = root.clone();
-            while !node.can_add_child() && !node.is_terminal() {
-                let child = &mut self
-                    .select_child(&mut node)
-                    .expect("A selected child was not found");
-            }
-
-            // Add a new child node into the tree.
-            if child.can_add_child() {
-                child.add_random_child();
-            }
+            self.execute_round(root.clone());
         }
 
         Move {
@@ -58,26 +29,49 @@ impl Agent {
         }
     }
 
+    fn execute_round(&self, root: Node) {
+        let mut node = root.clone();
+        while !node.borrow().can_add_child() && !node.borrow().is_terminal() {
+            node = self.select_child(node.clone());
+        }
+
+        // Add a new child node into the tree.
+        if node.borrow().can_add_child() {
+            node.borrow_mut().add_random_child();
+        }
+
+        // Simulate a random game from this node.
+        let winner = self.simulate_random_game(&node.borrow().game_state);
+
+        // Propagate scores back up the tree.
+        //     while node is not None:
+        //         node.record_win(winner)
+        //         node = node.parent
+    }
+
     // Selecte node with highest UCT score.
-    pub fn select_child<'a>(&self, node: &'a mut Node) -> Option<&'a mut Node> {
+    pub fn select_child<'a>(&self, node: Node) -> Node {
         let mut total_rollouts = 0.0;
-        for child in &node.children {
-            total_rollouts += child.num_rollouts as f64;
+        for child in &node.borrow().children {
+            total_rollouts += child.borrow().num_rollouts as f64;
         }
 
         let mut best_score = -1.0;
         let mut best_child = None;
-        for child in &mut node.children {
-            let win_percentage = child.winning_fraction(node.game_state.current_player);
-            let exploration_factor = (total_rollouts.log10() / child.num_rollouts as f64).sqrt();
+        for child in &node.borrow().children {
+            let win_percentage = child
+                .borrow()
+                .winning_fraction(node.borrow().game_state.current_player);
+            let exploration_factor =
+                (total_rollouts.log10() / child.borrow().num_rollouts as f64).sqrt();
             let uct_score = win_percentage + self.temperature * exploration_factor;
             if uct_score > best_score {
                 best_score = uct_score;
-                best_child = Some(child);
+                best_child = Some(child.clone());
             }
         }
 
-        best_child
+        best_child.expect("Child was not found")
     }
 
     fn simulate_random_game(&self, game: &GameState) -> Option<Player> {
@@ -99,7 +93,7 @@ impl Agent {
 
 #[cfg(test)]
 mod tests {
-    use super::super::Node;
+    use super::super::{Node, NodeBuilder};
     use super::*;
     use crate::game::{new_board, GameState};
     use std::collections::HashMap;
@@ -119,25 +113,25 @@ mod tests {
     #[test]
     fn select_child_works() {
         let game = GameState::new(new_board(), 0, "agent");
-        let mut node = Node::new(game.clone());
-        let mut child_one = Node::new(game.clone());
-        let mut child_two = Node::new(game.clone());
-        let mut child_three = Node::new(game);
+        let node: Node = NodeBuilder::new(game.clone());
+        let child_one: Node = NodeBuilder::new(game.clone());
+        let child_two: Node = NodeBuilder::new(game.clone());
+        let child_three: Node = NodeBuilder::new(game);
 
         let mut win_counts = HashMap::new();
         win_counts.insert("agent", 3);
 
-        child_one.num_rollouts = 5;
-        child_one.win_counts = win_counts.clone();
-        child_two.num_rollouts = 4;
-        child_two.win_counts = win_counts.clone();
-        child_three.num_rollouts = 3;
-        child_three.win_counts = win_counts.clone();
-        node.children = vec![child_one, child_two, child_three];
+        child_one.borrow_mut().num_rollouts = 5;
+        child_one.borrow_mut().win_counts = win_counts.clone();
+        child_two.borrow_mut().num_rollouts = 4;
+        child_two.borrow_mut().win_counts = win_counts.clone();
+        child_three.borrow_mut().num_rollouts = 3;
+        child_three.borrow_mut().win_counts = win_counts.clone();
+        node.borrow_mut().children = vec![child_one, child_two, child_three];
 
         let agent = Agent::new(5, 1.0);
-        let child = agent.select_child(&mut node).unwrap();
-        assert_eq!(child.num_rollouts, 3);
+        let child = agent.select_child(node.clone());
+        assert_eq!(child.borrow().num_rollouts, 3);
     }
 
     #[test]
