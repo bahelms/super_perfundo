@@ -2,4 +2,4 @@ mod agent;
 mod node;
 
 pub use agent::Agent;
-pub use node::{Node, NodeBuilder};
+pub use node::{Node, NodeBuilder, AGENT, PLAYER};

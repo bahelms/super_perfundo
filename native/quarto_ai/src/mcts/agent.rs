@@ -1,6 +1,7 @@
 use super::{Node, NodeBuilder};
 use crate::game::{GameState, Move, Player};
 use rand::Rng;
+use std::rc::Rc;
 
 // Monte Carlo Tree Search executor
 pub struct Agent {
@@ -30,27 +31,32 @@ impl Agent {
     }
 
     fn execute_round(&self, root: Node) {
+        // Find a node to add a child to
         let mut node = root.clone();
         while !node.borrow().can_add_child() && !node.borrow().is_terminal() {
             node = self.select_child(node.clone());
         }
 
-        // Add a new child node into the tree.
-        if node.borrow().can_add_child() {
-            node.borrow_mut().add_random_child();
-        }
+        // Add a new move into the tree.
+        self.add_child_for_random_move(node.clone());
 
         // Simulate a random game from this node.
         let winner = self.simulate_random_game(&node.borrow().game_state);
+        node.borrow_mut().propagate_wins(winner);
+    }
 
-        // Propagate scores back up the tree.
-        //     while node is not None:
-        //         node.record_win(winner)
-        //         node = node.parent
+    fn add_child_for_random_move(&self, node: Node) {
+        if node.borrow().can_add_child() {
+            let next_move = node.borrow_mut().random_legal_move();
+            let new_game_state = node.borrow().game_state.apply_move(&next_move);
+            let child: Node = NodeBuilder::new(new_game_state);
+            child.borrow_mut().parent = Some(Rc::downgrade(&node));
+            node.borrow_mut().children.push(child);
+        }
     }
 
     // Selecte node with highest UCT score.
-    pub fn select_child<'a>(&self, node: Node) -> Node {
+    pub fn select_child(&self, node: Node) -> Node {
         let mut total_rollouts = 0.0;
         for child in &node.borrow().children {
             total_rollouts += child.borrow().num_rollouts as f64;
@@ -65,12 +71,12 @@ impl Agent {
             let exploration_factor =
                 (total_rollouts.log10() / child.borrow().num_rollouts as f64).sqrt();
             let uct_score = win_percentage + self.temperature * exploration_factor;
+
             if uct_score > best_score {
                 best_score = uct_score;
                 best_child = Some(child.clone());
             }
         }
-
         best_child.expect("Child was not found")
     }
 
@@ -93,10 +99,20 @@ impl Agent {
 
 #[cfg(test)]
 mod tests {
-    use super::super::{Node, NodeBuilder};
+    use super::super::{Node, NodeBuilder, AGENT};
     use super::*;
     use crate::game::{new_board, GameState};
     use std::collections::HashMap;
+
+    #[test]
+    fn add_child_for_random_move_adds_new_node_to_tree() {
+        let game = GameState::new(new_board(), 0, AGENT);
+        let node: Node = NodeBuilder::new(game);
+        let agent = Agent::new(5, 1.0);
+        agent.add_child_for_random_move(node.clone());
+        assert_eq!(node.borrow().children.len(), 1);
+        // let child = node.borrow().children.first().unwrap();
+    }
 
     #[test]
     fn simulate_random_game_returns_the_winning_player() {
@@ -104,7 +120,7 @@ mod tests {
         board[1] = Some(1);
         board[2] = Some(2);
         board[3] = Some(3);
-        let game = GameState::new(board, 0, "agent");
+        let game = GameState::new(board, 0, AGENT);
         let agent = Agent::new(5, 1.0);
 
         assert!(agent.simulate_random_game(&game).is_some());
@@ -112,14 +128,14 @@ mod tests {
 
     #[test]
     fn select_child_works() {
-        let game = GameState::new(new_board(), 0, "agent");
+        let game = GameState::new(new_board(), 0, AGENT);
         let node: Node = NodeBuilder::new(game.clone());
         let child_one: Node = NodeBuilder::new(game.clone());
         let child_two: Node = NodeBuilder::new(game.clone());
         let child_three: Node = NodeBuilder::new(game);
 
         let mut win_counts = HashMap::new();
-        win_counts.insert("agent", 3);
+        win_counts.insert(AGENT, 3);
 
         child_one.borrow_mut().num_rollouts = 5;
         child_one.borrow_mut().win_counts = win_counts.clone();
@@ -137,7 +153,7 @@ mod tests {
     #[test]
     fn select_move_returns_a_move() {
         let agent = Agent::new(5, 1.0);
-        let game = GameState::new(new_board(), 0, "agent");
+        let game = GameState::new(new_board(), 0, AGENT);
         let next_move = agent.select_move(game);
         assert_eq!(next_move.position, 0);
         assert_eq!(next_move.piece, 0);
