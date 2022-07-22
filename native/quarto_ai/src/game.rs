@@ -1,4 +1,6 @@
+use crate::mcts::{AGENT, OPPONENT};
 use std::collections::HashSet;
+use std::iter::FromIterator;
 
 type Piece = i32;
 type Position = i32;
@@ -49,7 +51,7 @@ impl GameState {
     pub fn legal_moves(&self) -> Vec<Move> {
         let mut legal_moves = Vec::new();
         let mut empty_positions = Vec::new();
-        let mut played_pieces = HashSet::from([self.active_piece]);
+        let mut played_pieces = HashSet::new();
 
         for (idx, pos) in self.board.iter().enumerate() {
             match pos {
@@ -63,13 +65,22 @@ impl GameState {
         let all_pieces: HashSet<i32> = (0..16).collect(); // optimize
         let remaining_pieces: Vec<i32> = all_pieces.difference(&played_pieces).copied().collect();
 
+        // This doesn't look very good :D
         for position in empty_positions {
-            for &next_piece in &remaining_pieces {
-                legal_moves.push(Move {
-                    position,
-                    next_piece,
-                    piece: self.active_piece,
-                })
+            for &piece in &remaining_pieces {
+                let remaining_set: HashSet<&Piece> = HashSet::from_iter(remaining_pieces.iter());
+                let next_pieces: Vec<&Piece> = remaining_set
+                    .difference(&HashSet::from([&piece]))
+                    .copied()
+                    .collect();
+
+                for &&next_piece in &next_pieces {
+                    legal_moves.push(Move {
+                        position,
+                        piece,
+                        next_piece,
+                    })
+                }
             }
         }
         legal_moves
@@ -83,8 +94,8 @@ impl GameState {
 
     fn next_player(&self) -> Player {
         match self.current_player {
-            "agent" => "player",
-            "player" => "agent",
+            AGENT => OPPONENT,
+            OPPONENT => AGENT,
             &_ => panic!("Current player is unsupported {}", self.current_player),
         }
     }
@@ -158,6 +169,7 @@ fn any_matches(left: Option<Piece>, right: Option<Piece>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::mcts::{AGENT, OPPONENT};
 
     fn draw_board() -> Board {
         [
@@ -182,26 +194,26 @@ mod tests {
 
     #[test]
     fn game_winner_is_none_when_neither_side_has_won() {
-        let state = GameState::new(draw_board(), 0, "player");
+        let state = GameState::new(draw_board(), 0, OPPONENT);
         assert_eq!(state.winner(), None);
     }
 
     #[test]
     fn game_winner_is_current_player_with_four_in_a_row() {
         let board = [Some(0); 16];
-        let state = GameState::new(board, 0, "player");
-        assert_eq!(state.winner().unwrap(), "player");
+        let state = GameState::new(board, 0, OPPONENT);
+        assert_eq!(state.winner().unwrap(), OPPONENT);
     }
 
     #[test]
     fn game_winner_returns_none_when_game_is_not_over() {
-        let state = GameState::new(new_board(), 0, "player");
+        let state = GameState::new(new_board(), 0, OPPONENT);
         assert_eq!(state.winner(), None);
     }
 
     #[test]
     fn apply_move_returns_updated_game_state() {
-        let state = GameState::new(new_board(), 0, "player");
+        let state = GameState::new(new_board(), 0, OPPONENT);
         let new_move = Move {
             position: 1,
             piece: 2,
@@ -210,7 +222,7 @@ mod tests {
         let new_state = state.apply_move(&new_move);
         assert_eq!(new_state.board[1].unwrap(), 2);
         assert_eq!(new_state.active_piece, 8);
-        assert_eq!(new_state.current_player, "agent");
+        assert_eq!(new_state.current_player, AGENT);
         assert_ne!(new_state.board, state.board);
     }
 
@@ -220,7 +232,7 @@ mod tests {
         for i in 0..16 {
             board[i] = Some(i as Piece);
         }
-        let game = GameState::new(board, 0, "player");
+        let game = GameState::new(board, 0, OPPONENT);
         assert_eq!(game.is_over(), true);
     }
 
@@ -231,21 +243,47 @@ mod tests {
         board[1] = Some(2);
         board[2] = Some(4);
         board[3] = Some(8);
-        let game = GameState::new(board, 15, "player");
+        let game = GameState::new(board, 15, OPPONENT);
         assert_eq!(game.is_over(), true);
     }
 
     #[test]
     fn is_over_is_false_when_the_board_is_empty() {
-        let game = GameState::new(new_board(), 0, "agent");
+        let game = GameState::new(new_board(), 0, AGENT);
         assert_eq!(game.is_over(), false);
     }
 
     #[test]
-    fn legal_moves_returns_a_vector_of_moves() {
-        let state = GameState::new(new_board(), 0, "agent");
+    fn legal_moves_has_returns_correct_move_data() {
+        let board = [
+            Some(0),
+            Some(1),
+            Some(2),
+            Some(3),
+            Some(4),
+            Some(5),
+            Some(6),
+            Some(7),
+            Some(8),
+            Some(9),
+            Some(10),
+            Some(11),
+            Some(12),
+            None,
+            None,
+            None,
+        ];
+        let state = GameState::new(board, 15, AGENT);
         let legal_moves = state.legal_moves();
-        assert_eq!(legal_moves.len(), 16 * 15);
+        dbg!(&legal_moves);
+        assert_eq!(legal_moves.len(), 18);
+    }
+
+    #[test]
+    fn legal_moves_returns_a_vector_of_moves() {
+        let state = GameState::new(new_board(), 0, AGENT);
+        let legal_moves = state.legal_moves();
+        assert_eq!(legal_moves.len(), 16 * 16 * 15);
     }
 
     #[test]
