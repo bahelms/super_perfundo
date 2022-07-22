@@ -2,7 +2,7 @@ mod game;
 mod mcts;
 
 use game::{new_board, Board, GameState};
-use mcts::Agent;
+use mcts::{Agent, AGENT};
 use rand::Rng;
 use rustler::{types::tuple::get_tuple, Term};
 use std::collections::HashSet;
@@ -24,7 +24,7 @@ use std::{thread, time};
 // rustler does not support generics currently
 fn spike_choose_position_and_next_piece(board: Term, active_piece: i32) -> (i32, i32) {
     let board = convert_term_to_board(board);
-    let game = GameState::new(board, active_piece, "agent");
+    let game = GameState::new(board, active_piece, AGENT);
     let agent = Agent::new(500, 1.4);
     let selected_move = agent.select_move(game);
     (selected_move.position, selected_move.next_piece)

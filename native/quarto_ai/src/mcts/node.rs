@@ -4,11 +4,10 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::{Rc, Weak};
 
-pub const PLAYER: &'static str = "player";
+pub const OPPONENT: &'static str = "opponent";
 pub const AGENT: &'static str = "agent";
 
 pub type Node = Rc<RefCell<NodeData>>;
-pub type WeakNode = Weak<RefCell<NodeData>>;
 
 pub trait NodeBuilder {
     fn new(game_state: GameState) -> Self;
@@ -28,8 +27,8 @@ pub struct NodeData {
     pub num_rollouts: i32,
     pub unvisited_moves: Vec<Move>,
     pub win_counts: HashMap<&'static str, i32>,
-    pub parent: Option<WeakNode>,
-    // pub current_move: Option<Move>,
+    pub parent: Option<Weak<RefCell<NodeData>>>,
+    pub node_move: Option<Move>,
 }
 
 impl NodeData {
@@ -37,7 +36,7 @@ impl NodeData {
         let unvisited_moves = game_state.legal_moves();
         let mut win_counts = HashMap::new();
         win_counts.insert(AGENT, 0);
-        win_counts.insert(PLAYER, 0);
+        win_counts.insert(OPPONENT, 0);
 
         Self {
             game_state,
@@ -46,6 +45,7 @@ impl NodeData {
             unvisited_moves,
             win_counts,
             parent: None,
+            node_move: None,
         }
     }
 
@@ -135,18 +135,18 @@ mod tests {
     #[test]
     fn record_win_increments_the_wins_for_player() {
         let root: Node = NodeBuilder::new(setup());
-        root.borrow_mut().record_win(Some(PLAYER));
-        root.borrow_mut().record_win(Some(PLAYER));
+        root.borrow_mut().record_win(Some(OPPONENT));
+        root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(AGENT));
-        assert_eq!(root.borrow().win_counts.get(PLAYER).unwrap(), &2);
+        assert_eq!(root.borrow().win_counts.get(OPPONENT).unwrap(), &2);
         assert_eq!(root.borrow().win_counts.get(AGENT).unwrap(), &1);
     }
 
     #[test]
     fn record_win_increments_the_number_of_rollouts() {
         let root: Node = NodeBuilder::new(setup());
-        root.borrow_mut().record_win(Some(PLAYER));
-        root.borrow_mut().record_win(Some(PLAYER));
+        root.borrow_mut().record_win(Some(OPPONENT));
+        root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(AGENT));
         assert_eq!(root.borrow().num_rollouts, 3);
     }
@@ -158,7 +158,7 @@ mod tests {
         root.borrow_mut().record_win(None);
         root.borrow_mut().record_win(None);
         assert_eq!(root.borrow().num_rollouts, 3);
-        assert_eq!(root.borrow().win_counts.get(PLAYER).unwrap(), &0);
+        assert_eq!(root.borrow().win_counts.get(OPPONENT).unwrap(), &0);
         assert_eq!(root.borrow().win_counts.get(AGENT).unwrap(), &0);
     }
 
@@ -191,9 +191,9 @@ mod tests {
     fn winning_fraction_returns_win_percentage_for_given_player() {
         let root: Node = NodeBuilder::new(setup());
         root.borrow_mut().win_counts.insert(AGENT, 28);
-        root.borrow_mut().win_counts.insert(PLAYER, 22);
+        root.borrow_mut().win_counts.insert(OPPONENT, 22);
         root.borrow_mut().num_rollouts = 50;
-        assert_eq!(root.borrow().winning_fraction(PLAYER), 0.44);
+        assert_eq!(root.borrow().winning_fraction(OPPONENT), 0.44);
         assert_eq!(root.borrow().winning_fraction(AGENT), 0.56);
     }
 }

@@ -20,5 +20,11 @@ end
 [This](https://github.com/hansihe/NifIo) is a complete example of a NIF written in Rust.
 
 ## Todo
-- Refactor GameState.current_player to be an enum:
-    - `Player::Agent` and `Player::Opponent`
+- Refactor
+    - NodeBuilder to include parent:
+        ```
+        let parent: Node = NodeBuilder::new(game).build();
+        let child: Node = NodeBuilder::new(game).with_parent(&parent).build();
+        ```
+    - GameState.current_player to be an enum:
+        - `Player::Agent` and `Player::Opponent`

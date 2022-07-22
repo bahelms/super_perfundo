@@ -23,11 +23,8 @@ impl Agent {
             self.execute_round(root.clone());
         }
 
-        Move {
-            position: 0,
-            piece: 0,
-            next_piece: 1,
-        }
+        // Having performed as many MCTS rounds as we have time for, we now pick a move.
+        self.pick_best_move(root)
     }
 
     fn execute_round(&self, root: Node) {
@@ -43,16 +40,6 @@ impl Agent {
         // Simulate a random game from this node.
         let winner = self.simulate_random_game(&node.borrow().game_state);
         node.borrow_mut().propagate_wins(winner);
-    }
-
-    fn add_child_for_random_move(&self, node: Node) {
-        if node.borrow().can_add_child() {
-            let next_move = node.borrow_mut().random_legal_move();
-            let new_game_state = node.borrow().game_state.apply_move(&next_move);
-            let child: Node = NodeBuilder::new(new_game_state);
-            child.borrow_mut().parent = Some(Rc::downgrade(&node));
-            node.borrow_mut().children.push(child);
-        }
     }
 
     // Selecte node with highest UCT score.
@@ -80,6 +67,16 @@ impl Agent {
         best_child.expect("Child was not found")
     }
 
+    fn add_child_for_random_move(&self, node: Node) {
+        if node.borrow().can_add_child() {
+            let next_move = node.borrow_mut().random_legal_move();
+            let new_game_state = node.borrow().game_state.apply_move(&next_move);
+            let child: Node = NodeBuilder::new(new_game_state);
+            child.borrow_mut().parent = Some(Rc::downgrade(&node));
+            node.borrow_mut().children.push(child);
+        }
+    }
+
     fn simulate_random_game(&self, game: &GameState) -> Option<Player> {
         let mut current_game = game.clone();
         while !current_game.is_over() {
@@ -94,6 +91,23 @@ impl Agent {
         let legal_moves = game.legal_moves();
         let index: usize = rng.gen_range(0..legal_moves.len());
         legal_moves[index].clone()
+    }
+
+    fn pick_best_move(&self, node: Node) -> Move {
+        let mut best_move = None;
+        let mut best_percent = -1.0;
+        for child in &node.borrow().children {
+            let child_percent = child
+                .borrow()
+                .winning_fraction(node.borrow().game_state.current_player);
+
+            if child_percent > best_percent {
+                best_percent = child_percent;
+                best_move = child.borrow().node_move.clone();
+            }
+        }
+        println!("Select move {:?} with win pct {}", best_move, best_percent);
+        best_move.expect("Best move not found")
     }
 }
 
