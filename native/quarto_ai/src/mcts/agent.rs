@@ -35,7 +35,9 @@ impl Agent {
         }
 
         // Add a new move into the tree.
-        self.add_child_for_random_move(node.clone());
+        if node.borrow().can_add_child() {
+            node = self.add_child_for_random_move(node.clone());
+        }
 
         // Simulate a random game from this node.
         let winner = self.simulate_random_game(&node.borrow().game_state);
@@ -67,14 +69,15 @@ impl Agent {
         best_child.expect("Child was not found")
     }
 
-    fn add_child_for_random_move(&self, node: Node) {
-        if node.borrow().can_add_child() {
-            let next_move = node.borrow_mut().random_legal_move();
-            let new_game_state = node.borrow().game_state.apply_move(&next_move);
-            let child: Node = NodeBuilder::new(new_game_state);
-            child.borrow_mut().parent = Some(Rc::downgrade(&node));
-            node.borrow_mut().children.push(child);
-        }
+    fn add_child_for_random_move(&self, node: Node) -> Node {
+        let next_move = node.borrow_mut().random_legal_move();
+        let new_game_state = node.borrow().game_state.apply_move(&next_move);
+        let child: Node = NodeBuilder::new(new_game_state);
+        // refactor with builder functions
+        child.borrow_mut().node_move = Some(next_move);
+        child.borrow_mut().parent = Some(Rc::downgrade(&node));
+        node.borrow_mut().children.push(child);
+        node.borrow().children.last().unwrap().clone()
     }
 
     fn simulate_random_game(&self, game: &GameState) -> Option<Player> {
@@ -125,7 +128,10 @@ mod tests {
         let agent = Agent::new(5, 1.0);
         agent.add_child_for_random_move(node.clone());
         assert_eq!(node.borrow().children.len(), 1);
-        // let child = node.borrow().children.first().unwrap();
+
+        let node_ref = node.borrow();
+        let child = node_ref.children.first().unwrap();
+        assert!(child.borrow().node_move.is_some());
     }
 
     #[test]
@@ -169,8 +175,6 @@ mod tests {
         let agent = Agent::new(5, 1.0);
         let game = GameState::new(new_board(), 0, AGENT);
         let next_move = agent.select_move(game);
-        assert_eq!(next_move.position, 0);
-        assert_eq!(next_move.piece, 0);
-        assert_eq!(next_move.next_piece, 1);
+        assert!(next_move.next_piece > -1);
     }
 }
