@@ -3,10 +3,23 @@ use crate::game::{GameState, Move, Player};
 use rand::Rng;
 use std::rc::Rc;
 
-// Monte Carlo Tree Search executor
+/* Monte Carlo Tree Search
+
+ - create tree for given game state
+ - start a round:
+   - pick a leaf node
+   - randomly place the active piece and choose the next piece
+   - add new child node with this game state
+   - execute rollout (simulate game from this node to see who wins)
+   - record the win in this node
+   - walkup all node ancestors and update their win counts
+ - Set this to a certain number of rounds or amount of time
+   - Once limit is reached, select the child node of the root that has the highest win rate
+
+*/
 pub struct Agent {
     num_rounds: i32,
-    temperature: f64,
+    temperature: f64, // For UCT - higher is volatile, lower is focused
 }
 
 impl Agent {
@@ -34,17 +47,17 @@ impl Agent {
             node = self.select_child(node.clone());
         }
 
-        // Add a new move into the tree.
+        // Add a new move into the tree
         if node.borrow().can_add_child() {
             node = self.add_child_for_random_move(node.clone());
         }
 
-        // Simulate a random game from this node.
+        // Simulate a random game from this node
         let winner = self.simulate_random_game(&node.borrow().game_state);
         node.borrow_mut().propagate_wins(winner);
     }
 
-    // Selecte node with highest UCT score.
+    // Select child node with highest UCT score.
     pub fn select_child(&self, node: Node) -> Node {
         let mut total_rollouts = 0.0;
         for child in &node.borrow().children {
@@ -54,12 +67,7 @@ impl Agent {
         let mut best_score = -1.0;
         let mut best_child = None;
         for child in &node.borrow().children {
-            let win_percentage = child
-                .borrow()
-                .winning_fraction(node.borrow().game_state.current_player);
-            let exploration_factor =
-                (total_rollouts.log10() / child.borrow().num_rollouts as f64).sqrt();
-            let uct_score = win_percentage + self.temperature * exploration_factor;
+            let uct_score = self.calculate_uct_score(child.clone(), total_rollouts);
 
             if uct_score > best_score {
                 best_score = uct_score;
@@ -67,6 +75,17 @@ impl Agent {
             }
         }
         best_child.expect("Child was not found")
+    }
+
+    // Calculate upper confidence bound for trees (UCT).
+    // This gives you a balance between exploration (breadth) and exploitation (depth).
+    fn calculate_uct_score(&self, node: Node, total_rollouts: f64) -> f64 {
+        let win_percentage = node
+            .borrow()
+            .winning_fraction(node.borrow().game_state.current_player);
+        let exploration_factor =
+            (total_rollouts.log10() / node.borrow().num_rollouts as f64).sqrt();
+        win_percentage + self.temperature * exploration_factor
     }
 
     fn add_child_for_random_move(&self, node: Node) -> Node {

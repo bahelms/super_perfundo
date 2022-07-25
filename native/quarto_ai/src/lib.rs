@@ -5,19 +5,6 @@ use game::{new_board, Board, GameState};
 use mcts::{Agent, AGENT};
 use rustler::{types::tuple::get_tuple, Term};
 
-// Monte Carlo Tree Search
-//
-// * create tree for given game state
-// * start a round:
-//   * pick a leaf node
-//   * randomly place the active piece and choose the next piece
-//   * add new child node with this game state
-//   * execute rollout (simulate game from this node to see who wins)
-//   * record the win in this node
-//   * walkup all node ancestors and update their win counts
-// * Set this to a certain number of rounds or amount of time
-// * Once limit is reached, select the child node of the root that has the highest win rate
-//
 // rustler does not support generics currently
 #[rustler::nif]
 fn choose_position_and_next_piece(board: Term, active_piece: i32) -> (i32, i32) {
