@@ -1,6 +1,5 @@
 use crate::mcts::{AGENT, OPPONENT};
 use std::collections::HashSet;
-use std::iter::FromIterator;
 
 type Piece = i32;
 type Position = i32;
@@ -51,7 +50,7 @@ impl GameState {
     pub fn legal_moves(&self) -> Vec<Move> {
         let mut legal_moves = Vec::new();
         let mut empty_positions = Vec::new();
-        let mut played_pieces = HashSet::new();
+        let mut played_pieces = HashSet::from([self.active_piece]);
 
         for (idx, pos) in self.board.iter().enumerate() {
             match pos {
@@ -65,22 +64,13 @@ impl GameState {
         let all_pieces: HashSet<i32> = (0..16).collect(); // optimize
         let remaining_pieces: Vec<i32> = all_pieces.difference(&played_pieces).copied().collect();
 
-        // This doesn't look very good :D
         for position in empty_positions {
-            for &piece in &remaining_pieces {
-                let remaining_set: HashSet<&Piece> = HashSet::from_iter(remaining_pieces.iter());
-                let next_pieces: Vec<&Piece> = remaining_set
-                    .difference(&HashSet::from([&piece]))
-                    .copied()
-                    .collect();
-
-                for &&next_piece in &next_pieces {
-                    legal_moves.push(Move {
-                        position,
-                        piece,
-                        next_piece,
-                    })
-                }
+            for &remaining_piece in &remaining_pieces {
+                legal_moves.push(Move {
+                    position,
+                    piece: self.active_piece,
+                    next_piece: remaining_piece,
+                });
             }
         }
         legal_moves
@@ -254,7 +244,7 @@ mod tests {
     }
 
     #[test]
-    fn legal_moves_has_returns_correct_move_data() {
+    fn legal_moves_returns_correct_move_data() {
         let board = [
             Some(0),
             Some(1),
@@ -275,15 +265,14 @@ mod tests {
         ];
         let state = GameState::new(board, 15, AGENT);
         let legal_moves = state.legal_moves();
-        dbg!(&legal_moves);
-        assert_eq!(legal_moves.len(), 18);
+        assert_eq!(legal_moves.len(), 6);
     }
 
     #[test]
     fn legal_moves_returns_a_vector_of_moves() {
         let state = GameState::new(new_board(), 0, AGENT);
         let legal_moves = state.legal_moves();
-        assert_eq!(legal_moves.len(), 16 * 16 * 15);
+        assert_eq!(legal_moves.len(), 16 * 15);
     }
 
     #[test]
