@@ -2,18 +2,18 @@
 Quarto, pt. 2.1: The AI
 
 ==tags==
-elixir, rust, ai, games
+elixir, rust, ai, games, quarto
 
 ==description==
-Creating an artificial intelligence to be fight you in Quarto. It's more fun when your
+Creating an artificial intelligence to fight you in Quarto. It's more fun when your
 opponent isn't randomly moving. Brought to you by Rust.
 
 ==image==
 rusty-engine.jpg
 
 ==body==
-Now where were we? I think I need to read [Part 1](/articles/quarto-part-1) again to see what happened.
-It may behoove you to, as well.
+Now where were we? I think I need to re-read [Part 1](/articles/quarto-part-1) to remember what happened.
+You might want to do the same. I'll wait.
 
 Ah yes. The current computer opponent is pretty useless, randomly placing its pieces
 and blindly picking your piece out of a hat. It would be much more interesting if it were actively
