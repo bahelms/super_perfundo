@@ -5,5 +5,6 @@ Quarto has 240 moves with an empty board, after first piece selection. Chess - 2
 - Add a step to see if the next move is a win. A child is never selected.
 - Refactor
     - Add heuristic to prevent handing over winning moves.
+    - Be able to configure Agent rounds and temp 
     - GameState.current_player to be an enum:
         - `Player::Agent` and `Player::Opponent`
