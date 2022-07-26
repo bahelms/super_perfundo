@@ -13,7 +13,7 @@ use std::rc::Rc;
    - execute rollout (simulate game from this node to see who wins)
    - record the win in this node
    - walkup all node ancestors and update their win counts
- - Set this to a certain number of rounds or amount of time
+ - Set this to a certain number of rounds
    - Once limit is reached, select the child node of the root that has the highest win rate
 
 */
@@ -31,8 +31,8 @@ impl Agent {
     }
 
     pub fn select_move(&self, game: GameState) -> Move {
-        let root: Node = NodeBuilder::new(game);
-        for _round in 0..self.num_rounds {
+        let root = NodeBuilder::new(game).build();
+        for _ in 0..self.num_rounds {
             self.execute_round(root.clone());
         }
 
@@ -67,7 +67,11 @@ impl Agent {
         let mut best_score = -1.0;
         let mut best_child = None;
         for child in &node.borrow().children {
-            let uct_score = self.calculate_uct_score(child.clone(), total_rollouts);
+            let uct_score = self.calculate_uct_score(
+                child.clone(),
+                total_rollouts,
+                node.borrow().game_state.current_player,
+            );
 
             if uct_score > best_score {
                 best_score = uct_score;
@@ -79,10 +83,8 @@ impl Agent {
 
     // Calculate upper confidence bound for trees (UCT).
     // This gives you a balance between exploration (breadth) and exploitation (depth).
-    fn calculate_uct_score(&self, node: Node, total_rollouts: f64) -> f64 {
-        let win_percentage = node
-            .borrow()
-            .winning_fraction(node.borrow().game_state.current_player);
+    fn calculate_uct_score(&self, node: Node, total_rollouts: f64, player: &str) -> f64 {
+        let win_percentage = node.borrow().winning_fraction(player);
         let exploration_factor =
             (total_rollouts.log10() / node.borrow().num_rollouts as f64).sqrt();
         win_percentage + self.temperature * exploration_factor
@@ -91,10 +93,10 @@ impl Agent {
     fn add_child_for_random_move(&self, node: Node) -> Node {
         let next_move = node.borrow_mut().random_legal_move();
         let new_game_state = node.borrow().game_state.apply_move(&next_move);
-        let child: Node = NodeBuilder::new(new_game_state);
-        // refactor with builder functions
-        child.borrow_mut().node_move = Some(next_move);
-        child.borrow_mut().parent = Some(Rc::downgrade(&node));
+        let child = NodeBuilder::new(new_game_state)
+            .node_move(next_move)
+            .parent(Rc::downgrade(&node))
+            .build();
         node.borrow_mut().children.push(child);
         node.borrow().children.last().unwrap().clone()
     }
@@ -135,7 +137,7 @@ impl Agent {
 
 #[cfg(test)]
 mod tests {
-    use super::super::{Node, NodeBuilder, AGENT};
+    use super::super::{NodeBuilder, AGENT};
     use super::*;
     use crate::game::{new_board, GameState};
     use std::collections::HashMap;
@@ -143,7 +145,7 @@ mod tests {
     #[test]
     fn add_child_for_random_move_adds_new_node_to_tree() {
         let game = GameState::new(new_board(), 0, AGENT);
-        let node: Node = NodeBuilder::new(game);
+        let node = NodeBuilder::new(game).build();
         let agent = Agent::new(5, 1.0);
         agent.add_child_for_random_move(node.clone());
         assert_eq!(node.borrow().children.len(), 1);
@@ -168,10 +170,10 @@ mod tests {
     #[test]
     fn select_child_works() {
         let game = GameState::new(new_board(), 0, AGENT);
-        let node: Node = NodeBuilder::new(game.clone());
-        let child_one: Node = NodeBuilder::new(game.clone());
-        let child_two: Node = NodeBuilder::new(game.clone());
-        let child_three: Node = NodeBuilder::new(game);
+        let node = NodeBuilder::new(game.clone()).build();
+        let child_one = NodeBuilder::new(game.clone()).build();
+        let child_two = NodeBuilder::new(game.clone()).build();
+        let child_three = NodeBuilder::new(game).build();
 
         let mut win_counts = HashMap::new();
         win_counts.insert(AGENT, 3);

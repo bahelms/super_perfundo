@@ -10,7 +10,7 @@ use rustler::{types::tuple::get_tuple, Term};
 fn choose_position_and_next_piece(board: Term, active_piece: i32) -> (i32, i32) {
     let board = convert_term_to_board(board);
     let game = GameState::new(board, active_piece, AGENT);
-    let agent = Agent::new(1000, 1.5);
+    let agent = Agent::new(3000, 1.0);
     let selected_move = agent.select_move(game);
     (selected_move.position, selected_move.next_piece)
 }

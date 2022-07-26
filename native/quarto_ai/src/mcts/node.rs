@@ -7,43 +7,65 @@ use std::rc::{Rc, Weak};
 pub const OPPONENT: &'static str = "opponent";
 pub const AGENT: &'static str = "agent";
 
-pub type Node = Rc<RefCell<NodeData>>;
+pub type Node = Rc<RefCell<MCTNode>>;
 
-pub trait NodeBuilder {
-    fn new(game_state: GameState) -> Self;
+pub struct NodeBuilder {
+    pub game_state: GameState,
+    pub parent: Option<Weak<RefCell<MCTNode>>>,
+    pub node_move: Option<Move>,
 }
 
-impl NodeBuilder for Node {
-    fn new(game_state: GameState) -> Node {
-        Rc::new(RefCell::new(NodeData::new(game_state)))
+impl NodeBuilder {
+    pub fn new(game_state: GameState) -> Self {
+        Self {
+            game_state,
+            parent: None,
+            node_move: None,
+        }
+    }
+
+    pub fn parent(mut self, parent: Weak<RefCell<MCTNode>>) -> Self {
+        self.parent = Some(parent);
+        self
+    }
+
+    pub fn node_move(mut self, node_move: Move) -> Self {
+        self.node_move = Some(node_move);
+        self
+    }
+
+    pub fn build(self) -> Node {
+        let mut node = MCTNode::new(self.game_state);
+        node.parent = self.parent;
+        node.node_move = self.node_move;
+        Rc::new(RefCell::new(node))
     }
 }
 
 // Monte Carlo Tree Node
 #[derive(Debug, Clone)]
-pub struct NodeData {
+pub struct MCTNode {
     pub game_state: GameState,
     pub children: Vec<Node>,
     pub num_rollouts: i32,
     pub unvisited_moves: Vec<Move>,
     pub win_counts: HashMap<&'static str, i32>,
-    pub parent: Option<Weak<RefCell<NodeData>>>,
+    pub parent: Option<Weak<RefCell<MCTNode>>>,
     pub node_move: Option<Move>,
 }
 
-impl NodeData {
+impl MCTNode {
     pub fn new(game_state: GameState) -> Self {
-        let unvisited_moves = game_state.legal_moves();
         let mut win_counts = HashMap::new();
         win_counts.insert(AGENT, 0);
         win_counts.insert(OPPONENT, 0);
 
         Self {
+            unvisited_moves: game_state.legal_moves(),
             game_state,
+            win_counts,
             children: Vec::new(),
             num_rollouts: 0,
-            unvisited_moves,
-            win_counts,
             parent: None,
             node_move: None,
         }
@@ -110,9 +132,9 @@ mod tests {
 
     #[test]
     fn propagate_scores_records_win_for_every_parent_in_the_branch() {
-        let root: Node = NodeBuilder::new(setup());
-        let child: Node = NodeBuilder::new(setup());
-        let grand_child: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
+        let child = NodeBuilder::new(setup()).build();
+        let grand_child = NodeBuilder::new(setup()).build();
 
         child.borrow_mut().parent = Some(Rc::downgrade(&root));
         grand_child.borrow_mut().parent = Some(Rc::downgrade(&child));
@@ -127,14 +149,14 @@ mod tests {
 
     #[test]
     fn new_returns_an_initialized_node() {
-        let node: Node = NodeBuilder::new(setup());
+        let node = NodeBuilder::new(setup()).build();
         assert_eq!(node.borrow().num_rollouts, 0);
         assert!(node.borrow().children.is_empty());
     }
 
     #[test]
     fn record_win_increments_the_wins_for_player() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(AGENT));
@@ -144,7 +166,7 @@ mod tests {
 
     #[test]
     fn record_win_increments_the_number_of_rollouts() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(OPPONENT));
         root.borrow_mut().record_win(Some(AGENT));
@@ -153,7 +175,7 @@ mod tests {
 
     #[test]
     fn record_win_increments_the_number_of_rollouts_with_no_winner() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         root.borrow_mut().record_win(None);
         root.borrow_mut().record_win(None);
         root.borrow_mut().record_win(None);
@@ -164,32 +186,32 @@ mod tests {
 
     #[test]
     fn can_add_child_returns_true_with_unvisited_moves() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         assert!(root.borrow().can_add_child());
     }
 
     #[test]
     fn can_add_child_returns_false_with_no_unvisited_moves() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         root.borrow_mut().unvisited_moves = Vec::new();
         assert_eq!(root.borrow().can_add_child(), false);
     }
 
     #[test]
     fn is_terminal_returns_true_when_game_is_over() {
-        let root: Node = NodeBuilder::new(setup_finished_game());
+        let root = NodeBuilder::new(setup_finished_game()).build();
         assert!(root.borrow().is_terminal());
     }
 
     #[test]
     fn is_terminal_returns_false_when_game_is_not_over() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         assert_eq!(root.borrow().is_terminal(), false);
     }
 
     #[test]
     fn winning_fraction_returns_win_percentage_for_given_player() {
-        let root: Node = NodeBuilder::new(setup());
+        let root = NodeBuilder::new(setup()).build();
         root.borrow_mut().win_counts.insert(AGENT, 28);
         root.borrow_mut().win_counts.insert(OPPONENT, 22);
         root.borrow_mut().num_rollouts = 50;
