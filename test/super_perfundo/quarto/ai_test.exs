@@ -4,7 +4,7 @@ defmodule SuperPerfundo.Quarto.AITest do
 
   describe "choose_position_and_next_piece/2" do
     test "an index of the board is returned" do
-      board = {nil, nil, 8, nil}
+      board = {nil, nil, 8, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil}
       {position, _piece} = AI.choose_position_and_next_piece(board, 10)
       assert position >= 0 && position < tuple_size(board)
       refute position == 2
