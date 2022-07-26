@@ -55,6 +55,7 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
+    IO.puts("")  # why does this fix the live view lag?
     {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
     board = Board.set_piece(board, piece, position)
     winning_state = Board.four_in_a_row?(board)
