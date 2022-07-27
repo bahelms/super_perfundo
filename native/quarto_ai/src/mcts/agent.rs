@@ -32,6 +32,13 @@ impl Agent {
 
     pub fn select_move(&self, game: GameState) -> Move {
         let root = NodeBuilder::new(game).build();
+
+        // If agent is given a winning move, take it!
+        match root.borrow().game_state.winning_move() {
+            Some(winning_move) => return winning_move,
+            None => (),
+        }
+
         for _ in 0..self.num_rounds {
             self.execute_round(root.clone());
         }
@@ -68,9 +75,11 @@ impl Agent {
         let mut best_child = None;
         for child in &node.borrow().children {
             let uct_score = self.calculate_uct_score(
-                child.clone(),
                 total_rollouts,
-                node.borrow().game_state.current_player,
+                child.borrow().num_rollouts as f64,
+                child
+                    .borrow()
+                    .winning_fraction(node.borrow().game_state.current_player),
             );
 
             if uct_score > best_score {
@@ -83,11 +92,9 @@ impl Agent {
 
     // Calculate upper confidence bound for trees (UCT).
     // This gives you a balance between exploration (breadth) and exploitation (depth).
-    fn calculate_uct_score(&self, node: Node, total_rollouts: f64, player: &str) -> f64 {
-        let win_percentage = node.borrow().winning_fraction(player);
-        let exploration_factor =
-            (total_rollouts.log10() / node.borrow().num_rollouts as f64).sqrt();
-        win_percentage + self.temperature * exploration_factor
+    fn calculate_uct_score(&self, parent_rollouts: f64, child_rollouts: f64, win_pct: f64) -> f64 {
+        let exploration = (parent_rollouts.log10() / child_rollouts).sqrt();
+        win_pct + self.temperature * exploration
     }
 
     fn add_child_for_random_move(&self, node: Node) -> Node {
@@ -120,7 +127,12 @@ impl Agent {
     fn pick_best_move(&self, node: Node) -> Move {
         let mut best_move = None;
         let mut best_percent = -1.0;
+
         for child in &node.borrow().children {
+            if self.is_losing_move(child.clone(), node.clone()) {
+                continue;
+            }
+
             let child_percent = child
                 .borrow()
                 .winning_fraction(node.borrow().game_state.current_player);
@@ -130,8 +142,31 @@ impl Agent {
                 best_move = child.borrow().node_move.clone();
             }
         }
+
+        if best_move.is_none() {
+            best_move = node
+                .borrow()
+                .children
+                .first()
+                .unwrap()
+                .borrow()
+                .node_move
+                .clone();
+        }
         println!("Select move {:?} with win pct {}", best_move, best_percent);
         best_move.expect("Best move not found")
+    }
+
+    fn is_losing_move(&self, child: Node, parent: Node) -> bool {
+        let child_ref = child.borrow();
+        let child_move = child_ref.node_move.as_ref().unwrap();
+        let new_game = parent.borrow().game_state.apply_move(child_move);
+        for legal_move in new_game.legal_moves() {
+            if new_game.apply_move(&legal_move).is_over() {
+                return true;
+            }
+        }
+        false
     }
 }
 
@@ -141,6 +176,71 @@ mod tests {
     use super::*;
     use crate::game::{new_board, GameState};
     use std::collections::HashMap;
+
+    #[test]
+    fn select_move_bug() {
+        // cannot sample empty range
+        let board = [
+            None,
+            Some(8),
+            Some(2),
+            None,
+            Some(1),
+            Some(13),
+            Some(6),
+            Some(9),
+            Some(10),
+            Some(5),
+            Some(11),
+            Some(14),
+            None,
+            Some(7),
+            Some(0),
+            None,
+        ];
+        let game = GameState::new(board, 3, AGENT);
+        let agent = Agent::new(3000, 1.5);
+        let selected_move = agent.select_move(game);
+        assert!(selected_move.position >= 0);
+    }
+
+    #[test]
+    fn select_move_returns_first_winning_move() {
+        let mut board = new_board();
+        board[0] = Some(0);
+        board[1] = Some(2);
+        board[2] = Some(4);
+        let game = GameState::new(board, 8, AGENT);
+        let agent = Agent::new(30, 1.0);
+        let selected_move = agent.select_move(game);
+        assert_eq!(selected_move.position, 3);
+    }
+
+    #[test]
+    fn select_move_returns_random_move_when_they_all_lose() {
+        let board = [
+            None,
+            Some(1),
+            Some(2),
+            Some(14),
+            Some(15),
+            None,
+            Some(8),
+            Some(6),
+            None,
+            None,
+            Some(10),
+            None,
+            Some(11),
+            Some(3),
+            None,
+            Some(5),
+        ];
+        let game = GameState::new(board, 0, AGENT);
+        let agent = Agent::new(30, 1.0);
+        let selected_move = agent.select_move(game);
+        assert!(selected_move.position >= 0);
+    }
 
     #[test]
     fn add_child_for_random_move_adds_new_node_to_tree() {

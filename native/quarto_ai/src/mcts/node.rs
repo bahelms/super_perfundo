@@ -2,6 +2,7 @@ use crate::game::{GameState, Move};
 use rand::Rng;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::fmt;
 use std::rc::{Rc, Weak};
 
 pub const OPPONENT: &'static str = "opponent";
@@ -43,7 +44,7 @@ impl NodeBuilder {
 }
 
 // Monte Carlo Tree Node
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct MCTNode {
     pub game_state: GameState,
     pub children: Vec<Node>,
@@ -109,6 +110,18 @@ impl MCTNode {
             let parent = parent_node.upgrade().unwrap();
             parent.borrow_mut().propagate_wins(winner);
         }
+    }
+}
+
+impl fmt::Debug for MCTNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("MCTNode")
+            .field("win_counts", &self.win_counts)
+            .field("num_rollouts", &self.num_rollouts)
+            .field("move", &self.node_move)
+            .field("num_children", &self.children.len())
+            .field("num_unvisited_moves", &self.unvisited_moves.len())
+            .finish()
     }
 }
 
