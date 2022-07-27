@@ -65,15 +65,49 @@ impl GameState {
         let remaining_pieces: Vec<i32> = all_pieces.difference(&played_pieces).copied().collect();
 
         for position in empty_positions {
-            for &remaining_piece in &remaining_pieces {
-                legal_moves.push(Move {
-                    position,
-                    piece: self.active_piece,
-                    next_piece: remaining_piece,
-                });
+            let mut legal_move = Move {
+                position,
+                piece: self.active_piece,
+                next_piece: 0,
+            };
+
+            if remaining_pieces.len() == 0 {
+                legal_moves.push(legal_move);
+            } else {
+                for &remaining_piece in &remaining_pieces {
+                    legal_move.next_piece = remaining_piece;
+                    legal_moves.push(legal_move.clone());
+                }
             }
         }
+
         legal_moves
+    }
+
+    pub fn empty_positions(&self) -> Vec<i32> {
+        let mut empty_positions = Vec::new();
+        for (idx, pos) in self.board.iter().enumerate() {
+            match pos {
+                None => empty_positions.push(idx as i32),
+                _ => (),
+            }
+        }
+        empty_positions
+    }
+
+    pub fn winning_move(&self) -> Option<Move> {
+        for position in self.empty_positions() {
+            let current_move = Move {
+                position,
+                piece: self.active_piece,
+                next_piece: 0, // doesn't matter
+            };
+
+            if self.apply_move(&current_move).is_over() {
+                return Some(current_move);
+            }
+        }
+        None
     }
 
     pub fn apply_move(&self, the_move: &Move) -> Self {
