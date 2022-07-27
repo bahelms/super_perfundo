@@ -16,6 +16,7 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
 * email signup as LiveView
 * comments
 - Quarto
+  * Handle a draw in UI
   * Include quarto_ai crate cargo tests in Github Actions verify PR checks
   * Change cursor to hand pointer
   * Restart game button
