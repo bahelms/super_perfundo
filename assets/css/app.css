@@ -12,7 +12,6 @@ html {
 
 body {
   margin: 0;
-  display: flex;
   justify-content: center;
   font-family: Inter, sans-serif;
   font-weight: 300;
@@ -140,10 +139,31 @@ nav a:visited, nav a:link {
   #responsive-nav {
     display: initial;
   }
+
+  #index {
+    margin-top: 100px;
+  }
 }
 
 main {
+  display: flex;
+  justify-content: center;
   margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+@media screen and (max-width: 900px) {
+  main {
+    display: block;
+    justify-content: unset;
+    margin-bottom: 0;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  main {
+    margin-left: 0;
+  }
 }
 
 h1, h2, h3, h4 {
@@ -317,8 +337,9 @@ pre {
   padding: 10px;
   line-height: initial !important;
   border-radius: 4px;
-  white-space: pre-wrap;
+  white-space: pre;
   word-break: break-word;
+  overflow: auto;
 }
 
 code {
