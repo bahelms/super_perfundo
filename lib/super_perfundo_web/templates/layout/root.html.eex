@@ -22,7 +22,7 @@
   <body>
     <header>
       <div id="header-container">
-        <div id="blog-title">SuperPerfundo.Tech</div>
+        <%= link("SuperPerfundo.Tech", to: "/", id: "blog-title") %>
         <nav>
           <%= link("ARTICLES", to: "/") %>
           <%= link("QUARTO", to: "/quarto") %>

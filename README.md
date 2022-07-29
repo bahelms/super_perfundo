@@ -11,10 +11,8 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
     * Announce: `Blog.get_post("name") |> Email.send_published_emails()`
 
 ### TODO
-* CSS mobile: horizontal scroll for code blocks
 * Usage metrics
 * email signup as LiveView
-* comments
 - Quarto
   * Handle a draw in UI
   * Include quarto_ai crate cargo tests in Github Actions verify PR checks
