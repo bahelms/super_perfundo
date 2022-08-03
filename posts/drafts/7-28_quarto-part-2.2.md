@@ -265,7 +265,7 @@ for child in &node.borrow().children {
 
 #### Deploying with Docker
 One last thing to note is the unforeseen difficulty in deploying the app.
-[Read here about how it's done](https://localhost:4001/articles/super-perfundo).
+[Read here about how it's done](/articles/super-perfundo).
 The problem was that now Rust needed to be installed in the Docker image. Because
 of the base image it uses, this took some trial and error.
 
