@@ -1,5 +1,5 @@
 ==title==
-Quarto, pt. 2.2: The AI - Behind The Curtain
+Quarto, pt. 2.2: AI - Behind The Curtain
 
 ==tags==
 elixir, rust, ai, games, quarto, algrithms
