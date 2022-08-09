@@ -129,4 +129,4 @@ And finally return the results as a tuple of type `(i32, i32)`:
 
 Hooray! We have done it. What a sweet refactoring. Now, how the hell do we make this thing
 take over the world? Well, that's gonna be a lot of work it turns out. Let's be lazy
-and push that to [Part 2.2](/), where we'll figure out how to do just that! Toodles.
+and push that to [Part 2.2](/articles/quarto-part-2.2), where we'll figure out how to do just that! Toodles.
