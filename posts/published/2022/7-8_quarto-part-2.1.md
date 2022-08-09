@@ -1,5 +1,5 @@
 ==title==
-Quarto, pt. 2.1: The AI
+Quarto, pt. 2.1: The AI - The Bridge Between Worlds
 
 ==tags==
 elixir, rust, ai, games, quarto
