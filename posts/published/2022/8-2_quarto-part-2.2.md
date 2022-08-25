@@ -2,7 +2,7 @@
 Quarto, pt. 2.2: AI - Behind The Curtain
 
 ==tags==
-elixir, rust, ai, games, quarto, algrithms
+elixir, rust, ai, games, quarto, algorithms
 
 ==description==
 How to actually write this silly robot. It's fun. I promise!
