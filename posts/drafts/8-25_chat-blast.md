@@ -89,10 +89,45 @@ pub async fn start(address: String, port: String) {
 
     loop {
         let (stream, addr) = listener.accept().await.unwrap();
-        println!("Connection accepted: {}", addr);
+        tokio::spawn(async move {
+            handle_stream(stream, addr).await;
+        });
+    }
 ```
-
 In the server start function, the given socket address is bound using the Tokio
 `TcpListener`. We then enter an infinite loop and accept any incoming socket
 connection. This blocks execution while it waits for a connection to come in.
 Now the server is on and waiting for clients to join.
+
+    nc localhost 4888
+
+Look at that! Our first customer. When Netcat makes the TCP connection, our listener
+will return a tuple that holds the socket stream and its address. Since we want
+to handle many connections at once (lot's of people are going to be chatting, I can't wait!),
+we'll create a task for each one with `tokio::spawn`.
+The stream data ownership will be passed to the async block given to `spawn`.
+That's what `move` does. Then we await the `handle_stream` function.
+This one is cool. You'll see why later. :D
+
+```rust
+async fn handle_stream(stream: TcpStream, addr: std::net::SocketAddr) {
+    let mut reader = BufReader::new(stream);
+    let mut buffer = String::new();
+    loop {
+        tokio::select! {
+            result = reader.read_line(&mut buffer) => {
+                // chat message received!
+            }
+        }
+    }
+}
+```
+When a user types in a message and hits enter, those bytes are sent into the socket.
+If you've never worked with sockets before, they are just files!
+That let's us read from the socket like it's a text file. `BufReader#read_line`
+will read bytes from the stream until a newline is found and use a string as a storage buffer.
+This is a blocking operation; if nothing is in socket, the reader waits for something
+to show up. This is where spawning a task comes into play.
+Since this is one of many tasks, Tokio will move to the next available task that is not
+blocked. Perhaps another client already typed something, so there is data that has
+been read from its socket. Execution will be moved to that task and continue from there.
