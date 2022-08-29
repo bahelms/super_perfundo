@@ -8,7 +8,7 @@ rust, networking, async, tokio
 Where we write a CLI chat server over TCP sockets using Rust and Tokio.
 
 ==image==
-monte-carlo.png
+chat-blast.jpg
 
 ==body==
 Hello there! I've been playing with Rust for years now, but I've never gotten
