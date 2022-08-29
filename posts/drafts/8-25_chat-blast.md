@@ -232,6 +232,7 @@ struct Event(SocketAddr, Message); // tuple struct
 
 // publish
 publisher.send(Event(addr, message))
+
 // consume
 let Event(id, msg) = event.expect("Parsing event failed");
 if id != addr {
@@ -240,3 +241,19 @@ if id != addr {
 ```
 
 ### Final Summation
+Remember that concurrency is not parallelism. You can achieve high concurrency on a single core
+in one thread. Vanilla async Rust acts simiarly to coroutines in Python, goroutines
+in Go, and processes in Elixir (although they all differ in implementation). They
+are green threads, which means application code manages the execution contexts rather
+than the OS. They're great for heavy IO use as opposed to CPU.
+
+My initial attempt at this server stayed in the standard lib by using
+`std::thread` to manage threads directly and `std::sync::mpsc` to communicate between them.
+I ran into pain when trying to figure out how to make a thread read data from the
+socket AND from the channel without blocking either. MPSC
+(multi-producer, single consumer) was also not
+the paradigm I was going for. After reading through the
+[Tokio tutorial](https://tokio.rs/tokio/tutorial){:target="x"}, I discovered it handled everything I needed.
+Sometimes it's fun to know how stuff runs under the covers, and sometimes you just
+want to get shit done. Tokio excels at that part.
+It makes concurrency a lot more ergonomic. I highly recommend it.
