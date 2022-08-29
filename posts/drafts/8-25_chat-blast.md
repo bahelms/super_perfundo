@@ -14,16 +14,18 @@ monte-carlo.png
 Hello there! I've been playing with Rust for years now, but I've never gotten
 around to using it asynchronously. I thought I should change this and write something
 simple yet useful enough for learning. A TCP chat server! First, let's define the
-problem. Code link
+problem.
+
+_All the code for this can be found [here](https://github.com/bahelms/chat_blast){:target="x"}._
 
 ### What is a TCP chat server?
 
-As a user, I want to connect to a remote chat room in my terminal (it's the 80s) and type
-messages that everybody else in the room, also remotely connected, can read. This
-means we need a client to send messages and a server to handle them. The first part
+As a user, I want to connect to a remote chat room in my terminal (it's the 80s) and send
+messages that anyone else who's connected can read. This
+means we need a client to send those messages and a server to handle them. The first part
 is super easy. We'll just use [Netcat](https://en.wikipedia.org/wiki/Netcat){:target="x"}
 as our client for now. It's probably already on your machine. This will let us
-focus on writing the server. We would probably want to write our own client if
+focus on writing the server. We might want to write our own client if
 we wanted to get fancy with a Chat Blast UI. Let's avoid that for now.
 
 For development, the server will be running on 127.0.0.1 on an arbitrary unused
@@ -58,10 +60,10 @@ The async/await feature comes with
 Rust, but Tokio makes it easier to use by treating async functions like tasks that
 it schedules for you. All you need to do is wait for them to finish. Tasks are good
 to use when you're waiting for a lot of IO operations. If you're doing lots of
-CPU computation, multithreading would be a better approach.
+CPU computation, multithreading might be a better approach.
 
-`#[tokio::main]` is an attribute-like procedural macro. It's a convenient way to
-set up the Tokio runtime. It converts the `main` function into this:
+`#[tokio::main]` is an attribute-like procedural macro. It's simply a convenient way to
+set up the Tokio runtime by converting `main` into this:
 
 ```rust
 fn main() {
@@ -94,7 +96,7 @@ pub async fn start(address: String, port: String) {
         });
     }
 ```
-In the server start function, the given socket address is bound using the Tokio
+In the `start` function, the given socket address is bound using the Tokio
 `TcpListener`. We then enter an infinite loop and accept any incoming socket
 connection. This blocks execution while it waits for a connection to come in.
 Now the server is on and waiting for clients to join.
@@ -103,9 +105,9 @@ Now the server is on and waiting for clients to join.
 
 Look at that! Our first customer. When Netcat makes the TCP connection, our listener
 will return a tuple that holds the socket stream and its address. Since we want
-to handle many connections at once (lot's of people are going to be chatting, I can't wait!),
-we'll create a task for each one with `tokio::spawn`.
-The stream data ownership will be passed to the async block given to `spawn`.
+to handle a lot of connections at once (lot's of people are going to be chatting, I can't wait!),
+we'll create an async task for each one with `tokio::spawn`.
+The stream and addr ownerships will be passed to the async block given to `spawn`.
 That's what `move` does. Then we await the `handle_stream` function.
 
 ```rust
@@ -128,7 +130,7 @@ and then put them in the buffer, a string in this case.
 This is a blocking operation; if nothing is in the socket, the reader says,
 "__EVERYBODY SHHHHH!__ _I'm listening..._".
 
-This is where spawning a task becomes necessary.
+And this is why we spawned a task.
 Let's say we're on a single thread and we have many tasks doing important things.
 If one of them stops to take a break, we don't want to prevent the others from working, too.
 When a task blocks on IO, Tokio will raise an eyebrow and put that task back in the box
@@ -142,7 +144,7 @@ possible. It's similar to the `match` statement where branches are
 matched to patterns. The branches in this `select!`, however, are futures that are
 awaited on. The first one that returns and matches its pattern is the branch that gets evaluated.
 If the return value does not match the pattern, the `select!` drops it and waits for another future.
-Since this is encompassed in an infinite loop, after a line is read and that branch evaluated,
+Due to the infinite loop, after a line is read and that branch evaluated,
 the process begins again and waits for more data to enter the stream.
 We only have one branch currently, but this will be important when we add another branch
 later. First thing's first though: we got a message from the stream! What do we
@@ -184,17 +186,17 @@ pub async fn start(address: String, port: String) {
     }
 }
 ```
-In the `start` function, we add in the use of the Tokio broadcast channel.
+In the `start` function, we create a Tokio broadcast channel.
 If you know Go, you'll be familiar with the concept. You set the maximum number
 of values to be stored in the channel, and you get a tuple containing a transmitter
 and receiver. Calling `send` on the transmitter puts a value in the channel, and
 using `recv` on the receiver gets the value out. This broadcast allows for a multiple-producer,
-multiple consumer communication method. We can `clone` and `subscribe` on the transmitter
-to get a new transmitter and receiver respectively. We can do this in each loop
-iteration and move them into the newly spawned task.
+multiple consumer communication method. We can `clone` and `subscribe` the transmitter
+to get new transmitters and receivers respectively, and move them into the
+spawned tasks of each iteration.
 
 ### Consumption
-Now the message has been sent to the channel. All the other tasks need to pick it
+The message has been sent to the channel, and all the other tasks need to pick it
 up and write it to their streams. But how are they supposed to do that when they are
 blocked while waiting for a read? Back to `tokio::select!`!
 
@@ -216,17 +218,17 @@ loop {
 }
 ```
 Now we can see the power. The select `await`s on `read_line` and `recv` (they are both async).
-Whichever branch finishes first will execute (those variable patterns match anything).
-Then the loop will start over and wait for a read or write. Beautiful!
+Whichever one finishes first will have their branch executed (those variable patterns match anything).
+Then the loop will start over and wait for another read or write. Beautiful!
 
 One more thing to note is how to avoid broadcasting a message to the same socket
 that it was read from. We can do this by including a unique task identifier with the
 message and avoid writing to that stream if it's from the same task. That's what the
-`addr` variable is used for (it comes from `accept` remember?)
+`addr` variable is used for (it comes from `accept` remember).
 
 ```rust
 #[derive(Debug, Clone)]
-struct Event(SocketAddr, Message);
+struct Event(SocketAddr, Message); // tuple struct
 
 // publish
 publisher.send(Event(addr, message))
