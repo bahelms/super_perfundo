@@ -30,7 +30,7 @@ For development, the server will be running on 127.0.0.1 on an arbitrary unused
 port, 4888. To connect with netcat we use `nc localhost 4888`, which does absolutely
 nothing right now since there is no server. How bout we fix that!
 
-### Rusty server
+### A rusty server
 
 ```rust
 // main.rs
@@ -99,7 +99,7 @@ In the server start function, the given socket address is bound using the Tokio
 connection. This blocks execution while it waits for a connection to come in.
 Now the server is on and waiting for clients to join.
 
-    nc localhost 4888
+    $ nc localhost 4888
 
 Look at that! Our first customer. When Netcat makes the TCP connection, our listener
 will return a tuple that holds the socket stream and its address. Since we want
@@ -107,7 +107,6 @@ to handle many connections at once (lot's of people are going to be chatting, I 
 we'll create a task for each one with `tokio::spawn`.
 The stream data ownership will be passed to the async block given to `spawn`.
 That's what `move` does. Then we await the `handle_stream` function.
-This one is cool. You'll see why later. :D
 
 ```rust
 async fn handle_stream(stream: TcpStream, addr: std::net::SocketAddr) {
@@ -115,7 +114,7 @@ async fn handle_stream(stream: TcpStream, addr: std::net::SocketAddr) {
     let mut buffer = String::new();
     loop {
         tokio::select! {
-            result = reader.read_line(&mut buffer) => {
+            read_result = reader.read_line(&mut buffer) => {
                 // chat message received!
             }
         }
@@ -123,11 +122,119 @@ async fn handle_stream(stream: TcpStream, addr: std::net::SocketAddr) {
 }
 ```
 When a user types in a message and hits enter, those bytes are sent into the socket.
-If you've never worked with sockets before, they are just files!
-That let's us read from the socket like it's a text file. `BufReader#read_line`
-will read bytes from the stream until a newline is found and use a string as a storage buffer.
-This is a blocking operation; if nothing is in socket, the reader waits for something
-to show up. This is where spawning a task comes into play.
-Since this is one of many tasks, Tokio will move to the next available task that is not
-blocked. Perhaps another client already typed something, so there is data that has
-been read from its socket. Execution will be moved to that task and continue from there.
+If you've never worked with sockets before, they're treated just like files!
+`BufReader#read_line` will read bytes from the stream until a newline is found
+and then put them in the buffer, a string in this case.
+This is a blocking operation; if nothing is in the socket, the reader says,
+"__EVERYBODY SHHHHH!__ _I'm listening..._".
+
+This is where spawning a task becomes necessary.
+Let's say we're on a single thread and we have many tasks doing important things.
+If one of them stops to take a break, we don't want to prevent the others from working, too.
+When a task blocks on IO, Tokio will raise an eyebrow and put that task back in the box
+and switch execution over to the next available task. Eventually, when the first
+one is no longer blocked, it will continue where it left off. Tokio also does this
+using multithreading, passing tasks across threads, but that is an implementation detail.
+
+#### tokio::select!
+Now, the `tokio::select!` macro is the shining jewel that made this whole chat server
+possible. It's similar to the `match` statement where branches are
+matched to patterns. The branches in this `select!`, however, are futures that are
+awaited on. The first one that returns and matches its pattern is the branch that gets evaluated.
+If the return value does not match the pattern, the `select!` drops it and waits for another future.
+Since this is encompassed in an infinite loop, after a line is read and that branch evaluated,
+the process begins again and waits for more data to enter the stream.
+We only have one branch currently, but this will be important when we add another branch
+later. First thing's first though: we got a message from the stream! What do we
+do with it?
+
+### Handle a message
+We have two things to work with, the result of reading and the message itself.
+If the read was successful, we need to broadcast the message to all the other streams
+that are open.
+```rust
+match read_result {
+    Ok(_bytes_read) => {
+        publisher
+            .send(Event(addr, message))
+            .expect("Error publishing message.");
+    }
+    Err(e) => {
+        println!("Error reading stream: {}", e);
+    }
+}
+```
+Wait a minute! Where'd that `publisher` come from? Has this post been proofread?
+Look here, I was witholding information until it was needed. Let's go back and
+add the code to get a publisher.
+
+```rust
+// server.rs
+use tokio::sync::broadcast;
+
+pub async fn start(address: String, port: String) {
+    let (tx, _) = broadcast::channel(32);
+    loop {
+        // ...
+        let publisher = tx.clone();
+        let consumer = tx.subscribe();
+        tokio::spawn(async move {
+            handle_stream(stream, publisher, consumer, addr).await;
+        });
+    }
+}
+```
+In the `start` function, we add in the use of the Tokio broadcast channel.
+If you know Go, you'll be familiar with the concept. You set the maximum number
+of values to be stored in the channel, and you get a tuple containing a transmitter
+and receiver. Calling `send` on the transmitter puts a value in the channel, and
+using `recv` on the receiver gets the value out. This broadcast allows for a multiple-producer,
+multiple consumer communication method. We can `clone` and `subscribe` on the transmitter
+to get a new transmitter and receiver respectively. We can do this in each loop
+iteration and move them into the newly spawned task.
+
+### Consumption
+Now the message has been sent to the channel. All the other tasks need to pick it
+up and write it to their streams. But how are they supposed to do that when they are
+blocked while waiting for a read? Back to `tokio::select!`!
+
+```rust
+loop {
+    tokio::select! {
+        read_result = reader.read_line(&mut buffer) => {
+            // chat message received, publish it!
+        }
+
+        event = consumer.recv() => {
+            let Event(id, msg) = event.expect("Parsing event failed");
+            if id != addr {
+                let formatted_msg = format!("[{}]: {}", id, msg);
+                let _ = reader.write(formatted_msg.as_bytes()).await.expect("Broadcast write failed");
+            }
+        }
+    }
+}
+```
+Now we can see the power. The select `await`s on `read_line` and `recv` (they are both async).
+Whichever branch finishes first will execute (those variable patterns match anything).
+Then the loop will start over and wait for a read or write. Beautiful!
+
+One more thing to note is how to avoid broadcasting a message to the same socket
+that it was read from. We can do this by including a unique task identifier with the
+message and avoid writing to that stream if it's from the same task. That's what the
+`addr` variable is used for (it comes from `accept` remember?)
+
+```rust
+#[derive(Debug, Clone)]
+struct Event(SocketAddr, Message);
+
+// publish
+publisher.send(Event(addr, message))
+// consume
+let Event(id, msg) = event.expect("Parsing event failed");
+if id != addr {
+    // write to stream
+}
+```
+
+### Final Summation
