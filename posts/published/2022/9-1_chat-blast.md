@@ -1,5 +1,5 @@
 ==title==
-Chat Blast! A TCP chat server in Rust.
+Chat Blast! A TCP chat server in Rust
 
 ==tags==
 rust, networking, async, tokio
