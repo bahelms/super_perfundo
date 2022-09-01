@@ -32,7 +32,7 @@ using a DB is novel and interesting, if not always practical in production.
 But it's not just reading a file and rendering it upon request. The posts 
 themselves are compiled into the app, so they are already in memory! Here's the
 magic:
-```
+```elixir
 defmodule SuperPerfundo.Blog do
   alias SuperPerfundo.Blog.Post
 
