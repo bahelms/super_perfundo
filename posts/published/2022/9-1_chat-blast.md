@@ -46,8 +46,8 @@ async fn main() {
 }
 ```
 It's a good idea to keep the main file pretty clean. It's responsible for handling
-inputs and starting the program. When business logic lives elsewhere, it's reuseable
-and easier to test. Speaking of reuseablility, you'll notice that I've hardcoded
+inputs and starting the program. When business logic lives elsewhere, it's reusable
+and easier to test. Speaking of reusablility, you'll notice that I've hardcoded
 the socket's address. If you deploy this to production, you'll probably want to change
 that. The address is passed to a function that will start the server. That
 function lives in another file named `server.rs`. `mod server` tells the
