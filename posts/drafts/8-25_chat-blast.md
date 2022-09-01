@@ -23,10 +23,10 @@ _All the code for this can be found [here](https://github.com/bahelms/chat_blast
 As a user, I want to connect to a remote chat room in my terminal (it's the 80s) and send
 messages that anyone else who's connected can read. This
 means we need a client to send those messages and a server to handle them. The first part
-is super easy. We'll just use [Netcat](https://en.wikipedia.org/wiki/Netcat){:target="x"}
-as our client for now. It's probably already on your machine. This will let us
+is super easy; we'll use [Netcat](https://en.wikipedia.org/wiki/Netcat){:target="x"}.
+It's probably already on your machine. This will let us
 focus on writing the server. We might want to write our own client if
-we wanted to get fancy with a Chat Blast UI. Let's avoid that for now.
+we want to get fancy with a Chat Blast UI. Let's avoid that for now.
 
 For development, the server will be running on 127.0.0.1 on an arbitrary unused
 port, 4888. To connect with netcat we use `nc localhost 4888`, which does absolutely
@@ -74,7 +74,7 @@ fn main() {
 }
 ```
 
-Async functions return lazy `Future` types that do nothing until `.await` is called
+Async functions return lazy `Future` types that do nothing until `await` is called
 on them. You can only await a future while inside an async function, which is why
 main is labelled as async. We've started the server, and now we're waiting for it
 to do something.
@@ -97,18 +97,19 @@ pub async fn start(address: String, port: String) {
     }
 ```
 In the `start` function, the given socket address is bound using the Tokio
-`TcpListener`. We then enter an infinite loop and accept any incoming socket
-connection. This blocks execution while it waits for a connection to come in.
-Now the server is on and waiting for clients to join.
+`TcpListener`. We then enter an infinite loop and listen for and accept incoming socket
+connections, which blocks execution during this waiting period.
+The server is officially on and waiting for clients to join.
 
     $ nc localhost 4888
 
 Look at that! Our first customer. When Netcat makes the TCP connection, our listener
 will return a tuple that holds the socket stream and its address. Since we want
 to handle a lot of connections at once (lot's of people are going to be chatting, I can't wait!),
-we'll create an async task for each one with `tokio::spawn`.
-The stream and addr ownerships will be passed to the async block given to `spawn`.
-That's what `move` does. Then we await the `handle_stream` function.
+we'll create an async task for each one by giving an async block to `tokio::spawn`.
+Defining the block with `move` means the stream and addr ownerships will be 
+passed into the block and will no longer be usable in this scope, which is fine.
+Then we await the `handle_stream` function.
 
 ```rust
 async fn handle_stream(stream: TcpStream, addr: std::net::SocketAddr) {
@@ -133,25 +134,25 @@ This is a blocking operation; if nothing is in the socket, the reader says,
 And this is why we spawned a task.
 Let's say we're on a single thread and we have many tasks doing important things.
 If one of them stops to take a break, we don't want to prevent the others from working, too.
-When a task blocks on IO, Tokio will raise an eyebrow and put that task back in the box
+When a task blocks, on IO for example, Tokio will raise an eyebrow and put that task back in the box
 and switch execution over to the next available task. Eventually, when the first
 one is no longer blocked, it will continue where it left off. Tokio also does this
 using multithreading, passing tasks across threads, but that is an implementation detail.
 
 #### tokio::select!
-Now, the `tokio::select!` macro is the shining jewel that made this whole chat server
+The `tokio::select!` macro is the shining jewel that made this whole chat server
 possible. It's similar to the `match` statement where branches are
 matched to patterns. The branches in this `select!`, however, are futures that are
 awaited on. The first one that returns and matches its pattern is the branch that gets evaluated.
 If the return value does not match the pattern, the `select!` drops it and waits for another future.
 Due to the infinite loop, after a line is read and that branch evaluated,
 the process begins again and waits for more data to enter the stream.
-We only have one branch currently, but this will be important when we add another branch
+We only have one branch currently, but this will be important when we add more functionality
 later. First thing's first though: we got a message from the stream! What do we
 do with it?
 
 ### Handle a message
-We have two things to work with, the result of reading and the message itself.
+We have two things to work with, the result of the reading and the message itself.
 If the read was successful, we need to broadcast the message to all the other streams
 that are open.
 ```rust
@@ -187,18 +188,19 @@ pub async fn start(address: String, port: String) {
 }
 ```
 In the `start` function, we create a Tokio broadcast channel.
-If you know Go, you'll be familiar with the concept. You set the maximum number
-of values to be stored in the channel, and you get a tuple containing a transmitter
-and receiver. Calling `send` on the transmitter puts a value in the channel, and
+You set the maximum number of values to be stored in the channel, 
+and you get a tuple containing a transmitter and receiver. If you know Go, 
+you'll be familiar with the concept. 
+Calling `send` on the transmitter puts a value in the channel, and
 using `recv` on the receiver gets the value out. This broadcast allows for a multiple-producer,
 multiple consumer communication method. We can `clone` and `subscribe` the transmitter
-to get new transmitters and receivers respectively, and move them into the
-spawned tasks of each iteration.
+to get new transmitters and receivers, respectively, and move them into the
+spawned tasks on each iteration.
 
 ### Consumption
 The message has been sent to the channel, and all the other tasks need to pick it
-up and write it to their streams. But how are they supposed to do that when they are
-blocked while waiting for a read? Back to `tokio::select!`!
+up and write it to their streams. But how are they supposed to do that while they are
+blocked waiting for a read? Back to `tokio::select!`!
 
 ```rust
 loop {
@@ -217,8 +219,10 @@ loop {
     }
 }
 ```
-Now we can see the power. The select `await`s on `read_line` and `recv` (they are both async).
+Now we can see the power. The select awaits on `read_line` and `recv` (they are both async).
 Whichever one finishes first will have their branch executed (those variable patterns match anything).
+When a message arrives on the channel, it will be written to the stream through the `reader`
+(yeah I was confused to).
 Then the loop will start over and wait for another read or write. Beautiful!
 
 One more thing to note is how to avoid broadcasting a message to the same socket
@@ -227,7 +231,7 @@ message and avoid writing to that stream if it's from the same task. That's what
 `addr` variable is used for (it comes from `accept` remember).
 
 ```rust
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone)] // automatic trait implementation
 struct Event(SocketAddr, Message); // tuple struct
 
 // publish
@@ -245,15 +249,18 @@ Remember that concurrency is not parallelism. You can achieve high concurrency o
 in one thread. Vanilla async Rust acts simiarly to coroutines in Python, goroutines
 in Go, and processes in Elixir (although they all differ in implementation). They
 are green threads, which means application code manages the execution contexts rather
-than the OS. They're great for heavy IO use as opposed to CPU.
+than the OS. This generally happens in one actual OS thread, but the scheduler may also
+use multiple OS threads as an implementation detail. Green threads are great for 
+heavy IO use as opposed to CPU crunching.
 
 My initial attempt at this server stayed in the standard lib by using
 `std::thread` to manage threads directly and `std::sync::mpsc` to communicate between them.
 I ran into pain when trying to figure out how to make a thread read data from the
 socket AND from the channel without blocking either. MPSC
 (multi-producer, single consumer) was also not
-the paradigm I was going for. After reading through the
-[Tokio tutorial](https://tokio.rs/tokio/tutorial){:target="x"}, I discovered it handled everything I needed.
+the paradigm I was going for, but it seemed to be the only channel structure offered by stdlib. 
+After reading through the [Tokio tutorial](https://tokio.rs/tokio/tutorial){:target="x"}, 
+I discovered it was built to handle everything I needed.
 Sometimes it's fun to know how stuff runs under the covers, and sometimes you just
 want to get shit done. Tokio excels at that part.
-It makes concurrency a lot more ergonomic. I highly recommend it.
+It makes concurrency a lot more ergonomic, and I highly recommend it.
