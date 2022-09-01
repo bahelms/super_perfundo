@@ -35,40 +35,48 @@ Setting up a Rust NIF is trivial: `mix rustler.new --name quarto_ai`. This creat
 directory containing a [Cargo](https://doc.rust-lang.org/cargo/){:target="x"} project with an example NIF. Let's set it up to be a
 replacement for the existing AI function. The format is fairly easy to follow:
 
-    #[rustler::nif]
-    fn choose_position_and_next_piece(board: SomeType, active_piece: SomeType) -> SomeType {
-      ...
-    }
+```rust
+#[rustler::nif]
+fn choose_position_and_next_piece(board: SomeType, active_piece: SomeType) -> SomeType {
+    ...
+}
 
-    rustler::init!("Elixir.SuperPerfundo.Quarto.AI", [choose_position_and_next_piece]);
+rustler::init!("Elixir.SuperPerfundo.Quarto.AI", [choose_position_and_next_piece]);
+```
 
 That defines the function and specifies where it will be accessible in Elixir.
 The client usage stays the same:
 
-    alias SuperPerfundo.Quarto.AI
-    {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
+```elixir
+alias SuperPerfundo.Quarto.AI
+{position, next_piece} = AI.choose_position_and_next_piece(board, piece)
+```
 
 We need to tell the AI module to use the function defined in the NIF. In the process,
 we'll also rip out the old AI and replace it with a default implementation in the event the NIF fails:
 
-    defmodule SuperPerfundo.Quarto.AI do
-      use Rustler, otp_app: :super_perfundo, crate: "quarto_ai"
+```elixir
+defmodule SuperPerfundo.Quarto.AI do
+  use Rustler, otp_app: :super_perfundo, crate: "quarto_ai"
 
-      def choose_position_and_next_piece(_board, _active_piece),
-        do: :erlang.nif_error(:nif_not_loaded)
-    end
+  def choose_position_and_next_piece(_board, _active_piece),
+    do: :erlang.nif_error(:nif_not_loaded)
+end
+```
 
 Since NIFs are just functions wrapped in an Elixir module,
 we can test them normally with `mix test`. Our function returns a tuple of integers
 representing the board position chosen for the given piece and the next piece
 chosen for the player to place. We can test this like so (remember the return values are random):
 
-    test "an index of the board is returned" do
-      board = {nil, nil, 8, nil}
-      {position, _piece} = AI.choose_position_and_next_piece(board, 10)
-      assert position >= 0 && position < tuple_size(board)
-      refute position == 2
-    end
+```elixir
+test "an index of the board is returned" do
+  board = {nil, nil, 8, nil}
+  {position, _piece} = AI.choose_position_and_next_piece(board, 10)
+  assert position >= 0 && position < tuple_size(board)
+  refute position == 2
+end
+```
 
 We're representing the board as a tuple of integers (pieces) or nil (no piece).
 Passing integers into the NIF is straightforward; they map to Rust type `i32`. But,
@@ -76,56 +84,70 @@ what about `nil`? How do we handle a tuple of mixed types? Unfortunately, the Ru
 documentation is lacking, so it took some digging and experimentation to figure out
 the correct types to use. The working signature:
 
-    fn choose_position_and_next_piece(board: rustler::Term, active_piece: i32) -> (usize, i32)
+```rust
+fn choose_position_and_next_piece(board: rustler::Term, active_piece: i32) -> (usize, i32)
+```
 
 `Term` is a Rustler type that covers all Elixir terms, meaning any type. In order
 to use the board, we convert the `Term` into a vector of terms with `get_tuple`,
 which returns a `Result`:
 
-    use rustler::types::tuple::get_tuple;
-    let positions = get_tuple(board).expect("Error getting board tuple.");
+```rust
+use rustler::types::tuple::get_tuple;
+let positions = get_tuple(board).expect("Error getting board tuple.");
+```
 
 Now all that's left is to translate the old logic from Elixir to Rust. Which is easy if you already
 know both languages :D. First, collect all the empty positions and played pieces in one swoop:
 
-    let mut empty_positions = Vec::new();
-    let mut played_pieces = HashSet::from([active_piece]);
-    for (idx, pos) in positions.iter().enumerate() {
-        # Board elements are either nil or an integer.
-        # In Elixir, nil is just an atom.
-        # Otherwise, decode the Term into an i32.
-        if pos.is_atom() {
-            empty_positions.push(idx);
-        } else {
-            played_pieces.insert(pos.decode().expect("Position isn't an i32"));
-        }
+```rust
+let mut empty_positions = Vec::new();
+let mut played_pieces = HashSet::from([active_piece]);
+for (idx, pos) in positions.iter().enumerate() {
+    // Board elements are either nil or an integer.
+    // In Elixir, nil is just an atom.
+    // Otherwise, decode the Term into an i32.
+    if pos.is_atom() {
+        empty_positions.push(idx);
+    } else {
+        played_pieces.insert(pos.decode().expect("Position isn't an i32"));
     }
+}
+```
 
 Pick one of the empty positions at random:
 
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    let index: usize = rng.gen_range(0..empty_positions.len());
-    let chosen_position = empty_positions[index];
+```rust
+use rand::Rng;
+let mut rng = rand::thread_rng();
+let index: usize = rng.gen_range(0..empty_positions.len());
+let chosen_position = empty_positions[index];
+```
 
 Choose one of the remaining pieces at random:
 
-    let all_pieces: HashSet<i32> = (0..16).collect();
-    let remaining_pieces: Vec<&i32> = all_pieces.difference(&played_pieces).collect();
-    let random_piece_idx: usize = rng.gen_range(0..remaining_pieces.len());
-    let chosen_piece = *remaining_pieces[random_piece_idx];
+```rust
+let all_pieces: HashSet<i32> = (0..16).collect();
+let remaining_pieces: Vec<&i32> = all_pieces.difference(&played_pieces).collect();
+let random_piece_idx: usize = rng.gen_range(0..remaining_pieces.len());
+let chosen_piece = *remaining_pieces[random_piece_idx];
+```
 
 Make the player wait so they think they are facing a super intelligent opponent and
 may be defeated at any moment:
 
-    let one_second = time::Duration::from_secs(1);
-    thread::sleep(one_second);
+```rust
+let one_second = time::Duration::from_secs(1);
+thread::sleep(one_second);
+```
 
 And finally return the results as a tuple of type `(i32, i32)`:
 
-    # a type cast is needed to turn usize (the index type) into an i32
-    # usize is an unsigned integer the size of the computer architecture's word (32 or 64)
-    (chosen_position as i32, chosen_piece)
+```rust
+// a type cast is needed to turn usize (the index type) into an i32
+// usize is an unsigned integer the size of the computer architecture's word (32 or 64)
+(chosen_position as i32, chosen_piece)
+```
 
 Hooray! We have done it. What a sweet refactoring. Now, how the hell do we make this thing
 take over the world? Well, that's gonna be a lot of work it turns out. Let's be lazy
