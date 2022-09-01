@@ -40,23 +40,26 @@ That's a [nibble!](https://en.wikipedia.org/wiki/Nibble){:target="x"} Therefore,
 the most efficient way to model the pieces is to use the integers 0-15. After 
 deciding that, I picked an arbitrary mapping of bit to property:
 
-    @property_map %{
-      shape: %{"0" => "cube", "1" => "cylinder"},
-      size: %{"0" => "short", "1" => "tall"},
-      fill: %{"0" => "solid", "1" => "hollow"},
-      color: %{"0" => "light", "1" => "dark"}
-    }
+```elixir
+@property_map %{
+  shape: %{"0" => "cube", "1" => "cylinder"},
+  size: %{"0" => "short", "1" => "tall"},
+  fill: %{"0" => "solid", "1" => "hollow"},
+  color: %{"0" => "light", "1" => "dark"}
+}
+```
 
 To enforce the order of the bits (again arbitrarily chosen), I convert
 the integer to a string of base 2 digits and extract the values in a pattern match.
 This tells me that number seven (`0101`) represents a tall, dark, solid cube. I
 think that's pretty cool:
 
-    <<shape, size, fill, color>> = 
-      7
-      |> Integer.to_string(2)
-      |> String.pad_leading(4, "0")
-
+```elixir
+<<shape, size, fill, color>> =
+  7
+  |> Integer.to_string(2)
+  |> String.pad_leading(4, "0")
+```
 
 #### Board
 Now that I know what the pieces look like, how do I place them? The board is a 
@@ -65,7 +68,9 @@ that it contains sixteen positions that can be chosen at random. This means I ne
 a collection that is hardcoded to a capacity of 16 and provides efficient random 
 access. In Elixir, that structure is the tuple. Here's what a random board looks like:
 
-    {nil, 0, nil, nil, nil, 13, nil, nil, 2, nil, nil, nil, nil, 10, nil, nil}
+```elixir
+{nil, 0, nil, nil, nil, 13, nil, nil, 2, nil, nil, nil, nil, 10, nil, nil}
+```
 
 This is the source of truth of played pieces. In order to display the remaining 
 pieces from which a player must select, I convert the board into a set
@@ -101,42 +106,44 @@ match of the single property shared by all numbers in this example.
 To see if four in a row exists on the board, this check must run for every direction 
 (vertical, horizontal, diagonal). The shortened Elixir for doing this:
 
-    import Bitwise
+```elixir
+import Bitwise
 
-    @match_positions [
-      [0, 1, 2, 3],
-      [4, 5, 6, 7],
-      [8, 9, 10, 11],
-      [12, 13, 14, 15],
-      [0, 4, 8, 12],
-      [1, 5, 9, 13],
-      [2, 6, 10, 14],
-      [3, 7, 11, 15],
-      [0, 5, 10, 15],
-      [3, 6, 9, 12]
-    ]
+@match_positions [
+  [0, 1, 2, 3],
+  [4, 5, 6, 7],
+  [8, 9, 10, 11],
+  [12, 13, 14, 15],
+  [0, 4, 8, 12],
+  [1, 5, 9, 13],
+  [2, 6, 10, 14],
+  [3, 7, 11, 15],
+  [0, 5, 10, 15],
+  [3, 6, 9, 12]
+]
 
-    def four_in_a_row?(board) do
-      Enum.find(@match_positions, fn positions ->
-        [one, two, three, four] = Enum.map(positions, &elem(board, &1))
-        left = match_pieces(one, two)
-        right = match_pieces(three, four)
+def four_in_a_row?(board) do
+  Enum.find(@match_positions, fn positions ->
+    [one, two, three, four] = Enum.map(positions, &elem(board, &1))
+    left = match_pieces(one, two)
+    right = match_pieces(three, four)
 
-        if any_matches?(left, right) do
-          match_pieces(one, three)
-          |> any_matches?(band(left, right))
-        end
-      end)
+    if any_matches?(left, right) do
+      match_pieces(one, three)
+      |> any_matches?(band(left, right))
     end
+  end)
+end
 
-    defp match_pieces(left, right) do
-      left
-      |> bxor(right)
-      |> bnot()
-      |> band(@twos_compliment_bitmask)
-    end
+defp match_pieces(left, right) do
+  left
+  |> bxor(right)
+  |> bnot()
+  |> band(@twos_compliment_bitmask)
+end
 
-    defp any_matches?(left, right), do: band(left, right) > 0
+defp any_matches?(left, right), do: band(left, right) > 0
+```
 
 A "gotcha" I found when implementing this is that negating the number converts it into a negative number.
 Getting the two's complement (`& 1111`) is necessary to find the true number I'm looking for.
@@ -154,44 +161,46 @@ Live Component. The properties of the piece determine which CSS classes to apply
 It was fairly straigtforward to make 3D cubes and cylinders with `transform`.
 For some added panache, when a piece is placed on the board, it has a nice intro animation.
 
-    # e.g. "1010"
-    defp nibble_to_piece(<<shape, size, fill, color>>) do
-      %Piece{
-        shape: @property_map.shape[<<shape>>],
-        size: @property_map.size[<<size>>],
-        fill: @property_map.fill[<<fill>>],
-        color: @property_map.color[<<color>>]
-      }
-    end
-    
-    def render(assigns) do
-      ~L"""
-      <div class="piece">
-        <%= if @piece.shape == "cube" do %>
-          <div class="cube">
-            <div class="side front <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="side back <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="side top <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="side bottom <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="side left <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="side right <%= @piece.size %> <%= @piece.color %>"></div>
-            <%= if @piece.fill == "hollow" do %>
-              <div class="hollow <%= @piece.size %>"></div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="cylinder <%= @piece.size %>">
-            <div class="bottom <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="middle <%= @piece.size %> <%= @piece.color %>"></div>
-            <div class="top <%= @piece.color %>"></div>
-            <%= if @piece.fill == "hollow" do %>
-              <div class="hollow"></div>
-            <% end %>
-          </div>
+```elixir
+# e.g. "1010"
+defp nibble_to_piece(<<shape, size, fill, color>>) do
+  %Piece{
+    shape: @property_map.shape[<<shape>>],
+    size: @property_map.size[<<size>>],
+    fill: @property_map.fill[<<fill>>],
+    color: @property_map.color[<<color>>]
+  }
+end
+
+def render(assigns) do
+  ~L"""
+  <div class="piece">
+    <%= if @piece.shape == "cube" do %>
+      <div class="cube">
+        <div class="side front <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="side back <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="side top <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="side bottom <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="side left <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="side right <%= @piece.size %> <%= @piece.color %>"></div>
+        <%= if @piece.fill == "hollow" do %>
+          <div class="hollow <%= @piece.size %>"></div>
         <% end %>
       </div>
-      """
-    end
+    <% else %>
+      <div class="cylinder <%= @piece.size %>">
+        <div class="bottom <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="middle <%= @piece.size %> <%= @piece.color %>"></div>
+        <div class="top <%= @piece.color %>"></div>
+        <%= if @piece.fill == "hollow" do %>
+          <div class="hollow"></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  """
+end
+```
 
 The board is just a flexbox of divs styled as circles. The only other thing of note
 is the Remaining Pieces container. It originally began as a modal for selecting
@@ -217,32 +226,36 @@ Let's say the user plays first. With no active piece, they can only perform the 
 action, choosing the piece for the opponent to play by clicking on one of the remaining
 pieces.
 
-    <div class="remaining-pieces">
-      <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
-        <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
-          <%= live_component(@socket, PieceComponent, piece: piece) %>
-        </div>
-      <% end %>
+```elixir
+<div class="remaining-pieces">
+  <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
+    <div phx-click="piece_chosen" phx-value-piece="<%= piece %>">
+      <%= live_component(@socket, PieceComponent, piece: piece) %>
     </div>
+  <% end %>
+</div>
+```
 
 This sends the `piece_chosen` event back to the server with the value of the piece,
 where the game logic is executed.
 
-    def handle_event("piece_chosen", %{"piece" => piece}, socket) do
-      with nil <- socket.assigns.winning_state,
-           nil <- socket.assigns.active_piece do
-        send(self(), :ai_start)
+```elixir
+def handle_event("piece_chosen", %{"piece" => piece}, socket) do
+  with nil <- socket.assigns.winning_state,
+        nil <- socket.assigns.active_piece do
+    send(self(), :ai_start)
 
-        {:noreply,
-         assign(socket,
-           active_piece: String.to_integer(piece),
-           active_player: :ai
-         )}
-      else
-        _ ->
-          {:noreply, socket}
-      end
-    end
+    {:noreply,
+      assign(socket,
+        active_piece: String.to_integer(piece),
+        active_player: :ai
+      )}
+  else
+    _ ->
+      {:noreply, socket}
+  end
+end
+```
 
 As long is there is no already active piece and no player has won yet 
 (to prevent undesirable game behavior from occuring), the AI's
@@ -250,12 +263,14 @@ turn begins and the state is updated accordingly. This will rerender only the ac
 active piece sections on the client and display a spinner while the asynchronous AI task 
 finishes making its decisions.
 
-    def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
-      {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
-      board = Board.set_piece(board, piece, position)
-      winning_state = Board.four_in_a_row?(board)
-      ...
-    end
+```elixir
+def handle_info(:ai_start, socket = %{assigns: %{board: board, active_piece: piece}}) do
+  {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
+  board = Board.set_piece(board, piece, position)
+  winning_state = Board.four_in_a_row?(board)
+  ...
+end
+```
 
 Once the AI has chosen the position to play and the piece to 
 pass to the user, the board is set, checked for a winning state, and then the 
@@ -263,30 +278,32 @@ socket updated, which in turn rerenders only the relevant parts of the client.
 The AI implementation used here is essentially a placeholder for the next iteration.
 Its decisions are entirely random and thus very easy to beat.
 
-    @doc """
-    Easiest AI ever! This picks a random position for the given piece and a random
-    piece to use next.
-    """
-    def choose_position_and_next_piece(board, active_piece) do
-      position =
-        board
-        |> open_positions()
-        |> Enum.take_random(1)
-        |> List.first()
+```elixir
+@doc """
+Easiest AI ever! This picks a random position for the given piece and a random
+piece to use next.
+"""
+def choose_position_and_next_piece(board, active_piece) do
+  position =
+    board
+    |> open_positions()
+    |> Enum.take_random(1)
+    |> List.first()
 
-      next_piece =
-        board
-        |> Board.remaining_pieces(active_piece)
-        |> Enum.take_random(1)
-        |> List.first()
+  next_piece =
+    board
+    |> Board.remaining_pieces(active_piece)
+    |> Enum.take_random(1)
+    |> List.first()
 
-      :timer.sleep(1000)
-      {position, next_piece}
-    end
+  :timer.sleep(1000)
+  {position, next_piece}
+end
 
-    defp open_positions(board) do
-      for index <- 0..15, !elem(board, index), do: index
-    end
+defp open_positions(board) do
+  for index <- 0..15, !elem(board, index), do: index
+end
+```
 
 This entire workflow of code (event -> server -> AI -> rerender) happens so
 fast, I needed to put in a one second delay to even see the "AI thinking" spinner.

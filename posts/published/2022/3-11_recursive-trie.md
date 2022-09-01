@@ -71,39 +71,47 @@ Let's figure out how the code is going to be used before actually writing it.
 Finding the interface to structures and algorithms tends to help drive their implementation.
 One way to build a trie is to add a word at a time:
 
-    trie =
-      Trie.new()
-      |> Trie.insert("apple")
-      |> Trie.insert("apes")
-      |> Trie.insert("beer")
-      |> Trie.insert("monkey")
-      |> Trie.insert("monks")
+```elixir
+trie =
+  Trie.new()
+  |> Trie.insert("apple")
+  |> Trie.insert("apes")
+  |> Trie.insert("beer")
+  |> Trie.insert("monkey")
+  |> Trie.insert("monks")
+```
 
 I like it. Let's go over those two functions in the `Trie` module, `new` and `insert`:
 
-    defmodule Trie do
-      def new, do: %{}
-    end
+```elixir
+defmodule Trie do
+  def new, do: %{}
+end
+```
 
 There's our root node; a humble empty map. Now for the easy function:
 
-    def insert(trie, word) do
-      insert_graphemes(trie, String.graphemes(word))
-    end
+```elixir
+def insert(trie, word) do
+  insert_graphemes(trie, String.graphemes(word))
+end
+```
 
 Our interface function breaks up the word string into a list of Unicode graphemes
 before passing it to the workhorse. If you've never heard of a grapheme, you're not alone.
 It's essentially a character, and it can consist of multiple code points.
 
-    defp insert_graphemes(trie, [grapheme | rest]) do
-      subtrie =
-        Map.get(trie, grapheme, %{})
-        |> insert_graphemes(rest)
+```elixir
+defp insert_graphemes(trie, [grapheme | rest]) do
+  subtrie =
+    Map.get(trie, grapheme, %{})
+    |> insert_graphemes(rest)
 
-      Map.put(trie, grapheme, subtrie)
-    end
+  Map.put(trie, grapheme, subtrie)
+end
 
-    defp insert_graphemes(trie, []), do: trie
+defp insert_graphemes(trie, []), do: trie
+```
 
 This recursion can be a little mind bending for the uninitiated. Let's take `"apple"` as our word;
 this makes the grapheme list `["a", "p", "p", "l", "e"]`. On first application, the `"a"` is
@@ -119,46 +127,56 @@ Therefore, when the base case is reached, the empty map is returned, bound to
 the `subtrie`, and `"e"` ends up pointing to this empty map. Here's a visual of
 the callstack and final data:
 
-    insert_graphemes(%{}, ["a" | ["p", "p", "l", "e"]])
-    insert_graphemes(%{}, ["p" | ["p", "l", "e"]])
-    insert_graphemes(%{}, ["p" | ["l", "e"]])
-    insert_graphemes(%{}, ["l" | ["e"]])
-    insert_graphemes(%{}, ["e" | []])
-    insert_graphemes(%{}, [])
-     
-    %{"a" => %{"p" => %{"p" => %{"l" => %{"e" => %{}}}}}}
+```elixir
+insert_graphemes(%{}, ["a" | ["p", "p", "l", "e"]])
+insert_graphemes(%{}, ["p" | ["p", "l", "e"]])
+insert_graphemes(%{}, ["p" | ["l", "e"]])
+insert_graphemes(%{}, ["l" | ["e"]])
+insert_graphemes(%{}, ["e" | []])
+insert_graphemes(%{}, [])
+
+%{"a" => %{"p" => %{"p" => %{"l" => %{"e" => %{}}}}}}
+```
 
 When we insert "apes" next, `"a"` now points to a map, and "pes"
 will be recursively inserted into it with the resulting trie being:
 
-    %{"a" =>
-      %{"p" =>
-        %{
-          "p" => %{"l" => %{"e" => %{}}},
-          "e" => %{"s" => %{}}
-        },
-      }
-    }
+```elixir
+%{"a" =>
+  %{"p" =>
+    %{
+      "p" => %{"l" => %{"e" => %{}}},
+      "e" => %{"s" => %{}}
+    },
+  }
+}
+```
 
 Beautiful! We've implemented our interface and constructed a trie! Now what do we
 do with it? Let's use it as a potty mouth catcher. Maybe we are running a chat
 server and want to filter out swear words
 and their leet code counterparts. We come across "$h1t". Is it bad? Ask the trie.
 
-    bad_words = %{"$" => %{"h" => %{"1" => %{"t" => %{}}}}}
-    Trie.exists?(bad_words, "$h1t") => true
+```elixir
+bad_words = %{"$" => %{"h" => %{"1" => %{"t" => %{}}}}}
+Trie.exists?(bad_words, "$h1t") => true
+```
 
 **GASP!** I knew it. But how does it work?
 
-    def exists?(trie, word) do
-      search_graphemes(trie, String.graphemes(word))
-    end
+```elixir
+def exists?(trie, word) do
+  search_graphemes(trie, String.graphemes(word))
+end
+```
 
 Once again, break the word into graphemes first.
 
-    defp search_graphemes(trie, [grapheme | rest]), do: search_graphemes(trie[grapheme], rest)
-    defp search_graphemes(trie, []) when trie == %{}, do: true
-    defp search_graphemes(_, _), do: false
+```elixir
+defp search_graphemes(trie, [grapheme | rest]), do: search_graphemes(trie[grapheme], rest)
+defp search_graphemes(trie, []) when trie == %{}, do: true
+defp search_graphemes(_, _), do: false
+```
 
 Oh man, Elixir is slick. One line for each method thanks to function signature pattern matching.
 We take the first grapheme and access its subtrie. Rinse and repeat for the rest
