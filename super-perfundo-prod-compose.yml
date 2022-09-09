@@ -11,6 +11,6 @@ services:
       - SENDGRID_API_KEY=$SENDGRID_API_KEY
       - AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-      - VIRTUAL_HOST=www.superperfundo.tech,superperfundo.tech
-      - LETSENCRYPT_HOST=www.superperfundo.tech,superperfundo.tech
+      - VIRTUAL_HOST=www.superperfundo.tech,superperfundo.tech,tr.superperfundo.tech
+      - LETSENCRYPT_HOST=www.superperfundo.tech,superperfundo.tech,tr.superperfundo.tech
 
