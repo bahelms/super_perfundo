@@ -76,3 +76,4 @@ config :phoenix, :plug_init_mode, :runtime
 
 config :super_perfundo, SuperPerfundo.Mailer, adapter: Bamboo.LocalAdapter
 config :super_perfundo, :email_list, "email-list-dev"
+config :super_perfundo, :analytics_src, "http://localhost:3214/umami.js"
