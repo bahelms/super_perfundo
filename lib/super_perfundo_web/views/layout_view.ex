@@ -12,4 +12,6 @@ defmodule SuperPerfundoWeb.LayoutView do
 
   def post_id(%{post: post}), do: post.id
   def post_id(_), do: ""
+
+  def analytics_src, do: Application.get_env(:super_perfundo, :analytics_src)
 end
