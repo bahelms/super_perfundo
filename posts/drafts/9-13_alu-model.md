@@ -93,8 +93,8 @@ fn not_gate_truth_table() {
     assert!(!not_gate(true));
 }
 
-pub fn not_gate(a: Bit) -> Bit {
-    !a
+pub fn not_gate(x: Bit) -> Bit {
+    !x
 }
 ```
 Voila! It's pretty neat how everything else you know about computers is built on
@@ -110,10 +110,81 @@ And then what? Since we are building our own, what should we make it do?
 Since it stands for arithmetic and logic, let's implement
 two simple operations for our simple ALU: equality and addition. Also, for simplicity's
 sake, let's make it an [8-bit](https://en.wikipedia.org/wiki/Nintendo_Entertainment_System){:target="x"} ALU.
+However, before we get to eight bits, we need to start with one.
 
 ### Equality
-- one bit equals
-- m-bit equals
+To compare two bits with each other, we need a circuit that takes two one-bit
+inputs and returns one bit that's a 1 when they're equal or a 0 when they're not.
+We need a truth table!
+```rust
+#[test]
+fn equals_truth_table() {
+    assert!(equals(false, false)); // 0 and 0 -> 1
+    assert!(!equals(true, false)); // 1 and 0 -> 0
+    assert!(!equals(false, true)); // 0 and 1 -> 0
+    assert!(equals(true, true));   // 1 and 1 -> 1
+}
+```
+This is actually a great scenario for using test-driven development. Given a truth
+table, find some combination of logic gates to satisfy every truth. If you want
+to take a break and paper napkin this one, be my guest. I'll wait.
+
+This will be easier to grok with a circuit diagram:
+<div class="flex" style="justify-content:center;">
+  <img class="md-image" style="width:60%;" src="<%= img_url.("equality-circuit.png") %>" alt="Equality Circuit" />
+</div>
+If either the AND of X and Y or the AND of the negation of X and Y is 1, then they
+are equal. This diagram can be mapped quite nicely to a function that passes all
+the test cases.
+```rust
+fn equals(x: Bit, y: Bit) -> Bit {
+    or_gate(
+        and_gate(not_gate(x), not_gate(y)),
+        and_gate(x, y)
+    )
+}
+```
+Great! We have a way of checking if two bits are equal. Except we are building an
+8-bit ALU, so we need to be able to check if two 8-bit values are equal. Since
+we're modeling indiviual bits with boolean values we use a collection of them to
+represent a byte.
+```rust
+// Example byte: 10100011
+let x = vec![true, false, true, false, false, false, true, true];
+let y = vec![true, false, true, false, false, false, true, true];
+m_bit_equals(x, y) == true;
+```
+Here we have identical vectors of bits standing in for X and Y. To support equality
+for these, we can compare the bit pairs individually with our `equals` function
+and return 0 (false) at the first pair that is not equal, otherwise 1 (true) if
+we've made it through the entire collection. This will also support any number of bits, not just eight.
+```rust
+fn m_bit_equals(x: Vec<Bit>, y: Vec<Bit>) -> Bit {
+    for (&x_bit, &y_bit) in x.iter().zip(y.iter()) {
+        if !equals(x_bit, y_bit) {
+            return false;
+        }
+    }
+    true
+}
+```
+### ALU v1
+Hooray! We have an 8-bit operation that we can put into the ALU. Let's create
+the simplest ALU ever!
+```rust
+const BITS: usize = 8;
+const EQ: Bit = false;
+
+pub fn alu(opcode: Bit, x: Vec<Bit>, y: Vec<Bit>) -> Vec<Bit> {
+    let mut result = vec![false; BITS];
+    result[BITS - 1] = m_bit_equals(x, y);
+    result
+}
+
+alu(EQ, x, y) == vec![false, false, false, false, false, false, false, true];
+```
+
+
 - add another op - one bit add
 - m-bit add
 - one bit two-way mux
