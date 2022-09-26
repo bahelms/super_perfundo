@@ -22,8 +22,9 @@ how computers work. It starts out going over the basics of C which in my opinion
 is the best first language to learn because it easily allows you to create a mental model of
 how your code is manipulating the hardware without also having to think about other
 things like safety (oh, the overhead). But the sweet spot of the book is where it describes
-how the computation itself works, starting with logic gates and going all the way up to multithreaded
-operating systems. Whew. I highly recommend reading it if you're not already familiar
+how the computation itself works, by manipulating electricity with logic gates
+and going all the way up to multithreaded operating systems.
+We are wizards wielding arcane magics. I highly recommend reading it if you're not already familiar
 with this stuff<a class="note-anchor" name="1'">[<sup>1</sup>](#1)</a>.
 
 The walk from logic gate to arithmetic logic unit (ALU) is fascinating, and it
@@ -152,7 +153,7 @@ represent a byte.
 // Example byte: 10100011
 let x = vec![true, false, true, false, false, false, true, true];
 let y = vec![true, false, true, false, false, false, true, true];
-m_bit_equals(x, y) == true;
+m_bit_equals(x, y) // -> true
 ```
 Here we have identical vectors of bits standing in for X and Y. To support equality
 for these, we can compare the bit pairs individually with our `equals` function
@@ -169,23 +170,99 @@ fn m_bit_equals(x: Vec<Bit>, y: Vec<Bit>) -> Bit {
 }
 ```
 ### ALU v1
-Hooray! We have an 8-bit operation that we can put into the ALU. Let's create
+Hooray! We have an 8-bit operation our machine can use. Let's create
 the simplest ALU ever!
 ```rust
 const BITS: usize = 8;
 const EQ: Bit = false;
 
-pub fn alu(opcode: Bit, x: Vec<Bit>, y: Vec<Bit>) -> Vec<Bit> {
+fn alu(_opcode: Bit, x: Vec<Bit>, y: Vec<Bit>) -> Vec<Bit> {
     let mut result = vec![false; BITS];
     result[BITS - 1] = m_bit_equals(x, y);
     result
 }
 
-alu(EQ, x, y) == vec![false, false, false, false, false, false, false, true];
+alu(EQ, x, y) // -> vec![false, false, false, false, false, false, false, true]
+```
+The `EQ` opcode is zero since it's the only one. We pass that and the two 8-bit
+vectors defined earlier to the ALU function. It returns one 8-bit vector which is initialized
+to `00000000`. The Mbit equals circuit is executed and the least significant bit of the return
+vector is set to the result. In this case, it's true since our compared vectors are identical.
+Therefore, the ALU returns `00000001`.
+The opcode is actually ignored right now, since there is only one operation.
+Let's change that and implement addition!
+
+### Addition
+This circuit is a bit more complicated than equality, so this time around we'll go straight
+to the diagram. The one bit adder:
+<div class="flex" style="justify-content:center;">
+  <img class="md-image" style="width:60%;" src="<%= img_url.("one-bit-adder.png") %>" alt="One bit adder" />
+</div>
+
+Remember, when dealing with addition, the sum may overflow the number base you are
+working with. It happens a lot in binary.
+```
+Base10                 Base2
+11       carry over    11
+ 245                    111  7
++781                   +101  5
+----                   ----
+1026                   1100  12
+```
+We can consider each column in the Base2 addition to be a one bit adder.
+It takes the two bits to add,
+and a carry-in bit from the previous adder. It returns the sum and a carry-over
+bit for the next adder. Here's the truth table and function signature:
+```rust
+#[test]
+fn one_bit_adder_truth_table() {
+    assert_eq!(one_bit_adder(false, false, false), (false, false));
+    assert_eq!(one_bit_adder(false, false, true), (true, false));
+    assert_eq!(one_bit_adder(true, false, false), (true, false));
+    assert_eq!(one_bit_adder(true, false, true), (false, true));
+    assert_eq!(one_bit_adder(false, true, false), (true, false));
+    assert_eq!(one_bit_adder(false, true, true), (false, true));
+    assert_eq!(one_bit_adder(true, true, false), (false, true));
+    assert_eq!(one_bit_adder(true, true, true), (true, true));
+}
+
+fn one_bit_adder(x: Bit, y: Bit, carry_in: Bit) -> (Bit, Bit) // (sum, carry_over)
+```
+Eagle eyed readers will notice that we are unable to implement the adder until we
+have one more tool to work with. The eXclusive OR gate! This gate returns 1 only
+when the two inputs are not equal and can be built from the three base gates:
+```rust
+#[test]
+fn xor_gate_truth_table() {
+    assert!(!xor_gate(false, false));
+    assert!(xor_gate(true, false));
+    assert!(xor_gate(false, true));
+    assert!(!xor_gate(true, true));
+}
+
+fn xor_gate(x: Bit, y: Bit) -> Bit {
+    or_gate(
+        and_gate(x, not_gate(y)),
+        and_gate(not_gate(x), y)
+    )
+}
+```
+And now the one bit adder! Try to visualize how this codifies the circuit diagram.
+```rust
+fn one_bit_adder(x: Bit, y: Bit, carry_in: Bit) -> (Bit, Bit) {
+    let half_sum = xor_gate(x, y);
+    let carry_over1 = and_gate(x, y);
+
+    let sum = xor_gate(half_sum, carry_in);
+    let carry_over2 = and_gate(half_sum, carry_in);
+
+    let carry_out = or_gate(carry_over1, carry_over2);
+    (sum, carry_out)
+}
 ```
 
 
-- add another op - one bit add
+
 - m-bit add
 - one bit two-way mux
 - m-bit two-way mux
@@ -195,4 +272,4 @@ do it
 
 
 #### Notes
-* <a name="1">[1](#1')</a>: [The Elements of Computing Systems](https://www.nand2tetris.org/book){:target="x"} is another similar book, but instead of just describing it, you actually build the stuff with code.
+* <a name="1">[1](#1')</a>: [The Elements of Computing Systems](https://www.nand2tetris.org/book){:target="x"} is another similar book, but instead of just describing it, you actually build the stuff with hands on code.
