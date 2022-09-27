@@ -226,7 +226,7 @@ fn one_bit_adder_truth_table() {
     assert_eq!(one_bit_adder(true, true, true), (true, true));
 }
 
-fn one_bit_adder(x: Bit, y: Bit, carry_in: Bit) -> (Bit, Bit) // (sum, carry_over)
+fn one_bit_adder(x: Bit, y: Bit, carry_in: Bit) -> (Bit, Bit) // (sum, carry_out)
 ```
 Eagle eyed readers will notice that we are unable to implement the adder until we
 have one more tool to work with. The eXclusive OR gate! This gate returns 1 only
@@ -260,16 +260,126 @@ fn one_bit_adder(x: Bit, y: Bit, carry_in: Bit) -> (Bit, Bit) {
     (sum, carry_out)
 }
 ```
+But of course, we need to handle adding 8-bit numbers.
+```rust
+fn m_bit_adder(bits: usize, x: Vec<Bit>, y: Vec<Bit>) -> (Vec<Bit>, Bit) {
+    let mut sum = vec![false; bits];
+    let mut carry_out = false;
+    let matched_bits: Vec<(&Bit, &Bit)> = x.iter().zip(y.iter()).collect();
 
+    for idx in (0..bits).rev() {
+        let (&a_bit, &b_bit) = matched_bits[idx];
+        let result = one_bit_adder(a_bit, b_bit, carry_out);
+        sum[idx] = result.0;
+        carry_out = result.1;
+    }
 
+    (sum, carry_out)
+}
+```
+Initialize the sum at 00000000, and carry over at 0. Pair all the bits together with `zip`.
+Starting with the least significant bit (the highest index), go over each pair
+and put them through the one bit adder. With each result, put that pair's sum into
+that index of the total sum and store the carry over. At the end, you have the
+full sum and a remaining carry out. Now, let's see how we can add this new operation to the ALU!
 
-- m-bit add
-- one bit two-way mux
-- m-bit two-way mux
+### Another circuit, really?
+
+The interesting thing about the operations in an ALU is that they are all executed
+at the same time. They're just circuits, so the electrical charges sent into the ALU
+run through all the operational circuits contained therein. In our ALU, when we
+provide the operands, the equality circuit AND the addition circuit will both be
+lit up and produce a value. It's the opcode that decides which one is actually
+chosen for output. How is this conditional logic implemented, you ask?
+Why, with a multiplexer!
+
+### The Multiplexer!
+This is a control circuit that selects one of multiple inputs. In the case of two
+one bit values, a single select bit is also passed in to determine which of the two
+inputs will be selected. This is a one bit two way multiplexer. As usual, the truth
+table:
+```rust
+#[test]
+fn two_way_mux_truth_table() {
+    assert!(!two_way_mux(false, false, false));
+    assert!(two_way_mux(false, true, false));
+    assert!(!two_way_mux(true, false, false));
+    assert!(two_way_mux(true, true, false));
+    assert!(!two_way_mux(false, false, true));
+    assert!(!two_way_mux(false, true, true));
+    assert!(two_way_mux(true, false, true));
+    assert!(two_way_mux(true, true, true));
+}
+```
+Like the XOR gate, multiplexers can be built from just the three basic gates:
+```rust
+fn two_way_mux(a: Bit, b: Bit, select: Bit) -> Bit {
+    or_gate(
+        and_gate(a, select),
+        and_gate(b, not_gate(select))
+    )
+}
+```
+Using this one bit mux, we can build an M-bit mux. We only have two operations
+to choose from, so it remains two-way.
+```rust
+fn m_bit_two_way_mux(a: Vec<Bit>, b: Vec<Bit>, select: Bit) -> Vec<Bit> {
+    let matched_bits: Vec<(&Bit, &Bit)> = a.iter().zip(b.iter()).collect();
+    let mut bits = Vec::with_capacity(matched_bits.capacity());
+    for (&a_bit, &b_bit) in matched_bits {
+        bits.push(two_way_mux(a_bit, b_bit, select));
+    }
+    bits
+}
+```
+The bits are paired and each pair is put through the one bit two way mux with the
+same select bit. This effectively picks one of the two multi-bit input values.
+Now let's put it all together! Execute all operations, then pick one. Powered
+by logic gates alone (mostly).
+
+### ALU v2
+```rust
+const BITS: usize = 8;
+const EQ: Bit = false;
+const ADD: Bit = true;
+
+fn alu(opcode: Bit, x: Vec<Bit>, y: Vec<Bit>) -> Vec<Bit> {
+    // ADD
+    let (sum, _carry_out) = m_bit_adder(BITS, x.clone(), y.clone());
+
+    // EQ
+    let mut equal = vec![false; BITS];
+    equal[BITS - 1] = m_bit_equals(x, y);
+
+    // choose which circuit value to return
+    m_bit_two_way_mux(sum, equal, opcode)
+}
+
+// 10100011
+let x = vec![true, false, true, false, false, false, true, true];
+let y = vec![true, false, true, false, false, false, true, true];
+
+// 00000001 - vec![false, false, false, false, false, false, false, true]
+let is_equal = alu(EQ, x, y);
+
+// 01000110 - vec![false, true, false, false, false, true, true, false]
+let sum = alu(ADD, x, y);
+```
 
 ### Final Summation
-do it
+Pretty cool, huh? You just built the soul of a machine!
+If you wanted to add more operations to the ALU, you just add
+more lines to include the function calls. The only thing that will need to change
+is the multiplexer. With N operation results to select, the number of select bits needs
+to increase by log2(N). For example, with four opcodes, you need two select bits;
+with eight opcodes, you need four select bits, etc.
 
+If you're feeling fiesty,
+you could expand on this and model the entire CPU. You'll need a register file for
+storage, instruction register, program counter, RAM, clock ticks that process fetch,
+decode, execute, write back cycles. That sounds nerdtastic!
+[Dive Into Systems](https://diveintosystems.org/){:target="x"} goes into detail
+about all of these concepts. I highly recommend it for further reading.
 
 #### Notes
 * <a name="1">[1](#1')</a>: [The Elements of Computing Systems](https://www.nand2tetris.org/book){:target="x"} is another similar book, but instead of just describing it, you actually build the stuff with hands on code.
