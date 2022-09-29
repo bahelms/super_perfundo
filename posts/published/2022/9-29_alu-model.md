@@ -9,7 +9,7 @@ Arithmetic logic units are the brains of central processing units, which are the
 brains of computers. Let's see how they work by coding one using Rust.
 
 ==image==
-replace.png
+one-bit-adder.png
 
 ==body==
 Do you love [metal!?](https://www.youtube.com/watch?v=MDBykpSXsSE){:target="x"}
