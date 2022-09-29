@@ -5,7 +5,7 @@ Model an ALU circuit in Rust
 rust, hardware, computer-science
 
 ==description==
-Arithmetic logic units are the brain of central processing units, which are the
+Arithmetic logic units are the brains of central processing units, which are the
 brains of computers. Let's see how they work by coding one using Rust.
 
 ==image==
