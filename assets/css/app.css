@@ -364,6 +364,8 @@ code[class*="language-"] {
 
 #about {
   margin-top: 50px;
+  padding-top: 5px;
+  padding-left: 20px;
 }
 
 #about h4 {
