@@ -5,13 +5,33 @@ Ray Tracer Challenge, pt. 1: Create An Image
 rust, graphics, algorithms, ray-tracer-challenge
 
 ==description==
-Let's accept the The Ray Tracer Challenge and do it with Rust!
+Let's accept the The Ray Tracer Challenge and write a 3D renderer in Rust!
 In Part 1, we'll generate and save an image showing the trajectory of a launched projectile.
 
 ==image==
 trajectory.png
 
 ==body==
+Hello there! Are you fascinated with really interesting computer science problems
+like compilers, complex machines, or graphics? Well, you've come to the right place.
+This is the first in a series of posts detailing my adventures in writing a 3D
+rendering program from scratch. A ray tracer, specifically. And my guide on this
+journey is the incredible book
+[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}.
+This is how all tutorials should be structured. Each chapter builds on the previous,
+describing what is necessary to implement in order to have a program that will generate
+3D images by the end. The killer feature is that you can code it however you want.
+There are no copy pastas or typing exercises involved. You're given explanations
+of what must be done and high level tests to prove it works. You are free to use
+whatever you can to get the tests to pass and have a running program. So cool.
+If you've read any of my previous posts, you'll probably correctly guess that I choose
+Rust to complete this challenge. It's a non-trivial piece of work, so once finished,
+it would be a great thing to translate into other languages that you want to learn.
+
+<hr>
+
+DEPRECATED
+
 Welcome back! I've been wanting to take the
 [Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
 for some time now, and I've finally arrived at that spot on my todo list.
