@@ -88,22 +88,142 @@ fn tick(point: Point) -> Point {
 Ship it! Well, this begs the question of how do we change a point? With a vector!
 
 ## How Vexing
-Vectors are essentially the line between two points. Given two points `(1, 2)` & `(3, 4)`,
+Vectors are just the line between two points. Given points `(1, 2)` & `(3, 4)`,
 the vector would be `(2, 2)`. It describes the direction and distance the first
-point needs to go to become the second. Adding a vector to a point will produce
-the "moved" point. This is exactly what we need.
+point needs to move to become the second. Adding a vector to a point will produce
+this "moved" point, which is exactly what we need. We can model it the same as a
+Point, but set the "w" to 0.0.
+```rust
+struct Vector {
+    x: f64,
+    y: f64,
+    z: f64,
+    w: f64,
+}
 
-<hr>
+impl Vector {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z, w: 0.0 }
+    }
+}
+```
+This next part is cool and reminds me of Python's object model. How do we add
+a point and a vector? Overload the addition operator by implementing the `std::ops::Add` trait.
+```rust
+impl Add<Vector> for Point {
+    type Output = Self;
 
-DEPRECATED
+    fn add(self, other: Vector) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: self.w + other.w,
+        }
+    }
+}
 
-Let's launch a projectile on the left side of the image and see how it flies.
-All its glory:
-Beautiful! We have a projectile that is represented by a point in space at a given
-time interval. It launches at a certain velocity and gravity and wind play their
-part in bringing it to the ground and increasing the travel distance respectively.
-Super cool. We'll get into the details in a bit, but for now, let's figure out how
-to create the image file.
+let new_point = point + vector;
+```
+`Add` is generic over the right hand side (`Add<Rhs = Self>`). By implementing `add`
+for Point and declaring the right hand side as a Vector, we can add a vector to a
+point. However, the opposite won't work: `vector + point`. We'd need to do the same
+for Vectors and define `impl Add<Point> for Vector` to have commutativity. Since
+the generic type defaults to `Self`, you can leave it out and add Points to Points or
+Vectors to Vectors: `impl Add for Vector`.
+
+## What Projects Are You Working On?
+A point and a vector compose a projectile, where the point is its position and
+the vector is its velocity.
+```rust
+struct Projectile {
+    position: Point,
+    velocity: Vector,
+}
+```
+
+For each tick, the projectile's position can be transformed by applying its velocity.
+```rust
+fn tick(projectile: Projectile) -> Projectile {
+    Projectile {
+        position: projectile.position + projectile.velocity,
+        velocity: projectile.velocity
+    }
+}
+```
+This code works great if you want to see a projectile shoot into space on a linear
+trajectory. We must also make the velocity change so we're not just drawing a straight line.
+The projectile is launched inside some environment. We could go crazy here modelling
+the environment with all sorts of physical aspects, but let's keep it simple and
+provide gravity to bring the projectile back down to earth and wind just to annoy the velocity.
+Will also keep it immutable, so the environment never changes.
+```rust
+struct Environment {
+    gravity: Vector,
+    wind: Vector,
+}
+
+fn tick(env: &Environment, projectile: Projectile) -> Projectile {
+    Projectile {
+        position: projectile.position + projectile.velocity,
+        velocity: projectile.velocity + env.gravity + env.wind,
+    }
+}
+```
+And now the updated generation of a trajectory:
+```rust
+let env = Environment {
+    gravity: Vector::new(0.0, -0.1, 0.0),
+    wind: Vector::new(-0.01, 0.0, 0.0),
+};
+
+let mut projectile = Projectile {
+    position: Point::new(0.0, 1.0, 0.0),
+    velocity: Vector::new(1.0, 1.8, 0.0),
+};
+
+while projectile.position.y > 0.0 {
+    projectile = tick(&env, projectile);
+}
+```
+We start the position just off the ground, so the while loop will actually run
+(also to account for the height of the launcher, am I right?). The velocity values are
+highly tweakable and perfect for experimentation. The book goes into vector magnitude
+and normalization and then multiplies by arbitrary numbers in order to create a nice
+trajectory curve. I'm glossing over those details for now, so if you're interested in them,
+get the book!
+
+## Blank Canvas
+Intro
+
+
+
+```rust
+pub struct Canvas {
+    width: i32,
+    height: i32,
+    pixels: Vec<Color>,
+}
+```
+When a new canvas is made, it should be blank, and we'll use black to do that (cause dark mode rocks).
+We'll look at `Color` later, but for now black is all zeroes and white is all max (255).
+```rust
+impl Canvas {
+    pub fn new(width: i32, height: i32) -> Self {
+        let capacity = width * height; // capacity is known!
+        let mut pixels = Vec::with_capacity(capacity as usize); // allocate list
+        for _ in 0..capacity {
+            pixels.push(Color::new(0.0, 0.0, 0.0)); // fill list with black pixels
+        }
+
+        Self {
+            width,
+            height,
+            pixels,
+        }
+    }
+}
+```
 
 ## File Type and Contents
 What type of image file should we use? Unless you've already taken this challenge,
@@ -139,37 +259,3 @@ There are various apps you can use to render a `.ppm` file. On macOS, Preview.ap
 has built in support. In Linux, you can use GIMP. Notice on the last line the use
 of `canvas.to_ppm()`. The canvas is a struct representing the image and it can
 be converted to a PPM string. I wonder what that canvas looks like?
-
-## The Canvas
-It's nearly identical to the PPM format. It has a width and height and holds a
-flat list of colors representing the pixels.
-```rust
-pub struct Canvas {
-    width: i32,
-    height: i32,
-    pixels: Vec<Color>,
-}
-```
-When a new canvas is made, it should be blank, and we'll use black to do that (cause dark mode rocks).
-We'll look at `Color` later, but for now black is all zeroes and white is all max (255).
-```rust
-impl Canvas {
-    pub fn new(width: i32, height: i32) -> Self {
-        let capacity = width * height; // capacity is known!
-        let mut pixels = Vec::with_capacity(capacity as usize); // allocate list
-        for _ in 0..capacity {
-            pixels.push(Color::new(0.0, 0.0, 0.0)); // fill list with black pixels
-        }
-
-        Self {
-            width,
-            height,
-            pixels,
-        }
-    }
-}
-```
-
-* Color
-* write_pixel
-* launch (tick loop)
