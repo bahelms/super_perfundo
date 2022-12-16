@@ -1,5 +1,5 @@
 ==title==
-Ray Tracer Challenge, pt. 1: Create An Image
+Ray Tracer Challenge, pt. 1: Create A 2D Image
 
 ==tags==
 rust, graphics, algorithms, ray-tracer-challenge
@@ -179,19 +179,21 @@ let env = Environment {
 
 let mut projectile = Projectile {
     position: Point::new(0.0, 1.0, 0.0),
-    velocity: Vector::new(1.0, 1.8, 0.0),
+    velocity: Vector::new(1.0, 1.8, 0.0), // mysterious numbers, AKA machine learning params
 };
 
-while projectile.position.y > 0.0 {
+while projectile.position.y > 0.0 { // not heavy enough to bore into the Earth
     projectile = tick(&env, projectile);
+    // do something to record this state
 }
 ```
-We start the position just off the ground, so the while loop will actually run
-(also to account for the height of the launcher, am I right?). The velocity values are
-highly tweakable and perfect for experimentation. The book goes into vector magnitude
-and normalization and then multiplies by arbitrary numbers in order to create a nice
-trajectory curve. I'm glossing over those details for now, so if you're interested in them,
-get the book!
+We start the position just off the ground, so the loop will actually run
+(also to account for the height of the launcher, am I right?). Gravity and wind are
+both negative so as to gradually drop and slow the projectile.
+The velocity and environment values are highly tweakable and perfect for experimentation.
+The book goes into vector magnitude, normalization, and multiplication in order to create a nice trajectory curve.
+I'm glossing over those details for now, so if you're interested in them,
+[get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
 
 ## Blank Canvas
 Intro
