@@ -195,10 +195,31 @@ The book goes into vector magnitude, normalization, and multiplication in order 
 I'm glossing over those details for now, so if you're interested in them,
 [get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
 
-## Blank Canvas
-Intro
+## Blank Canvas, With Colors
+We've implemented changing the point over time, but we're not doing anything with it.
+Our points long to be dropped onto a grid. This grid can be our canvas that we paint
+this points onto! But what does a point even look like? We need to give introduce some color.
+The canvas can be black to start with (cause dark mode is cool) and our point will
+be purple, just cause. Now to write some color!
 
+We can model color with three values for red, green, and blue. Let's make the range 0 to 255
+and say black is (0,0,0) and white is (255,255,255).
+#### TODO: SCALING
+```rust
+struct Color {
+    red: f64,
+    green: f64,
+    blue: f64,
+}
 
+let black = Color::new(0.0, 0.0, 0.0);
+```
+
+Now for the canvas. My favorite way to code a grid is with a contiguous array.
+#### TODO: STARTS IN TOP LEFT CORNER
+If the grid has a height of 5 and a width of 5, it will contain 25 points.
+The grid is our canvas and the points are pixels, which each pixel represented by
+a single Color struct. A new canvas defaults to all black.
 
 ```rust
 pub struct Canvas {
@@ -206,10 +227,7 @@ pub struct Canvas {
     height: i32,
     pixels: Vec<Color>,
 }
-```
-When a new canvas is made, it should be blank, and we'll use black to do that (cause dark mode rocks).
-We'll look at `Color` later, but for now black is all zeroes and white is all max (255).
-```rust
+
 impl Canvas {
     pub fn new(width: i32, height: i32) -> Self {
         let capacity = width * height; // capacity is known!
@@ -223,6 +241,20 @@ impl Canvas {
             height,
             pixels,
         }
+    }
+}
+```
+
+We have a canvas! Update the `tick` function to write a purple pixel every time we
+get a new projectile position.
+```rust
+while projectile.position.y > 0.0 {
+    projectile = tick(&env, projectile);
+    let position = projectile.position;
+    let pixel = Color::new(1.0, 0.0, 1.0); // full red and full blue make purple
+    let pos_y = canvas.height - (position.y as i32);
+    if pos_y <= canvas.height {
+        canvas.write_pixel(position.x as i32, pos_y, pixel);
     }
 }
 ```
