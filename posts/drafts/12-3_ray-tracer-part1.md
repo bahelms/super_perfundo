@@ -196,15 +196,18 @@ I'm glossing over those details for now, so if you're interested in them,
 [get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
 
 ## Blank Canvas, With Colors
-We've implemented changing the point over time, but we're not doing anything with it.
-Our points long to be dropped onto a grid. This grid can be our canvas that we paint
-this points onto! But what does a point even look like? We need to give introduce some color.
-The canvas can be black to start with (cause dark mode is cool) and our point will
-be purple, just cause. Now to write some color!
+We've implemented changing points over time, but we're not doing anything with them, yet.
+Our points long to be dropped onto a grid, which will then become the canvas that we'll paint.
+But what does a point even look like? We need to introduce some color.
+The canvas will be black to start with (cause dark mode is cool) and our point will
+be purple because its my wife's favorite color.
 
-We can model color with three values for red, green, and blue. Let's make the range 0 to 255
-and say black is (0,0,0) and white is (255,255,255).
-#### TODO: SCALING
+Color can be represented as varying shades of red, green, and blue. If we model these
+values on a range between 0 and 1, we can represent an infinite scale of colors.
+However, we'll need to convert those to a bounded scale that can be practically
+used.
+
+Let's make the range 0 to 255 and say black is (0,0,0) and white is (255,255,255).
 ```rust
 struct Color {
     red: f64,
@@ -214,12 +217,38 @@ struct Color {
 
 let black = Color::new(0.0, 0.0, 0.0);
 ```
+In order to scale a float between 0.0 and 1.0, we need to multiply it with the total
+number of values, 256 in this case. Also we should constrain the result not to go
+below 0 or above 255. Voila:
+```rust
+fn scale_color(color: &Color, max: i32) -> [i32; 3] {
+    let total_values = max + 1; // include 0 (0..=max is max+1 values)
+    [color.red, color.green, color.blue].map(|value| {
+        let mut scaled = (value * total_values as f64) as i32;
+        if scaled < 0 {
+            scaled = 0;
+        } else if scaled > max {
+            scaled = max;
+        }
+        scaled
+    })
+}
+```
 
-Now for the canvas. My favorite way to code a grid is with a contiguous array.
-#### TODO: STARTS IN TOP LEFT CORNER
-If the grid has a height of 5 and a width of 5, it will contain 25 points.
-The grid is our canvas and the points are pixels, which each pixel represented by
-a single Color struct. A new canvas defaults to all black.
+Our canvas of pixels is implemented as a grid of points. My favorite way to code a grid is with a contiguous array.
+For example, let's take a 5x5 grid. It contains 25 points, which can be held in a 25 element array.
+The first element is the top left corner of the grid, so the corresponding indexes would hold the
+individual points:
+```
+0  1  2  3  4
+5  6  7  8  9
+10 11 12 13 14
+15 16 17 18 19
+20 21 22 23 24
+```
+
+A point is a pixel, and a pixel is just a color. When a new canvas is created, it
+will default to black, so load up its pixel array with black colors.
 
 ```rust
 pub struct Canvas {
@@ -245,7 +274,7 @@ impl Canvas {
 }
 ```
 
-We have a canvas! Update the `tick` function to write a purple pixel every time we
+We have a canvas! Update the `tick` function to insert a purple pixel every time we
 get a new projectile position.
 ```rust
 while projectile.position.y > 0.0 {
@@ -258,6 +287,9 @@ while projectile.position.y > 0.0 {
     }
 }
 ```
+
+## Pixelating The Canvas
+Write pixel.
 
 ## File Type and Contents
 What type of image file should we use? Unless you've already taken this challenge,
