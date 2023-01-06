@@ -12,6 +12,8 @@ In Part 1, we'll generate and save an image showing the trajectory of a launched
 trajectory.png
 
 ==body==
+The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}.
+
 Hello there! Have you ever wondered what goes on under the hood when generating computer graphics?
 Ever yearned to write a 3D renderer from scratch? Me too! You've come to the right place.
 This is the first in a series of posts detailing my adventures in doing just that.
@@ -195,19 +197,17 @@ The book goes into vector magnitude, normalization, and multiplication in order 
 I'm glossing over those details for now, so if you're interested in them,
 [get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
 
-## Blank Canvas, With Colors
+## Do You Dream In Color?
 We've implemented changing points over time, but we're not doing anything with them, yet.
 Our points long to be dropped onto a grid, which will then become the canvas that we'll paint.
 But what does a point even look like? We need to introduce some color.
 The canvas will be black to start with (cause dark mode is cool) and our point will
 be purple because its my wife's favorite color.
 
-Color can be represented as varying shades of red, green, and blue. If we model these
+One way to represent color is varying shades of red, green, and blue. If we model these
 values on a range between 0 and 1, we can represent an infinite scale of colors.
-However, we'll need to convert those to a bounded scale that can be practically
-used.
-
-Let's make the range 0 to 255 and say black is (0,0,0) and white is (255,255,255).
+Since white light can be broken up into its component colors through a prism, let's
+say maximum RGB is white (1,1,1) and the absence of color is black (0,0,0).
 ```rust
 struct Color {
     red: f64,
@@ -215,26 +215,43 @@ struct Color {
     blue: f64,
 }
 
-let black = Color::new(0.0, 0.0, 0.0);
+impl Color {
+    pub fn new(red: f64, green: f64, blue: f64) -> Self {
+        Self { red, green, blue }
+    }
+
+    pub fn black() -> Self {
+        Self::new(0.0, 0.0, 0.0)
+    }
+
+    pub fn white() -> Self {
+        Self::new(1.0, 1.0, 1.0)
+    }
+}
 ```
-In order to scale a float between 0.0 and 1.0, we need to multiply it with the total
+However, we'll need to convert these floats to a bounded scale that can be practically
+used. The human eye can't tell the difference between a red at 0.555555555555 and one
+at 0.555555555556. Also, the image spec we're going to use for saving the canvas to
+a file doesn't handle values like that. But more on that later.
+
+Let's make the scaled range start at 0 and max out at 255.
+In order to scale a number in the range of 0.0 to 1.0, we need to multiply it with the total
 number of values, 256 in this case. Also we should constrain the result not to go
 below 0 or above 255. Voila:
 ```rust
 fn scale_color(color: &Color, max: i32) -> [i32; 3] {
     let total_values = max + 1; // include 0 (0..=max is max+1 values)
     [color.red, color.green, color.blue].map(|value| {
-        let mut scaled = (value * total_values as f64) as i32;
-        if scaled < 0 {
-            scaled = 0;
-        } else if scaled > max {
-            scaled = max;
-        }
-        scaled
+        let scaled = (value * total_values as f64) as i32;
+        scaled.clamp(0, max) // thanks Rust!
     })
 }
+
+let pink = Color::new(0.5, 0.0, 0.0);
+assert_eq!(scale_color(pink, 255), [128, 0, 0]);
 ```
 
+## It's A Blank Canvas
 Our canvas of pixels is implemented as a grid of points. My favorite way to code a grid is with a contiguous array.
 For example, let's take a 5x5 grid. It contains 25 points, which can be held in a 25 element array.
 The first element is the top left corner of the grid, so the corresponding indexes would hold the
@@ -262,7 +279,7 @@ impl Canvas {
         let capacity = width * height; // capacity is known!
         let mut pixels = Vec::with_capacity(capacity as usize); // allocate list
         for _ in 0..capacity {
-            pixels.push(Color::new(0.0, 0.0, 0.0)); // fill list with black pixels
+            pixels.push(Color::black()); // fill list with black pixels
         }
 
         Self {
@@ -274,23 +291,64 @@ impl Canvas {
 }
 ```
 
-We have a canvas! Update the `tick` function to insert a purple pixel every time we
-get a new projectile position.
+## Pixelation
+We have a canvas! Remember when we used the `tick` function? Now, after each tick,
+we can write a purple pixel into the canvas corresponding to the point of the
+projectile.
 ```rust
+let mut canvas = Canvas::new(500, 300);
+
 while projectile.position.y > 0.0 {
     projectile = tick(&env, projectile);
     let position = projectile.position;
     let pixel = Color::new(1.0, 0.0, 1.0); // full red and full blue make purple
-    let pos_y = canvas.height - (position.y as i32);
+    let pos_y = canvas.height - (position.y as i32); // flip Y
     if pos_y <= canvas.height {
         canvas.write_pixel(position.x as i32, pos_y, pixel);
     }
 }
 ```
+A couple gotchas are that the projectile's Y coordinate is upside-down because the
+canvas's origin is the top left, not the bottom left. Y increases as a point travels
+down the canvas. To reflect this, we need to flip the projectile's Y value by subtracting
+it from the height of the canvas. Also, we won't write pixels if the projectile
+falls off the canvas. We could also check X and maybe even move that logic into
+the canvas module itself.
 
-## Pixelating The Canvas
-Write pixel.
+Writing a pixel simply consists of putting it into the canvas's vector of pixels.
+The neat thing is determining how to find the proper index. **Striding** is a way to convert a
+point to an index within a grid. Remember our example grid:
+```
+0  1  2  3  4
+5  6  7  8  9
+10 11 12 13 14
+15 16 17 18 19
+20 21 22 23 24
+```
+Given point (3,2), the index would be 13. The formula to find this is `y * width + x`.
+```
+(3,2) -> 2*5+3 = 13
+(0,4) -> 4*5+0 = 20
+(4,1) -> 1*5+4 = 9
+```
+Pretty cool! I already knew how to do this because I had just so happened to recently
+read [Hands-on Rust](https://pragprog.com/titles/hwrust/hands-on-rust/){:target="X"},
+and it was described there. That's also a great book,
+although it's more focused on game development than Rust itself. The Ray Tracer Challenge
+doesn't mention this formula because, and I'll say it again, the thing I enjoy most
+is that it doesn't spell out how you implement anything. It's totally up to you.
 
+Now that we know how to put a point into a vector, let's do it!
+```rust
+pub fn write_pixel(&mut self, x: i32, y: i32, color: Color) {
+    let idx = self.point_to_index(x, y);
+    if idx < self.pixels.len() { // ignore if index is out of bounds
+        self.pixels[idx] = color;
+    }
+}
+```
+
+## Save Your Work!
 ## File Type and Contents
 What type of image file should we use? Unless you've already taken this challenge,
 you may have never heard of the type suggested by the book: PPM! The
@@ -325,3 +383,6 @@ There are various apps you can use to render a `.ppm` file. On macOS, Preview.ap
 has built in support. In Linux, you can use GIMP. Notice on the last line the use
 of `canvas.to_ppm()`. The canvas is a struct representing the image and it can
 be converted to a PPM string. I wonder what that canvas looks like?
+
+## Final Summation
+This turned out to be a heavier post than I was anticipated.
