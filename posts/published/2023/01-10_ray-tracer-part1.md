@@ -384,14 +384,15 @@ To convert the canvas to a PPM file, write the header to a string then iterate o
 the pixels and stringify them before appending. Don't to forget to scale
 the color values! Also, PPMs have a line length limit of 70; the rest of the grid row
 will be put on a new line. Here's a first iteration that gets slow very quickly for bigger
-canvases. I'm sure I'll optimize it as I get further along in the book. That's a task
-for future me.
+canvases. I'm sure I'll need to optimize it as I get further along in the book,
+which will be fun by itself. I've always enjoyed the algorithms part of coding the most.
+Everything else is just boilerplate.
 ```rust
 const MAX_PPM_VALUE: i32 = 255;
 const PPM_LINE_SIZE: i32 = 70;
 
 // Color values are scaled bewteen 0 and 255: 0:0-1:255
-// This algorithm runs pretty slow.
+// This algorithm runs pretty slow as it's O(n^2)
 // At 500x300 canvas: "cargo run  7.40s user 4.33s system 99% cpu 11.822 total"
 pub fn to_ppm(&self) -> String {
     let mut ppm = format!("P3\n{} {}\n{}\n", self.width, self.height, MAX_PPM_VALUE);
