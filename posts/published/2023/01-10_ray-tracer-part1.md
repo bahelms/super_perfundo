@@ -5,8 +5,8 @@ Ray Tracer Challenge, pt. 1: Creating A 2D Image
 rust, graphics, algorithms, ray-tracer-challenge
 
 ==description==
-Let's accept the The Ray Tracer Challenge and write a 3D renderer in Rust!
-In Part 1, we'll generate and save an image showing the trajectory of a launched projectile.
+Let's accept The Ray Tracer Challenge and write a 3D renderer in Rust!
+In Part 1, we'll generate an image showing the trajectory of a launched projectile.
 
 ==image==
 trajectory.png
