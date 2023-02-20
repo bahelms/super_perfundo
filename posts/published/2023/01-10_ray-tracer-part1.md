@@ -14,6 +14,9 @@ trajectory.png
 ==body==
 _The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
 
+* Part 1: Creating A 2D Image
+* [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
+
 Hello there! Have you ever wondered what goes on under the hood when generating computer graphics?
 Ever yearned to write a 3D renderer from scratch? Me too! You've come to the right place, my friend.
 This is the first in a series of posts detailing my adventures in doing just that.
