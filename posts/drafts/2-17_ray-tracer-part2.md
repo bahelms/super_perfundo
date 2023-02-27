@@ -64,11 +64,173 @@ code and simplified the whole design since we only need to think about the one t
 
 At a high level, we take the starting point, rotate it across the Z axis, then move it
 along the X and Y axes (translation). This is done for every hour: `1..=12` inclusive range.
-Each new point is then written to the canvas before being converted to PPM format
+Each new point is then written to the canvas before the whole thing is converted to PPM format
 and saved to disk (review in [part one](/articles/ray-tracer-part1)).
 The main change to note here is the use of the new `Matrix` type, which we've so
 eloquently implemented with a 
 [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface){:target="x"}.
 
-So WTF is a matrix?
+So, WTF is a matrix?
 ## Red pill or blue pill?
+It's a grid of numbers. Boom. Here's some 2D examples:
+```
+2x2
+[3 1
+ 2 7]
+
+3x5
+[9 0 2 1 0
+ 0 0 2 3 1
+ 8 3 5 2 9]
+```
+For ray tracing, we'll mostly use 4x4 matrices. To implement this, I opted for a
+simple approach and just used a vector of vectors (unlike how the Canvas works with a single vector).
+```rust
+#[derive(Debug, PartialEq, Clone)]
+pub struct Matrix {
+    rows: Vec<Vec<f64>>,
+}
+
+impl Matrix {
+    fn populate(rows: Vec<Vec<f64>>) -> Self {
+        Self { rows }
+    }
+}
+
+let matrix = Matrix::populate(vec![
+    vec![8.0, -5.0, 9.0, 2.0],
+    vec![7.0, 5.0, 6.0, 1.0],
+    vec![-6.0, 0.0, 9.0, 6.0],
+    vec![-3.0, 0.0, -9.0, -4.0],
+]);
+```
+The first thing we want out of `Matrix` is its identity. When you multiply
+any number by 1 you get the original number back. This makes 1 the _multiplicative identity_.
+The identity equivalent for matrices is a matrix which when multiplied by another
+matrix or tuple returns that matrix or tuple.
+```rust
+// 4x4 identity matrix
+pub fn identity() -> Self {
+    Self::populate(vec![
+        vec![1.0, 0.0, 0.0, 0.0],
+        vec![0.0, 1.0, 0.0, 0.0],
+        vec![0.0, 0.0, 1.0, 0.0],
+        vec![0.0, 0.0, 0.0, 1.0],
+    ])
+}
+
+## We Don't Die, We Multiply
+```
+Now that we have the identity, we need to know how to actually multiply matrices with themselves
+and tuples. The product of two matrices is another matrix. Let's look at an example:
+```
+   A             B             C
+ 1 2 3 4     (0) 2  4  6    [] [] [] []
+(2 3 4 5)    (1) 2  4  8    31 [] [] []
+ 3 4 5 6  X  (2) 4  8 16  = [] [] [] []
+ 4 5 6 7     (4) 8 16 32    [] [] [] []
+```
+To calculate the value of an element in the product, C[1, 0] in this case, you multiply
+the corresponding row in A[1] with the column in B[0] and then sum them together.
+```
+2 * 0 = 0
+3 * 1 = 3
+4 * 2 = 8
+5 * 4 = 20
+0 + 3 + 8 + 20 = 31
+```
+In Rust speak:
+```rust
+impl Mul for &Matrix {
+    type Output = Matrix;
+
+    // hardcoded for a 4x4 matrix
+    fn mul(self, other: &Matrix) -> Self::Output {
+        let mut product = self.clone();
+        let width = self.rows[0].len();
+
+        for row in 0..width {
+            for col in 0..width {
+                product[row][col] = self[row][0] * other[0][col]
+                    + self[row][1] * other[1][col]
+                    + self[row][2] * other[2][col]
+                    + self[row][3] * other[3][col];
+            }
+        }
+        product
+    }
+}
+
+// Implementing Mul let's us do this. Pretty neat.
+let product = matrixA * matrixB;
+```
+A possible problem I see with this code is the left hand side matrix is moved into `mul`
+and dropped. We won't ever be able to work with that matrix again, and I don't know
+what the future of our ray tracing matrix manipulations entail. Put a pin in that.
+
+Multiply a matrix with a tuple is nearly the same, but you only have one column on
+the right hand side and a tuple is returned.
+```
+   A          B       C
+ 1 2 3 4     (0)     []
+(2 3 4 5)    (1)     31
+ 3 4 5 6  X  (2)  =  []
+ 4 5 6 7     (4)     []
+```
+Here's our beautiful hardcoded Rust representation.
+```rust
+impl Mul<Tuple> for Matrix {
+    type Output = Tuple;
+
+    // Hardcoded for a 4x4 matrix
+    fn mul(self, other: Tuple) -> Self::Output {
+        let x = self[0][0] * other.x
+            + self[0][1] * other.y
+            + self[0][2] * other.z
+            + self[0][3] * other.w;
+        let y = self[1][0] * other.x
+            + self[1][1] * other.y
+            + self[1][2] * other.z
+            + self[1][3] * other.w;
+        let z = self[2][0] * other.x
+            + self[2][1] * other.y
+            + self[2][2] * other.z
+            + self[2][3] * other.w;
+        let w = self[3][0] * other.x
+            + self[3][1] * other.y
+            + self[3][2] * other.z
+            + self[3][3] * other.w;
+        let mut point = Tuple::point(x, y, z);
+        point.w = w;
+        point
+    }
+}
+
+let new_point = matrix * point;
+```
+We can think of these matrices as transformations we can apply to points to create new
+points. The identity matrix doesn't change anything by itself; it is simply a starting
+point to be tweaked into different transformations. To complete our analog clock,
+we need two more tweaks: rotation around the Z-axis and moving a point to a different
+location, called translation. Let's start with the latter.
+
+## Lost In Translation
+We have a point (0, 1, 0), and we need to move it to (20, 30, 40) by multiplying it
+with a matrix. The method to generate a translation matrix is to set the tuple's
+X to the identity matrix's [0, 3], Y to [1, 3], and Z to [2, 3].
+```
+1 0 0 X
+0 1 0 Y
+0 0 1 Z
+0 0 0 1
+```
+Now we can move points around!
+```rust
+pub fn translate(&self, x: f64, y: f64, z: f64) -> Self {
+    let mut transform = Matrix::identity();
+    transform[0][3] = x;
+    transform[1][3] = y;
+    transform[2][3] = z;
+    transform * self.clone()
+}
+```
