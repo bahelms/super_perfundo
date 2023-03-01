@@ -44,12 +44,11 @@ use std::f64::consts::PI;
 fn main() {
     let mut canvas = Canvas::new(250, 250);
     let start_point = Tuple::point(0.0, -100.0, 0.0);
-    let identity = Matrix::identity();
 
     for hour in 1..=12 {
-        let new_point = identity
+        let new_point = Matrix::identity()
             .rotate_z(hour as f64 * PI / 6.0)
-            .translate(125.0, 125.0, 0.0)
+            .translate((canvas.width / 2) as f64, 125.0, 0.0)
             * start_point;
         canvas.write_pixel(&new_point, Color::white());
     }
@@ -70,9 +69,8 @@ The main change to note here is the use of the new `Matrix` type, which we've so
 eloquently implemented with a 
 [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface){:target="x"}.
 
-So, WTF is a matrix?
 ## Red pill or blue pill?
-It's a grid of numbers. Boom. Here's some 2D examples:
+So, WTF is a matrix? It's a grid of numbers. Boom. Here's some 2D examples:
 ```
 2x2
 [3 1
@@ -231,6 +229,83 @@ pub fn translate(&self, x: f64, y: f64, z: f64) -> Self {
     transform[0][3] = x;
     transform[1][3] = y;
     transform[2][3] = z;
-    transform * self.clone()
+    &transform * self
+}
+
+let new_point = matrix.translate(20.0, 30.0, 40.0) * point;
+```
+We can multiply a reference to a matrix with a reference
+to another matrix because we specified those types in the trait implementation: `impl Mul for &Matrix`.
+
+The final piece we need to make our analog clock tick is Z-axis rotation.
+Picture the three axes in your mind: X is the horizon, Y is straight up and down, and Z
+is a line headed directly away from you. We want our point to rotate clockwise around this
+line to create a circle. This means the Z axis will always remain 0, and X and Y
+are the ones that change. And since we're speaking about circles, math showed up
+and brought some Pi. That math is so nice.
+
+## She's My Cherry Pi
+Rotation involves moving a point by some angle in relation to the origin point.
+Circles and angles means Trigonometry was invited to our party. There is some hand
+waving at this point because I don't know how this actually works, but it does.
+Each axis needs its own matrix transformation for rotation. The matrix specifically
+needed for the Z-axis is as follows:
+```
+cos(r) -sin(r) 0 0
+sin(r) cos(r)  0 0
+0      0       1 0
+0      0       0 1
+```
+
+The cosine, sine, and negative sine of the given radians are set in these specific
+positions. Radians are a measurement of the curved distance between two points.
+A full cirle has 2π radians, so 180˚ is π radians. Rust is so friendly, that it
+implements trigonometric methods directly on numbers! We don't even need to use a math library.
+```rust
+pub fn rotate_z(&self, radians: f64) -> Self {
+    let mut transform = Matrix::identity();
+    transform[0][0] = radians.cos();
+    transform[0][1] = -radians.sin();
+    transform[1][0] = radians.sin();
+    transform[1][1] = radians.cos();
+    &transform * self
 }
 ```
+Going from the 12 o'clock hour to 3 on a clock is a quarter circle, π/2 radians.
+However, the distance of each hour is a third of that. Since `2*3 == 6`, the distance
+in radians for an hour would be π/6. As an example, to calculate a matrix that rotates a point to
+the 7 o'clock position, you would need 7 of those one hour distances:
+```rust
+let matrix = matrix.rotate_z(7.0 * PI / 6.0);
+```
+
+## Fluent Interface
+Let's bring it back to the final code that generates the clock canvas and walk through it.
+```rust
+let mut canvas = Canvas::new(250, 250);
+let start_point = Tuple::point(0.0, -100.0, 0.0);
+
+for hour in 1..=12 {
+    let new_point = Matrix::identity()
+        .rotate_z(hour as f64 * PI / 6.0)
+        .translate((canvas.width / 2) as f64, 125.0, 0.0)
+        * start_point;
+    canvas.write_pixel(&new_point, Color::white());
+}
+```
+We start with an origin point at (0, -100). Remember, the canvas begins at the
+upper left corner, so a negative Y value will put the point _above_ the canvas.
+For each hour, we rotate on Z to move the point π/6 radians, then translate that
+point halfway across (250/2 + X) and 25 down (125 + Y) the canvas. Voila.
+
+One aesthetic thing I like is giving the Matrix type a fluent interface. We start
+with the identity, then transform it with a rotation, then transform that with a
+translate. Then multiply the final transformation with the point. This fluent method
+chaining allows for a pipelined form of state transitions by taking the initial receiver,
+modifying it, and then returning it. In our implementations, we're dealing with references,
+so the matrix returned is a new instantiation, rather than the same struct modified.
+This could have performance concerns down the line, but we should always wait to cross
+that bridge when we get there. "Premature optimization is the root of all evil." said
+a smart person somewhere.
+
+## Final Summation
