@@ -103,7 +103,29 @@ let matrix = Matrix::populate(vec![
     vec![-3.0, 0.0, -9.0, -4.0],
 ]);
 ```
-The first thing we want out of `Matrix` is its identity. When you multiply
+Something really cool we can do with this Matrix type allow it to handle indexing:
+```rust
+impl Index<usize> for Matrix {
+    type Output = Vec<f64>;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.rows[index]
+    }
+}
+
+impl IndexMut<usize> for Matrix {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.rows[index]
+    }
+}
+```
+The first implementation returns an immutable reference to a row from the matrix: `matrix[2]`. Then,
+it's just indexing that vector as usual to get the value for the column: `matrix[2][0]`.
+The second method returns a mutable reference, which allows us to set values in the
+matrix through indexing: `matrix[6][15] = 1.8`. This is super cool!
+
+## Who Am I?
+The next thing we want out of `Matrix` is its identity. When you multiply
 any number by 1 you get the original number back. This makes 1 the _multiplicative identity_.
 The equivalent for matrices is a matrix which when multiplied by another
 matrix or tuple returns that matrix or tuple.
