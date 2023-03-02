@@ -11,7 +11,6 @@ Run `mix phx.gen.cert` in order to serve `https` in dev.
     * Announce: `Blog.get_post("name") |> Email.send_published_emails()`
 
 ### TODO
-* Usage metrics
 * email signup as LiveView
 - Quarto
   * Handle a draw in UI

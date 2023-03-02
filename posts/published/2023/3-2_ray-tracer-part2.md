@@ -146,17 +146,18 @@ In Rust speak:
 impl Mul for &Matrix {
     type Output = Matrix;
 
-    // hardcoded for a 4x4 matrix
+    // Assumes the rows are of equal length
     fn mul(self, other: &Matrix) -> Self::Output {
         let mut product = self.clone();
         let width = self.rows[0].len();
 
         for row in 0..width {
             for col in 0..width {
-                product[row][col] = self[row][0] * other[0][col]
-                    + self[row][1] * other[1][col]
-                    + self[row][2] * other[2][col]
-                    + self[row][3] * other[3][col];
+                let mut sum = 0.0;
+                for idx in 0..self.rows.len() {
+                    sum += self[row][idx] * other[idx][col]
+                }
+                product[row][col] = sum;
             }
         }
         product
@@ -186,6 +187,7 @@ impl Mul<Tuple> for Matrix {
     type Output = Tuple;
 
     // Hardcoded for a 4x4 matrix
+    // This could be cleaned up if Tuple were iterable.
     fn mul(self, other: Tuple) -> Self::Output {
         let x = self[0][0] * other.x
             + self[0][1] * other.y
