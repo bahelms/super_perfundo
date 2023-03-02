@@ -11,8 +11,8 @@ defmodule SuperPerfundo.Email do
   def published_email(recipient, post) do
     new_email(
       to: recipient,
-      from: "SuperPerfundo <tech@superperfundo.tech>",
-      subject: "A new article has been published at SuperPerfundo.Tech!"
+      from: "SuperPerfundo <tech@superperfundo.dev>",
+      subject: "A new article has been published at SuperPerfundo.Dev"
     )
     |> render(:published_email, post: post, email: recipient)
   end

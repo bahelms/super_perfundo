@@ -5,7 +5,7 @@ services:
     restart: always
     image: registry.digitalocean.com/super-perfundo/super-perfundo:prod
     environment:
-      - HOST=superperfundo.tech
+      - HOST=superperfundo.dev
       - PORT=80
       - SECRET_KEY_BASE=$SECRET_KEY_BASE
       - SENDGRID_API_KEY=$SENDGRID_API_KEY
