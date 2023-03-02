@@ -146,7 +146,7 @@ In Rust speak:
 impl Mul for &Matrix {
     type Output = Matrix;
 
-    // Assumes the matrix is square
+    // Assumes the rows are of equal length
     fn mul(self, other: &Matrix) -> Self::Output {
         let mut product = self.clone();
         let width = self.rows[0].len();
