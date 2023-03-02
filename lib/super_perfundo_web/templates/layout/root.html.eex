@@ -12,9 +12,9 @@
     <meta property="og:url" content="<%= Routes.blog_url(@conn, :show, post_id(assigns)) %>">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="en_US">
-    <meta property="og:site_name" content="SuperPerfundo.Tech">
+    <meta property="og:site_name" content="SuperPerfundo.Dev">
 
-    <title><%= assigns[:page_title] || "SuperPerfundo.Tech" %></title>
+    <title><%= assigns[:page_title] || "SuperPerfundo.Dev" %></title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2:wght@600&family=Spartan:wght@400;800&family=Inter:wght@300;400;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
     <%= csrf_meta_tag() %>
@@ -23,7 +23,7 @@
   <body>
     <header>
       <div id="header-container">
-        <%= link("SuperPerfundo.Tech", to: "/", id: "blog-title") %>
+        <%= link("SuperPerfundo.Dev", to: "/", id: "blog-title") %>
         <nav>
           <%= link("ARTICLES", to: "/") %>
           <%= link("QUARTO", to: "/quarto") %>
