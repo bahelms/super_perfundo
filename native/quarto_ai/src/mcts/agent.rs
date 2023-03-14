@@ -153,7 +153,6 @@ impl Agent {
                 .node_move
                 .clone();
         }
-        println!("Select move {:?} with win pct {}", best_move, best_percent);
         best_move.expect("Best move not found")
     }
 
