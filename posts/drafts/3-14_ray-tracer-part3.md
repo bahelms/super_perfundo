@@ -1,18 +1,22 @@
 ==title==
-Test Draft!
+Ray Tracer Challenge, pt. 3: Rays of Sunshine
 
 ==tags==
-donuts, draft
+rust, graphics, algorithms, ray-tracer-challenge, math
 
 ==description==
-One fine day, I decided to write a blog! But not yet.
+Let's accept The Ray Tracer Challenge and write a 3D renderer in Rust!
+In Part 3, we'll fill in the analog clock to render a full 2D circle by shooting
+rays at a 3D sphere. And then paint it red!
 
 ==image==
-some-pic.png
+2d_circle.png
 
 ==body==
-## Check it out!
+_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
 
-One fine day, I decided to write a blog!
+* [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
+* [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
+* Part 3: Rays of Sunshine
 
-<img src="<%= img_url.("test.jpeg") %>" />
+Welcome back, Constant Readers.
