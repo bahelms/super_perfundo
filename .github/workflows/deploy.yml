@@ -1,3 +1,4 @@
+name: SuperPerfundo
 on: 
   pull_request:
     types: [closed]
@@ -31,6 +32,7 @@ jobs:
         run: docker push registry.digitalocean.com/super-perfundo/super-perfundo:prod
 
   deploy:
+    name: Deploy
     needs: build_image
     runs-on: ubuntu-latest
 
