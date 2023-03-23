@@ -1,3 +1,4 @@
+name: SuperPerfundo
 on: 
   pull_request:
     types: [closed]
