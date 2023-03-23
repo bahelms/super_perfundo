@@ -1,3 +1,4 @@
+name: SuperPerfundo
 on: 
   pull_request:
     branches:
@@ -5,6 +6,7 @@ on:
 
 jobs:
   verify:
+    name: Verify
     runs-on: ubuntu-20.04
 
     steps:
