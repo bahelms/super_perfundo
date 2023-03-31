@@ -90,5 +90,45 @@ to define, and our world will be fully modeled.
 # Another Brick In The Wall
 The wall behind the sphere is a little more abstract. It's basically there to provide
 some bounds on our world and act as a terminus for all the rays we're gonna launch out.
-Modeling pure constraints in this way doesn't necessitate the use of a struct.
-Raw numbers are all we'll need.
+Modeling pure constraints in this way doesn't necessitate the use of a struct because
+we're just dealing with raw numbers. But you never know what the future will bring, and
+it tends to be a better idea to encapsulate the concept in a type of its own.
+```rust
+struct Wall {
+    z: f64,
+    size: f64,
+}
+```
+Remember, the sphere is centered on the origin with a one unit radius. The wall must be
+behind it at some point. Moving something away from you entails increasing the Z-axis
+value. When we create the wall it must have a Z-axis value of at least one, or the
+sphere will be stuck inside it like those poor dudes in the [Philadelphia Experiment](https://en.wikipedia.org/wiki/Philadelphia_Experiment){:target="x"}.
+The size of the wall defines the limits of our world. We'll shoot rays at every point
+on it and all of them don't make it to the wall will describe the sphere that's in the way.
+All that's left to do is code the algorithm to do this and turn the light on.
+
+# Kick the Tires and Light the Fires
+We first need to set up some data to initialize the world.
+```rust
+    let flashlight = Tuple::point(0.0, 0.0, -5.0);
+    let sphere = Sphere::new();
+    let wall = Wall { z: 10.0, size: 8.0 };
+```
+The flashlight is centered on the sphere, four units in front of its surface.
+The sphere is using an identity matrix for the transform, so it will be rendered
+as a normal perfect sphere. The wall is nine units behind sphere's surface and it
+has a size of eight. This size is completely arbitray and is ripe for tweaking.
+All of these numbers are highly tweakable in fact, and it's encouraged that you
+play around with them to see understand their effects. For instance, as you move
+the light away from the sphere, the shadow behind it on the wall gets bigger.
+You can try that for real life, if you don't believe me. I did.
+
+We have the world set up, but it's pretty abstract still. We'll need to figure out
+a way to translate it to our concrete canvas in order to write pixels to a file.
+```rust
+    let canvas_pixels = 300;
+    let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
+    let world_pixel_size = wall.size / canvas_pixels as f64;
+    let half_wall_size = wall.size / 2.0;
+```
+
