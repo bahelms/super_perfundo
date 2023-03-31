@@ -1,5 +1,5 @@
 ==title==
-Ray Tracer Challenge, pt. 3: Rays of Sunshine
+Ray Tracer Challenge, pt. 3: Let There Be Light!
 
 ==tags==
 rust, graphics, algorithms, ray-tracer-challenge, math
@@ -17,7 +17,7 @@ _The full code for this challenge can be found at [this repo](https://github.com
 
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
-* Part 3: Rays of Sunshine
+* Part 3: Let There Be Light!
 
 Welcome back, Constant Readers! Without further ado, here is the image we'll create
 today:
@@ -45,7 +45,7 @@ let's model the three entities in our world.
 
 # Your Balls Are Showing
 The sphere is the simplest object. It's a struct with a random ID and a matrix
-transformation (more on this later).
+transformation.
 ```rust
 pub struct Sphere {
     id: f64,
@@ -66,6 +66,29 @@ impl Sphere {
     }
 }
 ```
-
+For the sake of simplicity, we'll be using a unit sphere, which means the center is
+the world's origin `(0, 0, 0)`, and it has a radius of 1. The sphere's transform describes how it will
+be moved and changed within the world. Since it defaults to the identity, the transform
+is essentially a no-op. Now, let there be light!
 
 # Ray, A Drop of Golden Sun
+Turn the flashlight on! What do you see? Well nothing yet, because the thing's broken.
+In a perfect world, with a working flashlight, what would normally shoot out of the
+glassy end? Rays of light! See what we're doing? We're gonna cast rays out
+into the world and trace them to see what they hit. Ray tracer. We finally know who we are now!
+So, just wtf is a ray? I'm glad I asked.
+```rust
+pub struct Ray {
+    origin: Tuple,
+    direction: Tuple,
+}
+```
+It's a point (the origin) and a vector (the direction). Given a starting point, a line
+shoots out forever in the direction described by the vector. We've got one more piece
+to define, and our world will be fully modeled.
+
+# Another Brick In The Wall
+The wall behind the sphere is a little more abstract. It's basically there to provide
+some bounds on our world and act as a terminus for all the rays we're gonna launch out.
+Modeling pure constraints in this way doesn't necessitate the use of a struct.
+Raw numbers are all we'll need.
