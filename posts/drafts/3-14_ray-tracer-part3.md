@@ -107,28 +107,105 @@ The size of the wall defines the limits of our world. We'll shoot rays at every 
 on it and all of them don't make it to the wall will describe the sphere that's in the way.
 All that's left to do is code the algorithm to do this and turn the light on.
 
-# Kick the Tires and Light the Fires
+# A Whole New World
 We first need to set up some data to initialize the world.
 ```rust
-    let flashlight = Tuple::point(0.0, 0.0, -5.0);
-    let sphere = Sphere::new();
-    let wall = Wall { z: 10.0, size: 8.0 };
+let flashlight = Tuple::point(0.0, 0.0, -5.0);
+let sphere = Sphere::new();
+let wall = Wall { z: 10.0, size: 8.0 };
 ```
 The flashlight is centered on the sphere, four units in front of its surface.
-The sphere is using an identity matrix for the transform, so it will be rendered
-as a normal perfect sphere. The wall is nine units behind sphere's surface and it
+The sphere is using an identity matrix for its transform, so it will be rendered
+as is, without actually being transformed. The wall is nine units behind sphere's surface and it
 has a size of eight. This size is completely arbitray and is ripe for tweaking.
-All of these numbers are highly tweakable in fact, and it's encouraged that you
-play around with them to see understand their effects. For instance, as you move
+All of these numbers are highly tweakable, in fact, and it's encouraged that you
+play around with them to understand their effects. For instance, as you move
 the light away from the sphere, the shadow behind it on the wall gets bigger.
-You can try that for real life, if you don't believe me. I did.
+You can try that for real life, if you don't believe me. I did. It's true.
 
-We have the world set up, but it's pretty abstract still. We'll need to figure out
-a way to translate it to our concrete canvas in order to write pixels to a file.
+Now we have the world set up, but it's still pretty abstract. We need to figure out
+a way to translate it to our concrete canvas so we can write the pixels to a file.
+We'll start with a square canvas.
 ```rust
-    let canvas_pixels = 300;
-    let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
-    let world_pixel_size = wall.size / canvas_pixels as f64;
-    let half_wall_size = wall.size / 2.0;
+let canvas_pixels = 300;
+let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
+```
+The final two data points we need before starting the algorithm are the size of a pixel in world space and
+the bounds of the wall's four sides. Using a square canvas makes calculating both
+of these values easier.
+```rust
+let world_pixel_size = wall.size / canvas_pixels as f64;
+let half_wall_size = wall.size / 2.0;
+```
+The world pixel size is a relationship between the wall and the canvas.
+To calculate it, we divide the wall size by the number of canvas pixels on a side.
+Next, since everything is centered on the origin, using half of the wall size would satisfy all
+directions on the X and Y axes. For example, with a wall size of 8, 4 is max X,
+-4 is min X with the same for Y.
+
+# Kick the Tires and Light the Fires
+Now, let's crunch some numbers! The following is the full algorithm for tracing
+the sphere. See if you can grok it before I explain it.
+```rust
+for x in 0..canvas.width {
+    for y in 0..canvas.height {
+        let world_y = half_wall_size - world_pixel_size * y as f64;
+        let world_x = half_wall_size - world_pixel_size * x as f64;
+        let world_position = Tuple::point(world_x, world_y, wall.z);
+        let ray = Ray::new(flashlight, (world_position - flashlight).normalize());
+
+        if let Some(intersections) = ray.intersect(&sphere) {
+            if hit(&intersections).is_some() {
+                let point = Tuple::point(x as f64, y as f64, 0.0);
+                canvas.write_pixel(&point, Color::red());
+            }
+        }
+    }
+}
+```
+We iterate over the positions of every pixel, which is O(n) by the way because it's just one
+pass through the array (nested loops don't always equate to quadratic time).
+For each pixel position, the first order of business is to convert it
+into a position in world space. We already know Z since that's where the wall is.
+That leaves X and Y. I admit calculating these values initially seemed like magic
+because the book doesn't explain it very well. Hopefully, I can do better.
+
+```rust
+let world_y = half_wall_size - world_pixel_size * y as f64;
+let world_x = half_wall_size - world_pixel_size * x as f64;
+let world_position = Tuple::point(world_x, world_y, wall.z);
+```
+We'll start with finding the world X and Y values. It's easier to understand by describing their boundaries first.
+Remember, the wall size is 8 and centered on the origin, so it goes from -4 to 4 on both axes.
+At the beginning of the loop, canvas Y is 0 and at the end
+it's 299. That gives us the following calculations: `4 - (8/300) * 0 = 4` and `4 - (8/300) * 299 = -3.97333`.
+This means the iterations start at 4 and go down each axis, picking 300 values until reaching -4.
+After finding X and Y, they're combined with the wall's Z to make a concrete point in world space. Whew.
+Now, we know where to point the flashlight, so let's turn it on!
+```rust
+let ray = Ray::new(flashlight, (world_position - flashlight).normalize());
+```
+Ahh my eyes! The flashlight is the origin of this ray and the direction is the spot
+we just calculated minus the ray's origin. But those are both points, you say.
+Correct! When you subtract a point from a point, you get a vector that describes their
+difference in space. Remember, from [Part 1](/articles/ray-tracer-part1){:target="x"},
+a point is a tuple with "w" = 1, and a vector is "w" = 0. `1 - 1 = 0`, therefore, a vector.
+We also normalize the vector, which makes its length equal to 1 unit, which simpliflies
+the calculations. It's just a direction that can be extrapolated on with further
+calculations on the ray, which we will discuss next!
+
+# Intersections and Hits: I Hope You Have Insurance
+Now that we have a ray and a spot to cast it to, we need to determine if it actually
+runs into anything. The first step is to determine any intersections between the ray's
+origin and it's termius, the wall: `ray.intersect(&sphere)`. Regarding math, here be dragons.
+```rust
+pub fn intersect<'a>(&'a self, sphere: &'a Sphere) -> Option<Vec<Intersection>>
+```
+The ray accepts a sphere and returns a list if intersections, or `None` if it only
+finds empty space.
+```rust
 ```
 
+
+
+# Final Summation
