@@ -195,17 +195,117 @@ the calculations. It's just a direction that can be extrapolated on with further
 calculations on the ray, which we will discuss next!
 
 # Intersections and Hits: I Hope You Have Insurance
-Now that we have a ray and a spot to cast it to, we need to determine if it actually
+Now that we have a ray and a spot to cast it to, we need to see if it actually
 runs into anything. The first step is to determine any intersections between the ray's
-origin and it's termius, the wall: `ray.intersect(&sphere)`. Regarding math, here be dragons.
+origin and the wall: `ray.intersect(&sphere)`. Regarding math, here be dragons.
 ```rust
 pub fn intersect<'a>(&'a self, sphere: &'a Sphere) -> Option<Vec<Intersection>>
 ```
-The ray accepts a sphere and returns a list if intersections, or `None` if it only
-finds empty space.
+The ray accepts a sphere and returns a list of intersections, or `None` if it only
+finds empty space. Let's look at the implementation of `intersect` in sections.
 ```rust
+// Hardcoded unit sphere
+let sphere_center = Tuple::point(0.0, 0.0, 0.0);
+// Transform the ray instead of the sphere - let the sphere stay at unit
+let transform_inverse = match sphere.transform.inverse() {
+    Some(transform_inverse) => transform_inverse,
+    None => return None,
+};
+let new_ray = self.transform(transform_inverse);
 ```
+This is an interesting take on using the transformations. Since the origin of the axes
+is actually the top left corner of the canvas, that's where the center of the sphere starts.
+In order to render the sphere centered in the canvas, it must be transformed to have
+the corresponding coordinates. That's why it has the `transform` attribute containing
+a matrix. However, instead of applying the matrix to the sphere to transform it, you
+can take the matrix's inverse and apply it to the ray to get the same result. The
+sphere never moves, but the way ray *thinks* it has. That's pretty neat.
+We start with a hardcoded unit sphere, take the inverse of its transform
+(not all matrices can be inverted - #math), and create a new ray by multiplying
+the current one with said transform:
+```rust
+fn transform(&self, transformation: Matrix) -> Self {
+    Self {
+        origin: &transformation * self.origin,
+        direction: &transformation * self.direction,
+    }
+}
+```
+According to the book, using this method to keep the sphere a unit is the simple path.
+Well, I'm glad we're not going down the hard path. Especially when you see the rest of
+`intersect`. Without further ado:
+```rust
+let center_to_origin = new_ray.origin - sphere_center;
+let a = new_ray.direction.dot(&new_ray.direction);
+let b = 2.0 * new_ray.direction.dot(&center_to_origin);
+let c = center_to_origin.dot(&center_to_origin) - 1.0;
+let discriminant = b * b - 4.0 * a * c;
 
+if discriminant < 0.0 {
+    return None;
+}
 
+let sqrt = discriminant.sqrt();
+Some(vec![
+    Intersection::new((-b - sqrt) / (2.0 * a), sphere),
+    Intersection::new((-b + sqrt) / (2.0 * a), sphere),
+])
+```
+This is mostly just codifying the math behind checking ray/sphere intersections.
+I'm waving my hand here because I can't explain something I don't understand myself.
+If you're feeling frisky, [here's an article that goes into it](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
+The tl;dr: the ray intersects if there is a discriminant value. We've made a new
+type to hold onto the intersection values, the object that was hit and the time
+it took for the ray to hit it.
+```rust
+pub struct Intersection<'a> {
+    pub time: f64,
+    pub object: &'a Sphere,
+}
+```
+Time is relative here; you can think of it as the number of units the ray traveled
+before intersecting with the sphere. We return two intersections because the ray
+will hit the front side of the sphere and then the back side on the way out. It
+could also only glance of the surface at one point as a tangent, in which case
+the time values for both intersections are the same.
+
+Now, the final piece of work is to
+determine which of the found intersections is the one that is actually visible from
+the perspective of the flashlight. Most intersections won't be seen, such as the back
+part of the sphere or in more complicated scenes, objects behind objects.
+```rust
+pub fn hit<'a>(intersections: &'a Vec<Intersection>) -> Option<&'a Intersection<'a>> {
+    let mut hit = None;
+    for intersection in intersections {
+        if intersection.time < 0.0 {
+            continue;
+        }
+
+        match hit {
+            None => hit = Some(intersection),
+            Some(last_hit) => {
+                if intersection.time < last_hit.time {
+                    hit = Some(intersection)
+                }
+            }
+        }
+    }
+    hit
+}
+```
+We only care about non-negative intersections, since they are in front of the flashlight.
+Then we pick the intersection with the smallest time, since that means it is closest
+to the flashlight. Much simpler than `intersect`. We return an `Option` in the case
+that none of the intersections match these constraints. If we have a hit, we write
+that shit down!
+```rust
+if let Some(intersections) = ray.intersect(&sphere) {
+    if hit(&intersections).is_some() {
+        let point = Tuple::point(x as f64, y as f64, 0.0);
+        canvas.write_pixel(&point, Color::red());
+    }
+}
+```
+And there we have it. Convert the canvas to a PPM string and save it to a file.
 
 # Final Summation
