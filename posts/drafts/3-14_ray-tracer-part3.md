@@ -44,8 +44,8 @@ Hey, it's my blog, and I pick the colors! Before we get into the dirty math,
 let's model the three entities in our world.
 
 # Your Balls Are Showing
-The sphere is the simplest object. It's a struct with a random ID and a matrix
-transformation.
+The sphere is the simplest object. It's a struct with a random ID and a [matrix
+transformation](/articles/ray-tracer-part2).
 ```rust
 pub struct Sphere {
     id: f64,
@@ -68,7 +68,7 @@ impl Sphere {
 ```
 For the sake of simplicity, we'll be using a unit sphere, which means the center is
 the world's origin `(0, 0, 0)`, and it has a radius of 1. The sphere's transform describes how it will
-be moved and changed within the world. Since it defaults to the identity, the transform
+be moved and changed within the world. Since it defaults to the identity, this transform
 is essentially a no-op. Now, let there be light!
 
 # Ray, A Drop of Golden Sun
@@ -104,7 +104,7 @@ behind it at some point. Moving something away from you entails increasing the Z
 value. When we create the wall it must have a Z-axis value of at least one, or the
 sphere will be stuck inside it like those poor dudes in the [Philadelphia Experiment](https://en.wikipedia.org/wiki/Philadelphia_Experiment){:target="x"}.
 The size of the wall defines the limits of our world. We'll shoot rays at every point
-on it and all of them don't make it to the wall will describe the sphere that's in the way.
+on it, and all of the one that don't make it to the wall will describe the sphere that has blocked them.
 All that's left to do is code the algorithm to do this and turn the light on.
 
 # A Whole New World
@@ -116,12 +116,12 @@ let wall = Wall { z: 10.0, size: 8.0 };
 ```
 The flashlight is centered on the sphere, four units in front of its surface.
 The sphere is using an identity matrix for its transform, so it will be rendered
-as is, without actually being transformed. The wall is nine units behind sphere's surface and it
+as is, without actually being transformed. The wall is nine units behind the sphere's surface and it
 has a size of eight. This size is completely arbitray and is ripe for tweaking.
 All of these numbers are highly tweakable, in fact, and it's encouraged that you
 play around with them to understand their effects. For instance, as you move
 the light away from the sphere, the shadow behind it on the wall gets bigger.
-You can try that for real life, if you don't believe me. I did. It's true.
+You can try that out for real life, if you don't believe me. I did. It's true.
 
 Now we have the world set up, but it's still pretty abstract. We need to figure out
 a way to translate it to our concrete canvas so we can write the pixels to a file.
@@ -191,17 +191,18 @@ Correct! When you subtract a point from a point, you get a vector that describes
 difference in space. Remember, from [Part 1](/articles/ray-tracer-part1){:target="x"},
 a point is a tuple with "w" = 1, and a vector is "w" = 0. `1 - 1 = 0`, therefore, a vector.
 We also normalize the vector, which makes its length equal to 1 unit, which simpliflies
-the calculations. It's just a direction that can be extrapolated on with further
-calculations on the ray, which we will discuss next!
+the calculations. There is no need for a literal vector between the two points.
+It's simply a direction pointing the way, and we can extrapolate on it further
+with more calculations, which we will discuss next!
 
 # Intersections and Hits: I Hope You Have Insurance
-Now that we have a ray and a spot to cast it to, we need to see if it actually
+Now that we have a ray, let's cast it out into the world and see if it
 runs into anything. The first step is to determine any intersections between the ray's
 origin and the wall: `ray.intersect(&sphere)`. Regarding math, here be dragons.
 ```rust
 pub fn intersect<'a>(&'a self, sphere: &'a Sphere) -> Option<Vec<Intersection>>
 ```
-The ray accepts a sphere and returns a list of intersections, or `None` if it only
+The ray accepts a reference to a sphere and returns a list of intersections, or `None` if it only
 finds empty space. Let's look at the implementation of `intersect` in sections.
 ```rust
 // Hardcoded unit sphere
@@ -214,13 +215,13 @@ let transform_inverse = match sphere.transform.inverse() {
 let new_ray = self.transform(transform_inverse);
 ```
 This is an interesting take on using the transformations. Since the origin of the axes
-is actually the top left corner of the canvas, that's where the center of the sphere starts.
+is actually the top left corner of the canvas, that's where the center of the unit sphere starts.
 In order to render the sphere centered in the canvas, it must be transformed to have
 the corresponding coordinates. That's why it has the `transform` attribute containing
 a matrix. However, instead of applying the matrix to the sphere to transform it, you
 can take the matrix's inverse and apply it to the ray to get the same result. The
-sphere never moves, but the way ray *thinks* it has. That's pretty neat.
-We start with a hardcoded unit sphere, take the inverse of its transform
+sphere never moves, but the ray *thinks* it has. That's pretty neat.
+We start with a hardcoded sphere center, take the inverse of its transform
 (not all matrices can be inverted - #math), and create a new ray by multiplying
 the current one with said transform:
 ```rust
@@ -231,9 +232,9 @@ fn transform(&self, transformation: Matrix) -> Self {
     }
 }
 ```
-According to the book, using this method to keep the sphere a unit is the simple path.
+According to the book, this method of using a unit sphere is the simple path.
 Well, I'm glad we're not going down the hard path. Especially when you see the rest of
-`intersect`. Without further ado:
+`intersect`:
 ```rust
 let center_to_origin = new_ray.origin - sphere_center;
 let a = new_ray.direction.dot(&new_ray.direction);
@@ -255,7 +256,7 @@ This is mostly just codifying the math behind checking ray/sphere intersections.
 I'm waving my hand here because I can't explain something I don't understand myself.
 If you're feeling frisky, [here's an article that goes into it](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
 The tl;dr: the ray intersects if there is a discriminant value. We've made a new
-type to hold onto the intersection values, the object that was hit and the time
+type to hold on to the intersection values: the object that was hit and the time
 it took for the ray to hit it.
 ```rust
 pub struct Intersection<'a> {
@@ -264,7 +265,8 @@ pub struct Intersection<'a> {
 }
 ```
 Time is relative here; you can think of it as the number of units the ray traveled
-before intersecting with the sphere. We return two intersections because the ray
+before intersecting with the sphere. This is why we normalized the direction vector earlier.
+We return two intersections because the ray
 will hit the front side of the sphere and then the back side on the way out. It
 could also only glance of the surface at one point as a tangent, in which case
 the time values for both intersections are the same.
@@ -295,7 +297,7 @@ pub fn hit<'a>(intersections: &'a Vec<Intersection>) -> Option<&'a Intersection<
 ```
 We only care about non-negative intersections, since they are in front of the flashlight.
 Then we pick the intersection with the smallest time, since that means it is closest
-to the flashlight. Much simpler than `intersect`. We return an `Option` in the case
+to the flashlight. Much simpler than `intersect`! We return an `Option` in the case
 that none of the intersections match these constraints. If we have a hit, we write
 that shit down!
 ```rust
@@ -305,7 +307,25 @@ if let Some(intersections) = ray.intersect(&sphere) {
         canvas.write_pixel(&point, Color::red());
     }
 }
+
+ray_tracer::save_image(canvas, "circle-2d.ppm");
 ```
-And there we have it. Convert the canvas to a PPM string and save it to a file.
+And there we have it. With a hit, we write a red pixel to the canvas
+(remember a blank canvas is all black). Convert the canvas to a PPM string, save it to a file, profit.
 
 # Final Summation
+Wooo doggy! This one was a brain stretcher. I felt the book was a little lacking in
+explaining some of these details, particulary object space and world space. I take
+object space to mean the canvas, which is the concretion of the abstract world.
+Then of course there is the linear algebra. I can see how the code for those formulas
+could be written after reading that [article](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
+It's very math heavy, but understandable. Sometimes I tend to focus on the concrete
+numbers that are calculated to understand the world in my head, but this tends to
+make it more confusing. For example, the value of the world pixel, 0.02666667.
+It doesn't make any difference in understanding the calculations.
+It finally clicked when I took a step back and focused on the abstract world.
+
+After all this work, we still only have a 2D circle. We'll I've already read the
+next chapter, and it's all about lighting, which will take our circle and explode
+it up to the next dimension! Until then.
+
