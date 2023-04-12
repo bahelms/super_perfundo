@@ -17,7 +17,7 @@ _The full code for this challenge can be found at [this repo](https://github.com
 
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * Part 2: Enter The Matrix
-* Part 3: ???
+* [Part 3: Let There Be Light!](/articles/ray-tracer-part3)
 
 Welcome back! Last time we set up the foundational data structures for our ray tracer
 by creating points, vectors, colors, and the canvas on which to draw them. This time,

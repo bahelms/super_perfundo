@@ -188,7 +188,7 @@ let ray = Ray::new(flashlight, (world_position - flashlight).normalize());
 Ahh my eyes! The flashlight is the origin of this ray and the direction is the spot
 we just calculated minus the ray's origin. But those are both points, you say.
 Correct! When you subtract a point from a point, you get a vector that describes their
-difference in space. Remember, from [Part 1](/articles/ray-tracer-part1){:target="x"},
+difference in space. Remember, from [Part 1](/articles/ray-tracer-part1),
 a point is a tuple with "w" = 1, and a vector is "w" = 0. `1 - 1 = 0`, therefore, a vector.
 We also normalize the vector, which makes its length equal to 1 unit, which simpliflies
 the calculations. There is no need for a literal vector between the two points.
@@ -317,15 +317,15 @@ And there we have it. With a hit, we write a red pixel to the canvas
 Wooo doggy! This one was a brain stretcher. I felt the book was a little lacking in
 explaining some of these details, particulary object space and world space. I take
 object space to mean the canvas, which is the concretion of the abstract world.
-Then of course there is the linear algebra. I can see how the code for those formulas
+Then of course there is the linear algebra. I could see how the code for those formulas
 could be written after reading that [article](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
 It's very math heavy, but understandable. Sometimes I tend to focus on the concrete
 numbers that are calculated to understand the world in my head, but this tends to
 make it more confusing. For example, the value of the world pixel, 0.02666667.
-It doesn't make any difference in understanding the calculations.
+Keeping that in your head doesn't make any difference in understanding what's going on.
 It finally clicked when I took a step back and focused on the abstract world.
 
 After all this work, we still only have a 2D circle. We'll I've already read the
-next chapter, and it's all about lighting, which will take our circle and explode
+next chapter, and it's all about lighting that circle, which totally explodes
 it up to the next dimension! Until then.
 
