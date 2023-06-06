@@ -13,10 +13,13 @@ services:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "/etc/nginx/certs"
 
-  letsencrypt-nginx-proxy-companion:
+  nginx-proxy-acme-companion:
     restart: always
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: nginxproxy/acme-companion
+    environment:
+      - DEFAULT_EMAIL=$CERTS_EMAIL
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/acme.sh"
     volumes_from:
       - "nginx-proxy"
