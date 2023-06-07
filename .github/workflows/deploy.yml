@@ -8,7 +8,7 @@ on:
 jobs:
   build_image:
     if: github.event.pull_request.merged
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout master
@@ -34,7 +34,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build_image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action

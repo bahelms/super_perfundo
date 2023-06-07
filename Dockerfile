@@ -1,4 +1,4 @@
-FROM bitwalker/alpine-elixir-phoenix:1.11.4 as builder
+FROM bitwalker/alpine-elixir-phoenix:1.14 as builder
 
 # install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -22,7 +22,7 @@ RUN mix release
 
 
 # start app
-FROM bitwalker/alpine-elixir:1.11.4
+FROM bitwalker/alpine-elixir:1.14
 
 # install runtime deps for Rust
 RUN apk update --no-cache && \
