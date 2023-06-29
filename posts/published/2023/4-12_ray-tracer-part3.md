@@ -18,6 +18,7 @@ _The full code for this challenge can be found at [this repo](https://github.com
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
 * Part 3: Let There Be Light!
+* [Part 4: The Next Dimension](/articles/ray-tracer-part4)
 
 Welcome back, Constant Readers! Without further ado, here is the image we'll create
 today:

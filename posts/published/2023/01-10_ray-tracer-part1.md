@@ -17,6 +17,7 @@ _The full code for this challenge can be found at [this repo](https://github.com
 * Part 1: Creating A 2D Image
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
 * [Part 3: Let There Be Light!](/articles/ray-tracer-part3)
+* [Part 4: The Next Dimension](/articles/ray-tracer-part4)
 
 Hello there! Have you ever wondered what goes on under the hood when generating computer graphics?
 Ever yearned to write a 3D renderer from scratch? Me too! You've come to the right place, my friend.
