@@ -3,7 +3,8 @@
 A blog server with no database!
 
 ### Dev
-Run `mix phx.gen.cert` in order to serve `https` in dev.
+* Run `mix phx.gen.cert` in order to serve `https` in dev.
+* Set your browser to allow insecure localhost
 
 ### Publish steps
 * Move draft into /posts/published/YEAR/MONTH-DAY_POST-TITLE.md
