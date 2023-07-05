@@ -34,10 +34,10 @@ the original 2D circle up to the 3rd dimension is light and shade.
 # Cast Out the Dark
 There are many ways to simulate light algorithmically; the method the book describes is the
 [Phong reflection model](https://en.wikipedia.org/wiki/Phong_reflection_model){:target="x"}.
-It consists of three layers of colors derived from the base image (our 2d circle).
+It consists of three layers of colors derived from the base image (our 2D circle).
 * **Ambient reflection** - light that is reflected off another object. When you light
 a candle in a dark room, the light that bounces off the walls back at you is ambient.
-This value is constant in the Phong model and the entire 2d circle is colored with it.
+This value is constant in the Phong model and the entire 2D circle is colored with it.
 * **Diffuse reflection** - light directly reflected from a matte surface.
 * **Specular reflection** - the reflection of the light source itself. It's the
 dot you see on a curved surface. Controlled by a "shininess" value.
@@ -124,30 +124,47 @@ pub fn lighting(
     // combine surface color with the light's color/intensity
     let effective_color = &material.color * &light.intensity;
     let light_direction = (light.position - position).normalize();
+
+    // Calculate ambient and initialize other layers
     let ambient = &effective_color * material.ambient;
     let mut diffuse = Color::black();
     let mut specular = Color::black();
 
-    // This is the cosine of the angle between the light vector and normal.
-    // A negative value means the light is on the other side of the surface.
+    // This is the cosine of the angle between the light vector and surface normal.
     let light_dot_normal = light_direction.dot(&normal);
+
+    // A negative value means the light is on the other side of the surface.
     if light_dot_normal > 0.0 {
         diffuse = &(&effective_color * material.diffuse) * light_dot_normal;
 
         // This is the cosine of the angle between the eye and reflection.
-        // A negative value means the light reflects away from the eye.
         let reflection_direction = -light_direction.reflect(&normal);
         let reflect_dot_eye = reflection_direction.dot(&eye);
 
-        if reflect_dot_eye <= 0.0 {
-            specular = Color::black();
-        } else {
-            let factor = reflect_dot_eye.powf(material.shininess);
-            specular = &(&light.intensity * material.specular) * factor;
+        // A negative value means the light reflects away from the eye.
+        if reflect_dot_eye > 0.0 {
+            // Shininess determines the size of the specular layer
+            let shininess = reflect_dot_eye.powf(material.shininess);
+            specular = &(&light.intensity * material.specular) * shininess;
         }
     }
     ambient + diffuse + specular
 }
 ```
+At the end of the function, we add the layers together to get the final color to
+paint the pixel at that position. The book goes other the algorithm in easy to follow
+steps. I'm sure it would have been much harder to grok a mathematical explanation of Phong's
+model and convert it to code. However, that's always part of the fun, right?
 
 # Final Summation
+I'd say we've finally crossed the Rubicon in our adventure here. We successfully
+created a working 3D renderer. That's pretty impressive. Everything that comes next
+is just features enchancing what we have: shadows, scenes with multiple objects,
+reflections of those objects, squares, cylinders, multi-polygonal shapes.
+I think this is a great stopping point in our study of rendering, so I'm going to
+take a break. There are other interesting things I'm itching to consume and write about. We can
+always pick up our journey with a future part 5 later. Until then, by all means,
+grab a copy of
+[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
+if you haven't already and give it a spin yourself. But use Haskell this time.
+Cheers!
