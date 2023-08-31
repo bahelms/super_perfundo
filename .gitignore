@@ -33,6 +33,7 @@ npm-debug.log
 # this depending on your deployment strategy.
 /priv/static/
 /priv/cert/
+priv/native/libquarto_ai.so
 
 posts/2019/
 credentials.csv
