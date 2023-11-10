@@ -9,5 +9,11 @@
     <li>
       <%= link("Twitter", to: "https://www.twitter.com/bahelms1", target: "_blank") %>
     </li>
+    <li>
+      <%= link("LinkedIn", to: "https://www.linkedin.com/in/barretthelms/", target: "_blank") %>
+    </li>
+    <li>
+      <%= link("ElixirConf 2023", to: "https://youtu.be/iGMs4lJCMB8?feature=shared", target: "_blank") %>
+    </li>
   </ul>
 </section>
