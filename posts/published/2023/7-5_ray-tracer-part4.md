@@ -6,7 +6,8 @@ rust, graphics, algorithms, ray-tracer-challenge, math
 
 ==description==
 Let's accept The Ray Tracer Challenge and write a 3D renderer in Rust!
-In Part 4, we'll barf.
+In Part 4, we'll discover how to push a plain 2D circle to apotheosis and turn
+it into a sphere.
 
 ==image==
 lighted_sphere.jpg
