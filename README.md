@@ -12,6 +12,8 @@ A blog server with no database!
     * Announce: `Blog.get_post("name") |> Email.send_published_emails()`
 
 ### TODO
+* Upgrade deps
+    - phoenix: https://gist.github.com/chrismccord/2ab350f154235ad4a4d0f4de6decba7b 
 * email signup as LiveView
 - Quarto
   * Handle a draw in UI

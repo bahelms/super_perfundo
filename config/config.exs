@@ -5,7 +5,7 @@
 # is restricted to this project.
 
 # General application configuration
-use Mix.Config
+import Config
 
 # Configures the endpoint
 config :super_perfundo, SuperPerfundoWeb.Endpoint,
@@ -19,6 +19,7 @@ config :super_perfundo, :posts_pattern, "posts/published/**/*.md"
 config :super_perfundo, :drafts_pattern, "posts/drafts/*.md"
 config :super_perfundo, :timezone, "US/Eastern"
 config :super_perfundo, :email_list, "email-list"
+config :super_perfundo, :env, config_env()
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -32,4 +33,4 @@ config :ex_aws, json_codec: Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"
