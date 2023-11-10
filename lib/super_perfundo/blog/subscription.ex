@@ -1,5 +1,5 @@
 defmodule SuperPerfundo.Blog.Subscription do
-  @timezone Application.get_env(:super_perfundo, :timezone)
+  @timezone Application.compile_env(:super_perfundo, :timezone)
 
   defmodule Email do
     defstruct [:address, :timestamp]

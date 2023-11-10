@@ -3,7 +3,7 @@ defmodule SuperPerfundo.Blog.Post do
   defstruct [:id, :title, :body, :tags, :description, :date, :image]
 
   @field_pattern ~r/^==(\w+)==\n/m
-  @timezone Application.get_env(:super_perfundo, :timezone)
+  @timezone Application.compile_env(:super_perfundo, :timezone)
 
   def parse!(filename) do
     id = parse_id(filename)
