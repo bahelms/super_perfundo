@@ -37,6 +37,8 @@ defmodule SuperPerfundo.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.13.2"},
+      # remove when upgrading phoenix to 1.6
+      {:cowboy_telemetry, "~> 0.3.1"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.5"},
