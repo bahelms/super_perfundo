@@ -41,7 +41,12 @@ defmodule SuperPerfundo.MixProject do
       {:cowboy_telemetry, "~> 0.3.1"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.5"},
+      # plug >= 1.16 requires Elixir ~> 1.15; 1.15.4 is the security backport
+      # for the multipart/param-decoding advisories. Widen once on Elixir 1.15+.
+      {:plug, "~> 1.15.4"},
+      # 2.8.1 patches the HTTP/2 :scheme atom-exhaustion advisory; 2.9.0 needs
+      # plug ~> 1.18 (Elixir 1.15+). Widen once on Elixir 1.15+.
+      {:plug_cowboy, "~> 2.8.1"},
       {:earmark, "~> 1.3"},
       {:ex_doc, "~> 0.21.3"},
       {:timex, "~> 3.6.1"},
