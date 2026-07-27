@@ -60,7 +60,10 @@ defmodule SuperPerfundo.MixProject do
       {:ex_aws_s3, "~> 2.2"},
       {:hackney, "~> 1.16"},
       {:sweet_xml, "~> 0.6"},
-      {:bamboo, "~> 1.4"},
+      {:bamboo, "~> 2.5"},
+      # Bamboo 2.0 extracted Bamboo.Phoenix (used by SuperPerfundo.Email) into
+      # its own package.
+      {:bamboo_phoenix, "~> 1.0"},
       {:floki, "~> 0.38", only: :test},
       {:rustler, "~> 0.38.0"}
     ]

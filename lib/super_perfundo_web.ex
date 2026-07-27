@@ -22,7 +22,6 @@ defmodule SuperPerfundoWeb do
       use Phoenix.Controller, namespace: SuperPerfundoWeb
 
       import Plug.Conn
-      import SuperPerfundoWeb.Gettext
       alias SuperPerfundoWeb.Router.Helpers, as: Routes
       import Phoenix.LiveView.Controller
     end
@@ -53,7 +52,6 @@ defmodule SuperPerfundoWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import SuperPerfundoWeb.Gettext
     end
   end
 
@@ -87,7 +85,6 @@ defmodule SuperPerfundoWeb do
       import Phoenix.View
 
       import SuperPerfundoWeb.ErrorHelpers
-      import SuperPerfundoWeb.Gettext
       alias SuperPerfundoWeb.Router.Helpers, as: Routes
     end
   end
