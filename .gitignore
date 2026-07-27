@@ -38,3 +38,4 @@ priv/native/libquarto_ai.so
 posts/2019/
 credentials.csv
 plans/
+tmp/
