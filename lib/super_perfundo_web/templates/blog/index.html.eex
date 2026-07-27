@@ -1,5 +1,5 @@
 <section id="index">
-  <p class="alert-danger" align="center"><%= get_flash(@conn, :error) %></p>
+  <p class="alert-danger" align="center"><%= Phoenix.Flash.get(@conn.assigns.flash, :error) %></p>
   <h3><%= index_heading(@tag) %></h3>
   <div>
 

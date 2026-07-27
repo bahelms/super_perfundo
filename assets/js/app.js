@@ -20,7 +20,9 @@ import "phoenix_html"
 // import socket from "./socket"
 
 import { Socket } from "phoenix"
-import LiveSocket from "phoenix_live_view"
+// LiveView >= 0.17 exports LiveSocket as a named export; the old default
+// export is gone, so `import LiveSocket from ...` silently yields undefined.
+import { LiveSocket } from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})

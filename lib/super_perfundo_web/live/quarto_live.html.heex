@@ -1,0 +1,67 @@
+<div class="game-won">
+  <%= if @winning_state do %>
+    Winner: <%= display_player(@active_player) %>!
+  <% end %>
+</div>
+
+<div id="game">
+  <div class="player-status">
+    <span><strong>Player:</strong> <%= display_player(@active_player) %></span>
+    <div class="active-piece">
+      <strong>Active Piece</strong>
+      <PieceComponent.piece piece={@active_piece} />
+    </div>
+    <%= if @active_player == :ai && !@winning_state do %>
+      <div class="thinking"></div>
+    <% end %>
+  </div>
+
+  <div id="board">
+    <%= for row <- 0..3 do %>
+      <div class="row">
+        <%= for position <- (row * 4)..(row * 4 + 3) do %>
+          <div
+            class={"slot #{highlight_for_win(@winning_state, position)}"}
+            phx-click="position_chosen"
+            phx-value-position={position}
+          >
+            <PieceComponent.piece board={@board} position={position} />
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class={"#{choose_piece?(@active_player, @active_piece, @winning_state)} remaining-pieces-container"}>
+    <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+      <strong>Select Opponent's Piece</strong>
+    <% else %>
+      <strong>Remaining Pieces</strong>
+    <% end %>
+
+    <div class="remaining-pieces">
+      <%= for piece <- Board.remaining_pieces(@board, @active_piece) do %>
+        <div phx-click="piece_chosen" phx-value-piece={piece}>
+          <PieceComponent.piece piece={piece} />
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= if @game_start do %>
+  <div id="game-start-modal">
+    <div class="modal-content">
+      <h3><%= display_coin_toss_winner(@chosen_player) %></h3>
+      <button id="game-start-btn" phx-click="start_game">Game on!</button>
+      <a href="https://youtu.be/VMazU6Q-YFY?t=10" target="_blank" id="instructions">
+        How to play Quarto (video)
+      </a>
+    </div>
+  </div>
+  <div class="blackout"></div>
+<% end %>
+
+<%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+  <div class="blackout"></div>
+<% end %>

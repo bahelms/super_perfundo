@@ -59,8 +59,9 @@ defmodule SuperPerfundoWeb do
 
   def live_view do
     quote do
+      # LiveView 1.0 takes the template as an atom, not a string.
       use Phoenix.LiveView,
-        layout: {SuperPerfundoWeb.LayoutView, "live.html"}
+        layout: {SuperPerfundoWeb.LayoutView, :live}
 
       unquote(view_helpers())
     end
@@ -79,8 +80,8 @@ defmodule SuperPerfundoWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      # Import LiveView helpers (live_render, live_component, live_patch, etc)
-      import Phoenix.LiveView.Helpers
+      # Phoenix.LiveView.Helpers was folded into Phoenix.Component in LiveView 1.0
+      import Phoenix.Component
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View

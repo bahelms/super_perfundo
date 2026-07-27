@@ -7,13 +7,7 @@ defmodule SuperPerfundo.MixProject do
       version: "0.3.1",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      # :gettext dropped (its compiler is gone in gettext >= 0.20 anyway).
-      # :phoenix must stay until Phoenix 1.6. Without it a *clean* build passes,
-      # but touching a LiveView component leaves update/2 unregistered and
-      # render/1 fails with "assign @piece not available" -- so it only breaks
-      # incremental rebuilds, which is why a clean build looks fine. Remove in
-      # Stage 2 alongside the Phoenix upgrade.
-      compilers: [:phoenix] ++ Mix.compilers(),
+      compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -38,13 +32,17 @@ defmodule SuperPerfundo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.3"},
+      {:phoenix, "~> 1.7.0"},
+      # Phoenix 1.7 dropped Phoenix.View from core. This compat package keeps the
+      # existing SuperPerfundoWeb.*View modules and .eex templates working, so the
+      # view -> Phoenix.Component migration stays a separate decision.
+      {:phoenix_view, "~> 2.0"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_html, "~> 2.11"},
+      # 3.3 rather than 4.0 on purpose: 4.0 removes link/2, button/2, form_for and
+      # the input helpers, which all 12 templates use. Phoenix 1.7 supports both.
+      {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.13.2"},
-      # remove when upgrading phoenix to 1.6
-      {:cowboy_telemetry, "~> 0.3.1"},
+      {:phoenix_live_view, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       # plug >= 1.16 requires Elixir ~> 1.15; 1.15.4 is the security backport
@@ -67,7 +65,7 @@ defmodule SuperPerfundo.MixProject do
       {:hackney, "~> 1.16"},
       {:sweet_xml, "~> 0.6"},
       {:bamboo, "~> 1.4"},
-      {:floki, "~> 0.27.0", only: :test},
+      {:floki, "~> 0.37.0", only: :test},
       {:rustler, "~> 0.25.0"}
     ]
   end
