@@ -66,6 +66,67 @@ defmodule SuperPerfundoWeb.QuartoLiveTest do
       refute html =~ ~s(phx-value-piece="#{piece}"), "the AI did not place the chosen piece"
       assert html =~ ~s(<div class="piece">), "no piece was rendered after the turn"
     end
+
+    test "clicking a position that is already taken is a no-op", %{conn: conn} do
+      {:ok, view, _html} = live(conn, "/quarto")
+      html = view |> element("#game-start-btn") |> render_click()
+
+      # The coin toss is random. If the user won it they have to hand the AI a
+      # piece first and take one back; if the AI won it the user already holds
+      # one. Both branches end with the user placing a piece on position 0 --
+      # or with the AI already sitting there, which is just as good here.
+      if html =~ "Select Opponent" do
+        view |> element(~s([phx-value-piece="#{first_remaining_piece(html)}"])) |> render_click()
+      end
+
+      html = view |> element(~s([phx-value-position="0"])) |> render_click()
+
+      # Re-clicking the occupied slot used to hand the whole assigns map back
+      # to assign/2, including the reserved :flash key, and crash the process.
+      assert view |> element(~s([phx-value-position="0"])) |> render_click() == html
+    end
+  end
+
+  describe "end of game" do
+    test "a full board with no four in a row renders a draw" do
+      html = render_state(board: full_board(), draw: true)
+
+      assert html =~ "Draw!"
+      refute html =~ "Winner:"
+      refute html =~ "Select Opponent"
+      refute html =~ "thinking"
+    end
+
+    test "a win still renders the winner" do
+      html = render_state(board: full_board(), active_player: :ai, winning_state: [0, 1, 2, 3])
+
+      assert html =~ "Winner: AI!"
+      refute html =~ "Draw!"
+      refute html =~ "Select Opponent"
+    end
+  end
+
+  defp render_state(assigns) do
+    defaults = [
+      board: SuperPerfundo.Quarto.Board.new(),
+      active_piece: nil,
+      active_player: nil,
+      winning_state: nil,
+      draw: false,
+      game_start: false,
+      chosen_player: :user,
+      __changed__: nil
+    ]
+
+    defaults
+    |> Keyword.merge(assigns)
+    |> Map.new()
+    |> QuartoLive.render()
+    |> rendered_to_string()
+  end
+
+  defp full_board do
+    List.to_tuple([7, 8, 5, 10, 12, 3, 14, 1, 15, 13, 9, 6, 2, 11, 4, 0])
   end
 
   defp first_remaining_piece(html) do

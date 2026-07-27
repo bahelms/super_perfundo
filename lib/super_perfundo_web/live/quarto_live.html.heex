@@ -2,6 +2,9 @@
   <%= if @winning_state do %>
     Winner: <%= display_player(@active_player) %>!
   <% end %>
+  <%= if @draw do %>
+    Draw!
+  <% end %>
 </div>
 
 <div id="game">
@@ -11,7 +14,7 @@
       <strong>Active Piece</strong>
       <PieceComponent.piece piece={@active_piece} />
     </div>
-    <%= if @active_player == :ai && !@winning_state do %>
+    <%= if @active_player == :ai && !game_over?(@winning_state, @draw) do %>
       <div class="thinking"></div>
     <% end %>
   </div>
@@ -32,8 +35,8 @@
     <% end %>
   </div>
 
-  <div class={"#{choose_piece?(@active_player, @active_piece, @winning_state)} remaining-pieces-container"}>
-    <%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+  <div class={"#{choose_piece?(@active_player, @active_piece, game_over?(@winning_state, @draw))} remaining-pieces-container"}>
+    <%= if choose_piece?(@active_player, @active_piece, game_over?(@winning_state, @draw)) do %>
       <strong>Select Opponent's Piece</strong>
     <% else %>
       <strong>Remaining Pieces</strong>
@@ -62,6 +65,6 @@
   <div class="blackout"></div>
 <% end %>
 
-<%= if choose_piece?(@active_player, @active_piece, @winning_state) do %>
+<%= if choose_piece?(@active_player, @active_piece, game_over?(@winning_state, @draw)) do %>
   <div class="blackout"></div>
 <% end %>

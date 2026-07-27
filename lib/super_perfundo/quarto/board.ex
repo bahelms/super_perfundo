@@ -91,6 +91,12 @@ defmodule SuperPerfundo.Quarto.Board do
     put_elem(board, position, piece)
   end
 
+  def full?(board) do
+    board
+    |> Tuple.to_list()
+    |> Enum.all?(&(&1 != nil))
+  end
+
   def remaining_pieces(board, active_piece) do
     used_pieces =
       board

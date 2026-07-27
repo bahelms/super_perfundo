@@ -10,6 +10,7 @@ defmodule SuperPerfundoWeb.QuartoLive do
         active_player: nil,
         active_piece: nil,
         winning_state: nil,
+        draw: false,
         game_start: true,
         chosen_player: Game.choose_player()
       )
@@ -35,7 +36,8 @@ defmodule SuperPerfundoWeb.QuartoLive do
   end
 
   def handle_event("piece_chosen", %{"piece" => piece}, socket) do
-    with nil <- socket.assigns.winning_state,
+    with false <- socket.assigns.draw,
+         nil <- socket.assigns.winning_state,
          nil <- socket.assigns.active_piece do
       send(self(), :ai_start)
 
@@ -60,26 +62,30 @@ defmodule SuperPerfundoWeb.QuartoLive do
     {position, next_piece} = AI.choose_position_and_next_piece(board, piece)
     board = Board.set_piece(board, piece, position)
     winning_state = Board.four_in_a_row?(board)
+    draw = is_nil(winning_state) && Board.full?(board)
 
     socket =
       assign(socket,
         board: board,
-        active_piece: if(winning_state, do: nil, else: next_piece),
-        active_player: if(winning_state, do: :ai, else: :user),
-        winning_state: winning_state
+        # On the last move there is no piece left to hand over, and the NIF
+        # reports 0 for it, so don't pass that back into the game.
+        active_piece: if(winning_state || draw, do: nil, else: next_piece),
+        active_player:
+          cond do
+            winning_state -> :ai
+            draw -> nil
+            true -> :user
+          end,
+        winning_state: winning_state,
+        draw: draw
       )
 
     {:noreply, socket}
   end
 
-  defp choose_piece?(:user, nil, winning_state) do
-    if !winning_state do
-      "raise-box"
-    else
-      nil
-    end
-  end
+  defp game_over?(winning_state, draw), do: !is_nil(winning_state) || draw
 
+  defp choose_piece?(:user, nil, false), do: "raise-box"
   defp choose_piece?(_, _, _), do: nil
 
   def highlight_for_win(nil, _), do: nil
