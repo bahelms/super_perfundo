@@ -1,5 +1,5 @@
 name: SuperPerfundo
-on: 
+on:
   pull_request:
     branches:
       - master
@@ -7,15 +7,32 @@ on:
 jobs:
   verify:
     name: Verify
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: 25.3.2.2
-          elixir-version: 1.14.5
+          # Single source of truth: versions live in .tool-versions only, so CI
+          # and local development cannot drift apart.
+          version-file: .tool-versions
+          version-type: strict
+
+      - name: Cache deps and build
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
 
       - run: mix deps.get
       - run: mix format --check-formatted
       - run: mix test
+
+      # The Rust MCTS agent behind the Quarto NIF was previously never exercised
+      # by CI, despite being the least-covered code in the project.
+      - name: Rust tests
+        working-directory: native/quarto_ai
+        run: cargo test

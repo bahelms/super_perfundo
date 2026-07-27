@@ -43,7 +43,11 @@ defmodule Mix.Tasks.Snapshot do
     dir = List.first(args) || @default_dir
     posts = Blog.list_posts()
 
-    if posts == [] do
+    # Enum.empty?/1 rather than `== []`: posts come from a compile-time module
+    # attribute, so Elixir 1.18's type checker can prove `== []` is always false
+    # and flags it. The check still earns its place as a guard against a
+    # misconfigured :posts_pattern.
+    if Enum.empty?(posts) do
       Mix.raise("no published posts found -- wrong MIX_ENV or working directory?")
     end
 

@@ -30,7 +30,6 @@ fn convert_term_to_board(board: Term) -> Board {
     board
 }
 
-rustler::init!(
-    "Elixir.SuperPerfundo.Quarto.AI",
-    [choose_position_and_next_piece]
-);
+// Since rustler 0.34 the NIF list is discovered automatically from #[rustler::nif]
+// and the second argument is gone.
+rustler::init!("Elixir.SuperPerfundo.Quarto.AI");

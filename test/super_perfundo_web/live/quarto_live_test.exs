@@ -54,14 +54,23 @@ defmodule SuperPerfundoWeb.QuartoLiveTest do
         end
 
       assert html =~ "Select Opponent"
-      assert html =~ ~s(phx-value-piece="5")
 
-      html = view |> element(~s([phx-value-piece="5"])) |> render_click()
+      # Pick whatever is actually still available rather than a fixed piece: in
+      # the branch above, the piece the AI chose has just been placed on the
+      # board and is no longer in the pool, and which piece that is, is random.
+      piece = first_remaining_piece(html)
 
-      # The AI placed piece 5 on the board, so it has left the remaining pool.
-      refute html =~ ~s(phx-value-piece="5"), "the AI did not place the chosen piece"
+      html = view |> element(~s([phx-value-piece="#{piece}"])) |> render_click()
+
+      # The AI placed the chosen piece, so it has left the remaining pool.
+      refute html =~ ~s(phx-value-piece="#{piece}"), "the AI did not place the chosen piece"
       assert html =~ ~s(<div class="piece">), "no piece was rendered after the turn"
     end
+  end
+
+  defp first_remaining_piece(html) do
+    [_, piece] = Regex.run(~r/phx-value-piece="(\d+)"/, html)
+    piece
   end
 
   test "highlight_for_win returns nil when position is not present" do

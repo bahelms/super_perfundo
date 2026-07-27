@@ -45,12 +45,8 @@ defmodule SuperPerfundo.MixProject do
       {:phoenix_live_view, "~> 1.0.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      # plug >= 1.16 requires Elixir ~> 1.15; 1.15.4 is the security backport
-      # for the multipart/param-decoding advisories. Widen once on Elixir 1.15+.
-      {:plug, "~> 1.15.4"},
-      # 2.8.1 patches the HTTP/2 :scheme atom-exhaustion advisory; 2.9.0 needs
-      # plug ~> 1.18 (Elixir 1.15+). Widen once on Elixir 1.15+.
-      {:plug_cowboy, "~> 2.8.1"},
+      {:plug, "~> 1.20"},
+      {:plug_cowboy, "~> 2.9"},
       # Pinned exactly. Earmark >= 1.4.4 parses HTML attributes, which mangles the
       # EEx embedded in post bodies:
       #   <img src="<%= img_url.("x.jpeg") %>" />
@@ -59,14 +55,14 @@ defmodule SuperPerfundo.MixProject do
       # than after (see Blog.get_article/2). Earmark is retired and its stored-XSS
       # advisory has no fixed release, so a parser migration is the real answer.
       {:earmark, "== 1.4.3"},
-      {:timex, "~> 3.6.1"},
+      {:timex, "~> 3.7"},
       {:ex_aws, "~> 2.2"},
       {:ex_aws_s3, "~> 2.2"},
       {:hackney, "~> 1.16"},
       {:sweet_xml, "~> 0.6"},
       {:bamboo, "~> 1.4"},
-      {:floki, "~> 0.37.0", only: :test},
-      {:rustler, "~> 0.25.0"}
+      {:floki, "~> 0.38", only: :test},
+      {:rustler, "~> 0.38.0"}
     ]
   end
 end
