@@ -8,9 +8,9 @@ defmodule SuperPerfundo.BlogTest do
       assert p.title == "Test post!"
     end
 
-    test "interpolates image url for the environment" do
+    test "interpolates a relative image url" do
       p = Blog.get_post("test")
-      assert p.body =~ "src=\"https://localhost:4002/images/test.jpeg\""
+      assert p.body =~ "src=\"/images/test.jpeg\""
     end
   end
 
@@ -25,9 +25,9 @@ defmodule SuperPerfundo.BlogTest do
       assert d.title == "Test Draft!"
     end
 
-    test "interpolates image url for the environment" do
+    test "interpolates a relative image url" do
       d = Blog.get_draft("test-draft")
-      assert d.body =~ "src=\"https://localhost:4002/images/test.jpeg\""
+      assert d.body =~ "src=\"/images/test.jpeg\""
     end
   end
 end

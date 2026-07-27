@@ -5,9 +5,15 @@ defmodule SuperPerfundo.MixProject do
     [
       app: :super_perfundo,
       version: "0.3.1",
-      elixir: "~> 1.14.0",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      # :gettext dropped (its compiler is gone in gettext >= 0.20 anyway).
+      # :phoenix must stay until Phoenix 1.6. Without it a *clean* build passes,
+      # but touching a LiveView component leaves update/2 unregistered and
+      # render/1 fails with "assign @piece not available" -- so it only breaks
+      # incremental rebuilds, which is why a clean build looks fine. Remove in
+      # Stage 2 alongside the Phoenix upgrade.
+      compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -47,8 +53,14 @@ defmodule SuperPerfundo.MixProject do
       # 2.8.1 patches the HTTP/2 :scheme atom-exhaustion advisory; 2.9.0 needs
       # plug ~> 1.18 (Elixir 1.15+). Widen once on Elixir 1.15+.
       {:plug_cowboy, "~> 2.8.1"},
-      {:earmark, "~> 1.3"},
-      {:ex_doc, "~> 0.21.3"},
+      # Pinned exactly. Earmark >= 1.4.4 parses HTML attributes, which mangles the
+      # EEx embedded in post bodies:
+      #   <img src="<%= img_url.("x.jpeg") %>" />
+      #     becomes <img src="<%= img_url.(" test="test">   -- the %> is dropped
+      # Upgrading requires resolving img_url *before* markdown rendering rather
+      # than after (see Blog.get_article/2). Earmark is retired and its stored-XSS
+      # advisory has no fixed release, so a parser migration is the real answer.
+      {:earmark, "== 1.4.3"},
       {:timex, "~> 3.6.1"},
       {:ex_aws, "~> 2.2"},
       {:ex_aws_s3, "~> 2.2"},

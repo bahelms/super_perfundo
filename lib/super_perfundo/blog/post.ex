@@ -69,11 +69,11 @@ defmodule SuperPerfundo.Blog.Post do
   defp parse_attr(:description, value), do: String.trim(value)
   defp parse_attr(:image, value), do: String.trim(value)
 
+  # Labelled fences get a `language-*` class and are highlighted client-side by
+  # Prism. Unlabelled blocks are left as plain <pre><code> on purpose: they hold
+  # ASCII diagrams, shell snippets and indented prose, not Elixir.
   defp parse_attr(:body, value),
-    do:
-      Earmark.as_html!(value, %Earmark.Options{code_class_prefix: "language-"})
-      # for pre-Prism posts
-      |> ExDoc.Highlighter.highlight_code_blocks()
+    do: Earmark.as_html!(value, %Earmark.Options{code_class_prefix: "language-"})
 
   defp parse_attr(:tags, value),
     do: String.split(value, ",") |> Enum.map(&String.trim/1) |> Enum.sort()
