@@ -69,12 +69,29 @@ defmodule SuperPerfundo.Blog.Post do
   defp parse_attr(:description, value), do: String.trim(value)
   defp parse_attr(:image, value), do: String.trim(value)
 
-  defp parse_attr(:body, value),
-    do:
-      Earmark.as_html!(value, %Earmark.Options{code_class_prefix: "language-"})
-      # for pre-Prism posts
-      |> ExDoc.Highlighter.highlight_code_blocks()
+  # Labelled fences get a `language-*` class and are highlighted client-side by
+  # Prism. Unlabelled blocks are left as plain <pre><code> on purpose: they hold
+  # ASCII diagrams, shell snippets and indented prose, not Elixir.
+  #
+  # `unsafe: true` lets the raw <div>/<img> blocks in post bodies through --
+  # without it comrak strips them. Post bodies are authored in this repo, so
+  # there is no untrusted markdown to sanitize.
+  #
+  # `smart: true` keeps the curly quotes, apostrophes and em dashes that Earmark
+  # applied by default; without it every "don't" in ten years of posts reverts
+  # to a straight apostrophe.
+  defp parse_attr(:body, value) do
+    value
+    |> MDEx.to_html!(parse: [smart: true], render: [unsafe: true])
+    |> external_links_in_new_tab()
+  end
 
   defp parse_attr(:tags, value),
     do: String.split(value, ",") |> Enum.map(&String.trim/1) |> Enum.sort()
+
+  # Stands in for the per-link `{:target="x"}` IALs the posts carried under
+  # Earmark, which MDEx has no equivalent for. Only absolute links match:
+  # footnote anchors carry no href and internal links are `href="#..."`.
+  defp external_links_in_new_tab(html),
+    do: Regex.replace(~r/<a href="(https?:)/, html, ~S(<a target="x" href="\1))
 end

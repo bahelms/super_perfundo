@@ -13,7 +13,7 @@ on the canvas. We'll take a starting point and transform it with matrices!
 analog-clock.png
 
 ==body==
-_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
+_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer)._
 
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * Part 2: Enter The Matrix
@@ -31,7 +31,7 @@ don't worry if that sounds scary; matrix manipulations are pretty straightforwar
 Like in part one, let's start at the end and see our rewarding image:
 
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:60%;" src="<%= img_url.("analog-clock.png") %>" alt="Analog Clock" />
+  <img class="md-image" style="width:60%;" src="/images/analog-clock.png" alt="Analog Clock" />
 </div>
 
 Wow. Mind blowing, right? It may not be a ray traced Mona Lisa, but it showcases
@@ -70,7 +70,7 @@ Each new point is then written to the canvas before the whole thing is converted
 and saved to disk (review in [part one](/articles/ray-tracer-part1)).
 The main change to note here is the use of the new `Matrix` type, which we've so
 eloquently implemented with a 
-[fluent interface](https://en.wikipedia.org/wiki/Fluent_interface){:target="x"}.
+[fluent interface](https://en.wikipedia.org/wiki/Fluent_interface).
 
 ## Red pill or blue pill?
 So, WTF is a matrix? It's a grid of numbers. Boom. Here's some examples:
@@ -296,7 +296,7 @@ The cosine, sine, and negative sine of the given radians (r) are set in these sp
 positions. Radians are a measurement of the curved distance between two points.
 Below is a visual example. Don't be jealous of my Paint skills.
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:60%;" src="<%= img_url.("radians.png") %>" alt="Analog Clock" />
+  <img class="md-image" style="width:60%;" src="/images/radians.png" alt="Analog Clock" />
 </div>
 
 A full cirle (360˚) has 2π radians, so half (180˚) is π radians. Rust is so friendly, that it
@@ -363,4 +363,4 @@ If that doesn't sound exciting, then I don't why you're reading this. But I stil
 Until then.
 
 #### Notes
-* The radians painting masterpiece created at [jspaint.app](https://jspaint.app){:target="x"}
+* The radians painting masterpiece created at [jspaint.app](https://jspaint.app)

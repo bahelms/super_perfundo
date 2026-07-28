@@ -12,11 +12,11 @@ brains of computers. Let's see how they work by coding one using Rust.
 one-bit-adder.png
 
 ==body==
-Do you love [metal!?](https://www.youtube.com/watch?v=MDBykpSXsSE){:target="x"}
+Do you love [metal!?](https://www.youtube.com/watch?v=MDBykpSXsSE)
 No, not that kind of metal. I'm talking about those periodic table elements that
 make up a computer. I thought so! Why else would you be here with a blog title like that?
 Well, I do, too. Lately, I've been reading the fantastic book,
-[Dive Into Systems](https://diveintosystems.org/){:target="x"}. It's been the most
+[Dive Into Systems](https://diveintosystems.org/). It's been the most
 enlightening yet succinct and specific experience I've had learning about the foundations of
 how computers work. It begins with the basics of C, which in my opinion
 is the best first language to learn because it easily allows you to create a mental model of
@@ -100,7 +100,7 @@ pub fn not_gate(x: Bit) -> Bit {
 ```
 Voila! It's pretty neat how everything else you know about computers is built on
 top of these three gates. But now what? How do we go about arranging them
-[like matches](https://www.youtube.com/watch?v=Qfw60qXtOH0){:target="x"}
+[like matches](https://www.youtube.com/watch?v=Qfw60qXtOH0)
 in order to build an ALU? Let's jump up the abstraction tree to figure out what
 we actually want the ALU to do.
 
@@ -110,7 +110,7 @@ else is just storage and control circuits to get what's in storage into the ALU.
 And then what? Since we are building our own, what should we make it do?
 Since it stands for arithmetic and logic, it only makes sense to provide those
 two operations for our simple ALU: addition and equality. Also, for simplicity's
-sake, let's make it an [8-bit](https://en.wikipedia.org/wiki/Nintendo_Entertainment_System){:target="x"} ALU.
+sake, let's make it an [8-bit](https://en.wikipedia.org/wiki/Nintendo_Entertainment_System) ALU.
 However, before we get to eight bits, we need to start with one.
 
 ### Equality
@@ -132,8 +132,9 @@ to take a break and paper napkin this one, be my guest. I'll wait.
 
 This will be easier to grok with a circuit diagram:
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:50%;" src="<%= img_url.("equality-circuit.png") %>" alt="Equality Circuit" />
+  <img class="md-image" style="width:50%;" src="/images/equality-circuit.png" alt="Equality Circuit" />
 </div>
+
 If either the AND of X and Y or the AND of the negation of X and Y is 1, then they
 are equal. This diagram can be mapped to a function that passes all
 the test cases.
@@ -196,7 +197,7 @@ Let's change that and implement addition!
 This circuit is a bit more complicated than equality, so this time around we'll go straight
 to the diagram. The one-bit adder:
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:60%;" src="<%= img_url.("one-bit-adder.png") %>" alt="One bit adder" />
+  <img class="md-image" style="width:60%;" src="/images/one-bit-adder.png" alt="One bit adder" />
 </div>
 
 Remember, when dealing with addition, the sum may overflow the number base you are
@@ -298,7 +299,7 @@ This is a control circuit that selects one of multiple inputs. In the case of tw
 one-bit values, a single select bit is passed in to determine which of the two
 inputs will be selected. This is a one-bit two-way multiplexer.
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:40%;" src="<%= img_url.("one-bit-mux.png") %>" alt="Equality Circuit" />
+  <img class="md-image" style="width:40%;" src="/images/one-bit-mux.png" alt="Equality Circuit" />
 </div>
 
 Que the truth table:
@@ -383,9 +384,9 @@ you could expand on this and model the entire CPU. You'll need RAM from which to
 instructions and data, a register file for storage, instruction and program counter registers, 
 and clock ticks that control the fetch, decode, execute, and write back cycles that use the ALU. 
 That sounds nerdtastic!
-[Dive Into Systems](https://diveintosystems.org/){:target="x"} goes into detail
+[Dive Into Systems](https://diveintosystems.org/) goes into detail
 about all of these concepts. I highly recommend it for further reading.
 
 #### Notes
-* <a name="1">[1](#1')</a>: [The Elements of Computing Systems](https://www.nand2tetris.org/book){:target="x"} is another similar book, but instead of just describing it, you actually build the stuff with hands on code.
-* Circuit diagrams made at [circuit-diagram.org](https://circuit-diagram.org){:target="x"}
+* <a name="1">[1](#1')</a>: [The Elements of Computing Systems](https://www.nand2tetris.org/book) is another similar book, but instead of just describing it, you actually build the stuff with hands on code.
+* Circuit diagrams made at [circuit-diagram.org](https://circuit-diagram.org)

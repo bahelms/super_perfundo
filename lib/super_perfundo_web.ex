@@ -22,7 +22,6 @@ defmodule SuperPerfundoWeb do
       use Phoenix.Controller, namespace: SuperPerfundoWeb
 
       import Plug.Conn
-      import SuperPerfundoWeb.Gettext
       alias SuperPerfundoWeb.Router.Helpers, as: Routes
       import Phoenix.LiveView.Controller
     end
@@ -53,14 +52,14 @@ defmodule SuperPerfundoWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import SuperPerfundoWeb.Gettext
     end
   end
 
   def live_view do
     quote do
+      # LiveView 1.0 takes the template as an atom, not a string.
       use Phoenix.LiveView,
-        layout: {SuperPerfundoWeb.LayoutView, "live.html"}
+        layout: {SuperPerfundoWeb.LayoutView, :live}
 
       unquote(view_helpers())
     end
@@ -79,14 +78,13 @@ defmodule SuperPerfundoWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      # Import LiveView helpers (live_render, live_component, live_patch, etc)
-      import Phoenix.LiveView.Helpers
+      # Phoenix.LiveView.Helpers was folded into Phoenix.Component in LiveView 1.0
+      import Phoenix.Component
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
       import SuperPerfundoWeb.ErrorHelpers
-      import SuperPerfundoWeb.Gettext
       alias SuperPerfundoWeb.Router.Helpers, as: Routes
     end
   end

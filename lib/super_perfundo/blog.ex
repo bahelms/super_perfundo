@@ -1,7 +1,7 @@
 defmodule SuperPerfundo.Blog do
   alias SuperPerfundo.Blog.Post
 
-  for app <- [:earmark, :makeup_elixir, :timex], do: Application.ensure_all_started(app)
+  for app <- [:mdex, :timex], do: Application.ensure_all_started(app)
 
   published_posts =
     Application.compile_env(:super_perfundo, :posts_pattern)
@@ -39,18 +39,5 @@ defmodule SuperPerfundo.Blog do
 
   def get_draft(id), do: get_article(@drafts, id)
 
-  defp get_article(articles, id) do
-    article = Enum.find(articles, &(&1.id == id))
-    struct(article, body: set_image_src(article.body))
-  end
-
-  defp set_image_src(text) do
-    text
-    |> EEx.eval_string(img_url: &"#{ssl_url()}/images/#{&1}")
-  end
-
-  defp ssl_url do
-    SuperPerfundoWeb.Endpoint.url()
-    |> String.replace("http:", "https:")
-  end
+  defp get_article(articles, id), do: Enum.find(articles, &(&1.id == id))
 end

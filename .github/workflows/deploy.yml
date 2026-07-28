@@ -1,5 +1,5 @@
 name: SuperPerfundo
-on: 
+on:
   pull_request:
     types: [closed]
     branches:
@@ -8,11 +8,11 @@ on:
 jobs:
   build_image:
     if: github.event.pull_request.merged
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
         with:
           ref: master
           fetch-depth: 0
@@ -34,20 +34,22 @@ jobs:
   deploy:
     name: Deploy
     needs: build_image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
-          USERNAME: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
-          KEY: ${{ secrets.PRIVATE_SSH_KEY }}
+          host: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          username: ${{ secrets.DIGITAL_OCEAN_USERNAME }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          # `docker-compose` (v1) is end-of-life; the droplet needs the Compose v2
+          # plugin for `docker compose` to resolve.
           script: |
             cd super_perfundo
             git pull origin master
-            docker-compose -f super-perfundo-prod-compose.yml stop
-            docker-compose -f super-perfundo-prod-compose.yml rm -f
+            docker compose -f super-perfundo-prod-compose.yml stop
+            docker compose -f super-perfundo-prod-compose.yml rm -f
             docker rmi registry.digitalocean.com/super-perfundo/super-perfundo:prod
-            docker-compose -f super-perfundo-prod-compose.yml pull
-            docker-compose -f super-perfundo-prod-compose.yml up -d
+            docker compose -f super-perfundo-prod-compose.yml pull
+            docker compose -f super-perfundo-prod-compose.yml up -d

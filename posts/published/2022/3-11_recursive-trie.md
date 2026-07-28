@@ -25,7 +25,7 @@ language filtering.
 
 ### The trie in all its glory
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:60%;" src="<%= img_url.("trie.png") %>" alt="My sweet trie" />
+  <img class="md-image" style="width:60%;" src="/images/trie.png" alt="My sweet trie" />
 </div>
 
 Say I start typing "ap" in a text box that provides auto-completion. Searching

@@ -36,7 +36,7 @@ than Tic-Tac-Toe, but not a non-trivial beast like Chess.
 When thinking about the implementation, I began with how the board and the pieces
 should be represented as data. A piece has four properties with each property having
 two possibilities. Four binary properties for a total of sixteen combinations? 
-That's a [nibble!](https://en.wikipedia.org/wiki/Nibble){:target="x"} Therefore, 
+That's a [nibble!](https://en.wikipedia.org/wiki/Nibble) Therefore, 
 the most efficient way to model the pieces is to use the integers 0-15. After 
 deciding that, I picked an arbitrary mapping of bit to property:
 
@@ -214,7 +214,7 @@ else on the screen. Pretty cool.
 
 ### LiveView Server
 Now for the technology I was most excited about using: 
-[Phoenix's LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html){:target="x"}. 
+[Phoenix's LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html). 
 It allows you to add super performant client-side behavior without touching any client-side
 code (apart from HTML). That's right! This project didn't require a single line
 of JavaScript on my part! Everything this game needs is all Elixir on the server-side.

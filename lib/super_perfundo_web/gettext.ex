@@ -20,5 +20,10 @@ defmodule SuperPerfundoWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :super_perfundo
+  # gettext >= 0.26 splits backend definition from use: `use Gettext, otp_app:`
+  # is deprecated in favour of `use Gettext.Backend, otp_app:`. Consumers that
+  # want the macros call `use Gettext, backend: SuperPerfundoWeb.Gettext` --
+  # nothing here does; ErrorHelpers calls Gettext.dgettext/dngettext with an
+  # explicit backend instead.
+  use Gettext.Backend, otp_app: :super_perfundo
 end

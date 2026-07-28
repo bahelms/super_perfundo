@@ -13,7 +13,7 @@ rays at a 3D sphere. And then paint it red!
 2d_circle.png
 
 ==body==
-_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
+_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer)._
 
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
@@ -24,7 +24,7 @@ Welcome back, Constant Readers! Without further ado, here is the image we'll cre
 today:
 
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:40%;" src="<%= img_url.("2d_circle.png") %>" alt="Blood red 2D circle" />
+  <img class="md-image" style="width:40%;" src="/images/2d_circle.png" alt="Blood red 2D circle" />
 </div>
 
 From a few dots around a clock to a fully formed two dimensional circle! We've taken a big leap.
@@ -103,7 +103,7 @@ struct Wall {
 Remember, the sphere is centered on the origin with a one unit radius. The wall must be
 behind it at some point. Moving something away from you entails increasing the Z-axis
 value. When we create the wall it must have a Z-axis value of at least one, or the
-sphere will be stuck inside it like those poor dudes in the [Philadelphia Experiment](https://en.wikipedia.org/wiki/Philadelphia_Experiment){:target="x"}.
+sphere will be stuck inside it like those poor dudes in the [Philadelphia Experiment](https://en.wikipedia.org/wiki/Philadelphia_Experiment).
 The size of the wall defines the limits of our world. We'll shoot rays at every point
 on it, and all of the one that don't make it to the wall will describe the sphere that has blocked them.
 All that's left to do is code the algorithm to do this and turn the light on.
@@ -255,7 +255,7 @@ Some(vec![
 ```
 This is mostly just codifying the math behind checking ray/sphere intersections.
 I'm waving my hand here because I can't explain something I don't understand myself.
-If you're feeling frisky, [here's an article that goes into it](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
+If you're feeling frisky, [here's an article that goes into it](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html).
 The tl;dr: the ray intersects if there is a discriminant value. We've made a new
 type to hold on to the intersection values: the object that was hit and the time
 it took for the ray to hit it.
@@ -319,7 +319,7 @@ Wooo doggy! This one was a brain stretcher. I felt the book was a little lacking
 explaining some of these details, particulary object space and world space. I take
 object space to mean the canvas, which is the concretion of the abstract world.
 Then of course there is the linear algebra. I could see how the code for those formulas
-could be written after reading that [article](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html){:target="x"}.
+could be written after reading that [article](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html).
 It's very math heavy, but understandable. Sometimes I tend to focus on the concrete
 numbers that are calculated to understand the world in my head, but this tends to
 make it more confusing. For example, the value of the world pixel, 0.02666667.

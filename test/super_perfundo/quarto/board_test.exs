@@ -146,4 +146,24 @@ defmodule SuperPerfundo.Quarto.BoardTest do
              )
     end
   end
+
+  describe "full?/1" do
+    test "is false for a new board" do
+      refute Board.full?(Board.new())
+    end
+
+    test "is false while any position is open" do
+      board = List.to_tuple(Enum.to_list(0..14) ++ [nil])
+      refute Board.full?(board)
+    end
+
+    test "is true once every position holds a piece" do
+      assert Board.full?(List.to_tuple(Enum.to_list(0..15)))
+    end
+
+    test "counts piece 0 as a piece" do
+      board = List.to_tuple([0 | Enum.to_list(1..15)])
+      assert Board.full?(board)
+    end
+  end
 end

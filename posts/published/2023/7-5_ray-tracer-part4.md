@@ -13,7 +13,7 @@ it into a sphere.
 lighted_sphere.jpg
 
 ==body==
-_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
+_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer)._
 
 * [Part 1: Creating A 2D Image](/articles/ray-tracer-part1)
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
@@ -24,9 +24,9 @@ Greetings, you beautiful people! I have great news: we've finally reached the st
 where we can create a real life 3D image. Behold!
 
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:40%;" src="<%= img_url.("lighted_sphere.jpg") %>" alt="Lighted Sphere" />
-  <img class="md-image" style="width:40%;" src="<%= img_url.("sphere3.jpg") %>" alt="Lighted Sphere" />
-  <img class="md-image" style="width:40%;" src="<%= img_url.("sphere4.jpg") %>" alt="Lighted Sphere" />
+  <img class="md-image" style="width:40%;" src="/images/lighted_sphere.jpg" alt="Lighted Sphere" />
+  <img class="md-image" style="width:40%;" src="/images/sphere3.jpg" alt="Lighted Sphere" />
+  <img class="md-image" style="width:40%;" src="/images/sphere4.jpg" alt="Lighted Sphere" />
 </div>
 
 Such beautiful balls we've created! What's fascinating is all that's needed to take
@@ -34,7 +34,7 @@ the original 2D circle up to the 3rd dimension is light and shade.
 
 # Cast Out the Dark
 There are many ways to simulate light algorithmically; the method the book describes is the
-[Phong reflection model](https://en.wikipedia.org/wiki/Phong_reflection_model){:target="x"}.
+[Phong reflection model](https://en.wikipedia.org/wiki/Phong_reflection_model).
 It consists of three layers of colors derived from the base image (our 2D circle).
 * **Ambient reflection** - light that is reflected off another object. When you light
 a candle in a dark room, the light that bounces off the walls back at you is ambient.
@@ -46,19 +46,19 @@ dot you see on a curved surface. Controlled by a "shininess" value.
 Alone, they aren't much, but combined, they convince your brain you're looking at a sphere.
 <div class="flex" style="justify-content:space-around;flex-wrap:wrap;">
   <div class="flex" style="flex-direction:column;align-items:center;">
-    <img class="md-image" style="" src="<%= img_url.("ambient_only.jpg") %>" alt="Lighted Sphere" />
+    <img class="md-image" style="" src="/images/ambient_only.jpg" alt="Lighted Sphere" />
     <span style="">Ambient</span>
   </div>
   <div class="flex" style="flex-direction:column;align-items:center;">
-    <img class="md-image" style="" src="<%= img_url.("diffuse_only.jpg") %>" alt="Lighted Sphere" />
+    <img class="md-image" style="" src="/images/diffuse_only.jpg" alt="Lighted Sphere" />
     <span>Diffuse</span>
   </div>
   <div class="flex" style="flex-direction:column;align-items:center;">
-    <img class="md-image" style="" src="<%= img_url.("specular_only.jpg") %>" alt="Lighted Sphere" />
+    <img class="md-image" style="" src="/images/specular_only.jpg" alt="Lighted Sphere" />
     <span>Specular</span>
   </div>
   <div class="flex" style="flex-direction:column;align-items:center;">
-    <img class="md-image" style="" src="<%= img_url.("all_three.jpg") %>" alt="Lighted Sphere" />
+    <img class="md-image" style="" src="/images/all_three.jpg" alt="Lighted Sphere" />
     <span>Combined</span>
   </div>
 </div>
@@ -166,6 +166,6 @@ I think this is a great stopping point in our study of rendering, so I'm going t
 take a break. There are other interesting things I'm itching to consume and write about. We can
 always pick up our journey with a future part 5 later. Until then, by all means,
 grab a copy of
-[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
+[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/)
 if you haven't already and give it a spin yourself. But use Haskell this time.
 Cheers!
