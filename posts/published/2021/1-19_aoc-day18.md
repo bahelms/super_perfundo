@@ -11,17 +11,17 @@ Evaluate addition and multiplication expressions with arbitrary precedence.
 og-image_aoc-day18.png
 
 ==body==
-One aspect of computer science that fascinates me is [programming language theory](https://en.wikipedia.org/wiki/Programming_language_theory){:target="x"}.
+One aspect of computer science that fascinates me is [programming language theory](https://en.wikipedia.org/wiki/Programming_language_theory).
 It's so cool that text in a file can make a computer do something.
 I've studied a good deal about parsers, interpreters, and compilers, so when I read
-the problem for day 18 on 2020's [Advent of Code](https://adventofcode.com/2020/day/18){:target="x"},
-I got excited. Spoiler: this post has a lot of [Rust](https://www.rust-lang.org/){:target="x"} code!
+the problem for day 18 on 2020's [Advent of Code](https://adventofcode.com/2020/day/18),
+I got excited. Spoiler: this post has a lot of [Rust](https://www.rust-lang.org/) code!
 
 ### The Problem - Part 1
 The challenge is to evaluate expressions consisting of addition, multiplication,
 and parentheses. The twist being the precedences for 
 adding and multiplying are the same: `5 + (6 + (3 * 1)) + 9 * 2 = 46`.
-I immediately thought, "Oh, should I write a [Pratt parser](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html){:target="x"}?". Due to the simple
+I immediately thought, "Oh, should I write a [Pratt parser](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html)?". Due to the simple
 left to right precedence, I decided on a straightforward recursive algorithm to find the 
 products and sums while taking into account groupings by parentheses. First working iteration:
 
@@ -85,7 +85,7 @@ and let me change precedence with ease. Well, I won the bet.
 
 ### Part 2
 The second half of the problem asks for the same process, but this time addition
-has a higher precedence than multiplication. A [Pratt parser](https://en.wikipedia.org/wiki/Operator-precedence_parser#Pratt_parsing){:target="x"} makes setting precedences
+has a higher precedence than multiplication. A [Pratt parser](https://en.wikipedia.org/wiki/Operator-precedence_parser#Pratt_parsing) makes setting precedences
 on infix and prefix operators trivial, although the parser itself can be hard to grok.
 First, we need a lexer and some tokens to play with.
 

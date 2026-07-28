@@ -47,14 +47,11 @@ defmodule SuperPerfundo.MixProject do
       {:jason, "~> 1.0"},
       {:plug, "~> 1.20"},
       {:plug_cowboy, "~> 2.9"},
-      # Pinned exactly. Earmark >= 1.4.4 parses HTML attributes, which mangles the
-      # EEx embedded in post bodies:
-      #   <img src="<%= img_url.("x.jpeg") %>" />
-      #     becomes <img src="<%= img_url.(" test="test">   -- the %> is dropped
-      # Upgrading requires resolving img_url *before* markdown rendering rather
-      # than after (see Blog.get_article/2). Earmark is retired and its stored-XSS
-      # advisory has no fixed release, so a parser migration is the real answer.
-      {:earmark, "== 1.4.3"},
+      # Replaced Earmark, which is retired at every version ("no longer
+      # maintained") and whose stored-XSS advisory has no fixed release. Post
+      # bodies no longer embed EEx, so nothing depends on a parser that leaves
+      # HTML attributes alone -- see Blog.Post.parse_attr/2.
+      {:mdex, "~> 0.13"},
       {:timex, "~> 3.7"},
       {:ex_aws, "~> 2.2"},
       {:ex_aws_s3, "~> 2.2"},

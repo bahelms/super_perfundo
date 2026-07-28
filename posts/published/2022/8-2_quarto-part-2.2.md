@@ -16,11 +16,11 @@ one can accomplish with grit, determination, perseverance, tenacity, all that.
 If you've stumbled on this post and haven't read the precursors, you're not going
 to have any idea what I'm talking about. Start here: [Part 1](/articles/quarto-part-1).
 
-The full code for this AI can be found [here](https://github.com/bahelms/super_perfundo/tree/master/native/quarto_ai){:target="x"}.
+The full code for this AI can be found [here](https://github.com/bahelms/super_perfundo/tree/master/native/quarto_ai).
 
 ### Step 1: The Algorithm - Monte Carlo Tree Search
 Because machine learning is fascinating and games are fun, I started reading
-[Deep Learning and the Game of Go](https://www.manning.com/books/deep-learning-and-the-game-of-go){:target="x"}
+[Deep Learning and the Game of Go](https://www.manning.com/books/deep-learning-and-the-game-of-go)
 (remember when a computer first beat the Go world champion? It was paradigm shifting).
 I didn't realize it at the time, but the first part of the book would enlighten me
 on how to build an AI for Quarto. It goes over traditional board game engine techniques like minimax,
@@ -230,7 +230,7 @@ pub fn apply_move(&self, the_move: &Move) -> Self {
 ```
 
 There is a lot more code that would make this post pretty long if we went over it all here.
-Feel free to spelunk for yourself [at the repo](https://github.com/bahelms/super_perfundo/tree/master/native/quarto_ai){:target="x"}.
+Feel free to spelunk for yourself [at the repo](https://github.com/bahelms/super_perfundo/tree/master/native/quarto_ai).
 After all the rounds are over and our tree has been populated with win counts,
 we iterate over all of the root's children and pick the move that had the highest
 win rate for the AI. Fin.
@@ -295,5 +295,5 @@ control the number of rounds to spend evaluating moves. Also, I need to fix the 
 to handle draws (they happen!). I was happy to have found Monte Carlo tree search.
 It made it easier to find winning moves without being dependent on game specific
 heuristics. Thanks go to
-[Deep Learning and the Game of Go](https://www.manning.com/books/deep-learning-and-the-game-of-go){:target="x"}.
+[Deep Learning and the Game of Go](https://www.manning.com/books/deep-learning-and-the-game-of-go).
 It's a great book, so check it out. Enough talk. [Go and play!](/quarto) <sub>(just not on mobile :D)</sub>

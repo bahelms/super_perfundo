@@ -16,14 +16,14 @@ around to using it asynchronously. I thought I should change this and write some
 simple yet useful enough for learning. A TCP chat server! First, let's define the
 problem.
 
-_All the code for this can be found [here](https://github.com/bahelms/chat_blast){:target="x"}._
+_All the code for this can be found [here](https://github.com/bahelms/chat_blast)._
 
 ### What is a TCP chat server?
 
 As a user, I want to connect to a remote chat room in my terminal (it's the 80s) and send
 messages that anyone else who's connected can read. This
 means we need a client to send those messages and a server to handle them. The first part
-is super easy; we'll use [Netcat](https://en.wikipedia.org/wiki/Netcat){:target="x"}.
+is super easy; we'll use [Netcat](https://en.wikipedia.org/wiki/Netcat).
 It's probably already on your machine. This will let us
 focus on writing the server. We might want to write our own client if
 we want to get fancy with a Chat Blast UI. Let's avoid that for now.
@@ -55,7 +55,7 @@ compiler to include that file during compilation; by default it won't, since it
 doesn't like to compile code that's not used.
 
 Now's when you ask, "WTH is tokio::main?". Good question! I had to figure that
-out myself. [Tokio](https://tokio.rs){:target="x"} is an async runtime for Rust.
+out myself. [Tokio](https://tokio.rs) is an async runtime for Rust.
 The async/await feature comes with
 Rust, but Tokio makes it easier to use by treating async functions like tasks that
 it schedules for you. All you need to do is wait for them to finish. Tasks are good
@@ -259,7 +259,7 @@ I ran into pain when trying to figure out how to make a thread read data from th
 socket AND from the channel without blocking either. MPSC
 (multi-producer, single consumer) was also not
 the paradigm I was going for, but it seemed to be the only channel structure offered by stdlib. 
-After reading through the [Tokio tutorial](https://tokio.rs/tokio/tutorial){:target="x"}, 
+After reading through the [Tokio tutorial](https://tokio.rs/tokio/tutorial), 
 I discovered it was built to handle everything I needed.
 Sometimes it's fun to know how stuff runs under the covers, and sometimes you just
 want to get shit done. Tokio excels at that part.

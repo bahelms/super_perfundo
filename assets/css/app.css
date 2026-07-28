@@ -346,7 +346,10 @@ code {
   font: 15px "Source Code Pro", monospace !important;
 }
 
-code.inline {
+/* Inline code spans. This used to key off `code.inline`, a class only Earmark
+   emitted; MDEx renders a bare <code>. Selecting on structure instead means the
+   rule no longer depends on which markdown renderer is in use. */
+:not(pre) > code {
   background-color: #f5f2f0;
   border-radius: 2px;
   border: 1px solid lightgrey;

@@ -15,4 +15,4 @@ some-pic.png
 
 One fine day, I decided to write a blog!
 
-<img src="<%= img_url.("test.jpeg") %>" />
+<img src="/images/test.jpeg" />

@@ -23,9 +23,9 @@ I moved the board farther away from my body, and put the right side on a book to
 create an incline for my left hand. 
 This bit of supination allowed that hand to remain in a more natural position, which did ease the pain somewhat.
 
-My manager offered some recommendations he found on [Hacker News](https://news.ycombinator.com/item?id=21553630){:target="x"} 
-such as exercising my wrists with a [spinner](https://nsdspinner.com/){:target="x"} and
-doing [daily stretches](https://youtu.be/mSZWSQSSEjE){:target="x"}.
+My manager offered some recommendations he found on [Hacker News](https://news.ycombinator.com/item?id=21553630) 
+such as exercising my wrists with a [spinner](https://nsdspinner.com/) and
+doing [daily stretches](https://youtu.be/mSZWSQSSEjE).
 After incorporating all these remedies into my workflow, the dull ache persisted. 
 I decided to initiate the nuclear option.
 
@@ -36,7 +36,7 @@ There are a few in my collection these days, and I enjoy discovering new, innova
 I had been drooling over the idea of a customizable split keyboard for some time, even before the wrist pain.
 Finally, the time had come where I felt I couldn't wait any longer.
 
-Of all the options available today, the [Ergodox EZ](https://ergodox-ez.com/){:target="x"}
+Of all the options available today, the [Ergodox EZ](https://ergodox-ez.com/)
 seems to be the best split mechanical keyboard with the smallest barrier of entry (you don't have to build it yourself).
 The ergonomics gained with this board are incredible.
 The two separate sides sit underneath your hands, wherever that may be.
@@ -52,7 +52,7 @@ But be prepared to make constant changes for a long time.
 I spent a solid five weeks in flux before mostly settling on my current layout.
 This is made possible by how easy it is to change the config with the GUI web app.
 
-<img class="md-image" src="<%= img_url.("ergodox-layout.png") %>" alt="Current layout" />
+<img class="md-image" src="/images/ergodox-layout.png" alt="Current layout" />
 
 You can set up to 32 layers, which means at the push of a button all the keys will change to whatever you've set for that layer.
 You can also give layers their own backlight color or change it for individual keys.
@@ -110,7 +110,7 @@ The view was pretty nice.
 
 ### Final Summation
 
-<img class="md-image" src="<%= img_url.("ergodox.jpeg") %>" alt="Current layout" />
+<img class="md-image" src="/images/ergodox.jpeg" alt="Current layout" />
 
 This is where I am now. The Ergodox gives me the freedom to do whatever I want, and Dvorak lets me do it while riding on a finger cloud.
 Dvorak is far superior to Qwerty, but it's not without its warts.

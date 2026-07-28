@@ -12,7 +12,7 @@ In Part 1, we'll generate an image showing the trajectory of a launched projecti
 trajectory.png
 
 ==body==
-_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer){:target="x"}._
+_The full code for this challenge can be found at [this repo](https://github.com/bahelms/ray_tracer)._
 
 * Part 1: Creating A 2D Image
 * [Part 2: Enter The Matrix](/articles/ray-tracer-part2)
@@ -23,7 +23,7 @@ Hello there! Have you ever wondered what goes on under the hood when generating 
 Ever yearned to write a 3D renderer from scratch? Me too! You've come to the right place, my friend.
 This is the first in a series of posts detailing my adventures in doing just that.
 A ray tracer, specifically. And my guide on this journey is the incredible book
-[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}.
+[The Ray Tracer Challenge](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/).
 
 It's fantastic! This book is how all tutorials should be structured. Each chapter builds on the previous,
 describing what needs to be implemented in order to create a program that has the power to generate
@@ -42,8 +42,9 @@ can get to making amazing 3D images, we need to start with making amazing 2D ima
 Along the way we'll develop some of the primitive structures that our ray tracer will need to work.
 Let's skip straight to the end to see our reward:
 <div class="flex" style="justify-content:center;">
-  <img class="md-image" style="width:60%;" src="<%= img_url.("trajectory.png") %>" alt="Projectile Trajectory" />
+  <img class="md-image" style="width:60%;" src="/images/trajectory.png" alt="Projectile Trajectory" />
 </div>
+
 It's beautiful! We launched a projectile from the bottom left corner of the
 image with a given velocity. It fights through wind and gravity to screech
 into the sky before it's finally overcome and begins its descent, landing
@@ -97,7 +98,7 @@ fn tick(point: Point) -> Point {
 Ship it! Well, this begs the question of how do we change a point? With a vector!
 
 ## How Vexing
-Vectors (no, not Rust [vectors](https://doc.rust-lang.org/rust-by-example/std/vec.html){:target="x"})
+Vectors (no, not Rust [vectors](https://doc.rust-lang.org/rust-by-example/std/vec.html))
 are just the lines between points. Given points `(1, 2)` & `(3, 4)`,
 the vector would be `(2, 2)`. It describes the direction and distance the first
 point needs to move to become the second. Adding a vector to a point will produce
@@ -202,7 +203,7 @@ both negative so as to gradually drop and slow the projectile.
 The velocity and environment values are highly tweakable and perfect for experimenting with different results.
 The book goes into vector magnitude, normalization, and multiplication in order to create a nice trajectory curve.
 I'm glossing over those details for now, so if you're interested,
-[get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/){:target="x"}
+[get the book!](https://pragprog.com/titles/jbtracer/the-ray-tracer-challenge/)
 
 ## Do You Dream In Color?
 We've implemented changing points over time, but we're not doing anything with them, yet.
@@ -340,7 +341,7 @@ Given point (3,2), the index would be 13. The formula to find this is `y * width
 (4,1) -> 1*5+4 = 9
 ```
 Pretty cool! I learned this trick from reading
-[Hands-on Rust](https://pragprog.com/titles/hwrust/hands-on-rust/){:target="X"}.
+[Hands-on Rust](https://pragprog.com/titles/hwrust/hands-on-rust/).
 That's also a great book,
 though it's more focused on game development than Rust itself. The Ray Tracer Challenge
 does not mention this formula. I'll say it again, the thing I enjoy the most
@@ -363,7 +364,7 @@ We now have a canvas painted with the trajectory of a projectile. The final piec
 to convert that in-memory data into an file saved on disk. That way we can open
 and view it at our leisure.
 What type of file should we use? One I had never even heard of before this book: PPM!
-The [Portable Pixmap](https://netpbm.sourceforge.net/){:target="x"}
+The [Portable Pixmap](https://netpbm.sourceforge.net/)
 is just one of many ways to encode graphics formats. It consists of a header and pixel data:
 ```
 P3

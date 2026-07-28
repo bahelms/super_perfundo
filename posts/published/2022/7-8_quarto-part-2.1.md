@@ -20,7 +20,7 @@ and blindly picking your piece out of a hat. It would be much more interesting i
 trying to destroy you in the most efficient way possible. It potentially has a lot
 more brain power than you do; it shouldn't be a push over. How do we create this
 monster? Well, since it's most likely going to be doing some heavy computation,
-let's use [Rust](https://www.rust-lang.org/){:target="x"}! It's a lot closer to the metal than Elixir, so it
+let's use [Rust](https://www.rust-lang.org/)! It's a lot closer to the metal than Elixir, so it
 should be more performant when crunching the numbers (aka annihilating you). Also,
 I like Rust and this is my blog. So there.
 
@@ -28,11 +28,11 @@ I like Rust and this is my blog. So there.
 Now that we've put on our Architect hats and chosen Rust, we need to change our current
 implementation to use it. That way we can iron out the interface between the two
 languages and then focus on rewriting the rando AI into a terrifying abomination AI. 
-[Rustler](https://github.com/rusterlium/rustler){:target="x"}
+[Rustler](https://github.com/rusterlium/rustler)
 is the de facto way to embed Rust into Elixir as native implemented functions (NIFs).
 
 Setting up a Rust NIF is trivial: `mix rustler.new --name quarto_ai`. This creates a new `native/quarto_ai/`
-directory containing a [Cargo](https://doc.rust-lang.org/cargo/){:target="x"} project with an example NIF. Let's set it up to be a
+directory containing a [Cargo](https://doc.rust-lang.org/cargo/) project with an example NIF. Let's set it up to be a
 replacement for the existing AI function. The format is fairly easy to follow:
 
 ```rust

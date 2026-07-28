@@ -4,13 +4,13 @@ defmodule SuperPerfundo.Blog.PublishedPostsTest do
 
   The rest of the suite runs against the fixtures in `test/posts/`, because
   `config/test.exs` overrides `:posts_pattern`. That leaves the actual articles --
-  the ones with the code blocks, image interpolation and Earmark edge cases that a
+  the ones with the code blocks, raw HTML blocks and markdown edge cases that a
   dependency upgrade will disturb -- completely untested. This module parses every
   real post directly, bypassing the config override.
 
-  Scope note: `Post.parse!/1` covers parsing, Earmark and syntax highlighting. It
-  does *not* cover the `EEx`/`img_url` step, which lives in `Blog.get_post/1` and
-  only sees real posts in the dev environment. `mix snapshot` covers that.
+  Scope note: these assertions check structure, not rendered bytes. They cannot
+  see a renderer changing its output while keeping the shape intact --
+  `mix snapshot` is what covers that.
   """
   use ExUnit.Case, async: true
 
